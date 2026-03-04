@@ -779,6 +779,39 @@ footer {
     }
 }
 
+/* Hero Carousel Animations */
+.carousel-exit {
+    animation: slideOutLeft 0.3s forwards ease-in !important;
+}
+
+.carousel-enter {
+    animation: slideInRight 0.4s forwards ease-out !important;
+}
+
+@keyframes slideOutLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 /* Mobile Adjustments */
 @media (max-width: 640px) {
     .container {

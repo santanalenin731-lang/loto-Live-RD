@@ -107,4 +107,29 @@ function initializeCrons(broadcastCb) {
     console.log('✅ Cron Jobs scheduled successfully for 20 draws.');
 }
 
-module.exports = { initializeCrons };
+async function backfillAll(broadcastCb) {
+    console.log('🚀 [BACKFILL] Starting initial backfill to populate empty DB...');
+    const scrapers = [
+        scrapeGanaMas, scrapeNacionalNoche, scrapeLeidsa, scrapeReal,
+        scrapePrimeraDia, scrapePrimeraNoche, scrapeSuerteDia, scrapeSuerteTarde, scrapeLotedom,
+        scrapeNYTarde, scrapeNYNoche, scrapeFLDia, scrapeFLNoche,
+        scrapeAnguila10, scrapeAnguila1, scrapeAnguila6, scrapeAnguila9,
+        scrapeKing12, scrapeKing7, scrapeLoteka
+    ];
+
+    for (const scraper of scrapers) {
+        try {
+            console.log(`[BACKFILL] Fetching: ${scraper.name}`);
+            const result = await scraper();
+            if (result && result.numbers && result.numbers.length > 0 && broadcastCb) {
+                const drawTime = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+                broadcastCb(result.lotteryCode, result.numbers, drawTime);
+            }
+        } catch (err) {
+            console.error(`[BACKFILL] Error fetching ${scraper.name}: ${err.message}`);
+        }
+    }
+    console.log('✅ [BACKFILL] Finished initial data population.');
+}
+
+module.exports = { initializeCrons, backfillAll };

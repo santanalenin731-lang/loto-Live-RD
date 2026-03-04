@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Current Time Update Logic
     const timeDisplay = document.getElementById('current-time');
-    setInterval(() => {
-        const now = new Date();
-        timeDisplay.textContent = now.toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    }, 1000);
+    if (timeDisplay) {
+        setInterval(() => {
+            const now = new Date();
+            timeDisplay.textContent = now.toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }, 1000);
+    }
 
     // Initial Hero Animation specific logic
     const heroBalls = document.querySelectorAll('.hero-ball');
@@ -120,46 +122,127 @@ document.addEventListener('DOMContentLoaded', () => {
             // Render regular lottery list
             renderLotteryCards(allLotteries);
 
-            // Set the Hero Section to a Jackpot instead of a daily draw
-            if (MOCK_JACKPOTS.length > 0) {
-                // Pick a prominent jackpot (e.g., Loto Leidsa or the one with highest prize)
-                updateHeroSection(MOCK_JACKPOTS[0]);
-            }
+            // Start the Hero Carousel
+            startHeroCarousel();
 
             checkEmptyState();
             lucide.createIcons(); // Initialize icons after initial render
         })
         .catch(error => {
-            console.error("Error loading results:", error);
-            spinner.innerHTML = `
-                <div class="empty-state visible">
-                    <p style="text-align:center; color: var(--text-muted); padding: 2rem;">Error de conexión. Intentando reconectar...</p>
-                </div>
-            `;
-            lucide.createIcons(); // Initialize icons even on error
+            console.warn("No se pudo conectar al servidor local. Mostrando datos offline...", error);
+
+            // Still hide the spinner
+            spinner.style.display = 'none';
+
+            // Use empty array to generate placeholders for all expected lotteries
+            allLotteries = mergeDataWithPlaceholders([]);
+            renderLotteryCards(allLotteries);
+
+            startHeroCarousel();
+
+            checkEmptyState();
+
+            // Optionally add a small toast/notice instead of fully replacing the container
+            const notice = document.createElement('div');
+            notice.className = 'glass-panel';
+            notice.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; padding: 1rem; border-left: 4px solid var(--accent-red); background: rgba(17, 24, 39, 0.95);';
+            notice.innerHTML = `<p style="margin:0; font-size:0.9rem; color:var(--text-muted);"><i data-lucide="wifi-off" style="width:16px; height:16px; margin-right:8px; vertical-align:middle;"></i>Sin conexión al servidor local</p>`;
+            document.body.appendChild(notice);
+
+            setTimeout(() => {
+                notice.style.opacity = '0';
+                notice.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => notice.remove(), 500);
+            }, 5000);
+
+            lucide.createIcons();
         });
 
-    // Initialize WebSocket for Real-time Updates
-    const socket = io('http://localhost:4000');
+    // Initialize WebSocket for Real-time Updates only if available
+    let socket;
+    try {
+        socket = io('http://localhost:4000', {
+            reconnectionAttempts: 3,
+            timeout: 5000
+        });
 
-    socket.on('connect', () => {
-        console.log('Connected to Lottery WebSocket Server');
-    });
+        socket.on('connect', () => {
+            console.log('Connected to Lottery WebSocket Server');
+        });
 
-    socket.on('new_result', (data) => {
-        console.log('Got new real-time result!', data);
+        socket.on('new_result', (data) => {
+            console.log('Got new real-time result!', data);
 
-        // In a real app we'd determine if the update is a jackpot or daily
-        fetch('http://localhost:4000/api/results/latest')
-            .then(res => res.json())
-            .then(newData => {
-                const mergedData = mergeDataWithPlaceholders(newData);
-                allLotteries = mergedData;
-                renderLotteryCards(mergedData);
-                // We keep the jackpot in the hero, so we might not update hero here unless the jackpot itself updated
-                lucide.createIcons();
-            });
-    });
+            // In a real app we'd determine if the update is a jackpot or daily
+            fetch('http://localhost:4000/api/results/latest')
+                .then(res => res.json())
+                .then(newData => {
+                    const mergedData = mergeDataWithPlaceholders(newData);
+                    allLotteries = mergedData;
+                    renderLotteryCards(mergedData);
+                    // We keep the jackpot in the hero, so we might not update hero here unless the jackpot itself updated
+                    lucide.createIcons();
+                })
+                .catch(err => console.warn('Real-time sync failed (offline):', err));
+        });
+    } catch (err) {
+        console.warn('WebSocket init failed:', err);
+    }
+
+    // Hero Carousel Logic
+    let currentJackpotIndex = 0;
+    let heroCarouselInterval = null;
+
+    function startHeroCarousel() {
+        if (MOCK_JACKPOTS.length === 0) return;
+
+        // Initial render
+        updateHeroSection(MOCK_JACKPOTS[currentJackpotIndex]);
+
+        if (heroCarouselInterval) clearInterval(heroCarouselInterval);
+
+        heroCarouselInterval = setInterval(() => {
+            currentJackpotIndex = (currentJackpotIndex + 1) % MOCK_JACKPOTS.length;
+
+            const lotteryNameNode = document.getElementById('hero-lottery-name');
+            const prizeNode = document.getElementById('hero-prize');
+            const heroVisualContainer = document.querySelector('.hero-visual');
+
+            // 1. Add Exit Animation
+            if (lotteryNameNode) {
+                lotteryNameNode.classList.remove('carousel-enter');
+                lotteryNameNode.classList.add('carousel-exit');
+            }
+            if (prizeNode) {
+                prizeNode.classList.remove('carousel-enter');
+                prizeNode.classList.add('carousel-exit');
+            }
+            if (heroVisualContainer) {
+                heroVisualContainer.classList.remove('carousel-enter');
+                heroVisualContainer.classList.add('carousel-exit');
+            }
+
+            // 2. Wait for exit, then update and animate entry
+            setTimeout(() => {
+                updateHeroSection(MOCK_JACKPOTS[currentJackpotIndex]);
+
+                const newPrizeNode = document.getElementById('hero-prize');
+
+                if (lotteryNameNode) {
+                    lotteryNameNode.classList.remove('carousel-exit');
+                    lotteryNameNode.classList.add('carousel-enter');
+                }
+                if (newPrizeNode) {
+                    newPrizeNode.classList.remove('carousel-exit');
+                    newPrizeNode.classList.add('carousel-enter');
+                }
+                if (heroVisualContainer) {
+                    heroVisualContainer.classList.remove('carousel-exit');
+                    heroVisualContainer.classList.add('carousel-enter');
+                }
+            }, 300); // 300ms matches exit animation duration
+        }, 5000); // 5 seconds per slide
+    }
 
     // Function to update the big Hero Banner
     function updateHeroSection(data) {
@@ -170,44 +253,43 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update the Lottery Name Label
         const lotteryNameNode = document.getElementById('hero-lottery-name');
         if (lotteryNameNode && meta) {
-            lotteryNameNode.style.opacity = '0';
-            setTimeout(() => {
-                lotteryNameNode.textContent = meta.name;
-                lotteryNameNode.style.opacity = '1';
+            lotteryNameNode.textContent = meta.name;
+            lotteryNameNode.style.opacity = '1';
 
-                // Add prize if it's a jackpot
-                if (data.prize) {
-                    const existingPrize = document.getElementById('hero-prize');
-                    if (existingPrize) {
-                        existingPrize.textContent = data.prize;
-                    } else {
-                        const prizeNode = document.createElement('div');
-                        prizeNode.id = 'hero-prize';
-                        prizeNode.style.fontSize = '2.5rem';
-                        prizeNode.style.color = 'var(--success-green)';
-                        prizeNode.style.fontWeight = '900';
-                        prizeNode.style.marginTop = '1rem';
-                        prizeNode.style.textShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
-                        prizeNode.textContent = data.prize;
+            // Clean up old prize node if it exists to avoid duplications
+            const existingPrize = document.getElementById('hero-prize');
+            if (existingPrize) {
+                existingPrize.remove();
+            }
 
-                        // Insert after the title in the hero section
-                        const heroTitleContainer = document.querySelector('.hero h2');
-                        if (heroTitleContainer) {
-                            heroTitleContainer.parentNode.insertBefore(prizeNode, heroTitleContainer.nextSibling);
-                        }
-                    }
+            // Add prize if it's a jackpot
+            if (data.prize) {
+                const prizeNode = document.createElement('div');
+                prizeNode.id = 'hero-prize';
+                prizeNode.style.fontSize = '2.5rem';
+                prizeNode.style.color = 'var(--success-green)';
+                prizeNode.style.fontWeight = '900';
+                prizeNode.style.marginTop = '1rem';
+                prizeNode.style.textShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
+                prizeNode.textContent = data.prize;
+
+                // Insert after the title in the hero section
+                const heroTitleContainer = document.querySelector('.hero h2');
+                if (heroTitleContainer) {
+                    heroTitleContainer.parentNode.insertBefore(prizeNode, heroTitleContainer.nextSibling);
                 }
-            }, 300);
+            }
         }
 
         const heroVisualContainer = document.querySelector('.hero-visual');
         if (heroVisualContainer) {
             heroVisualContainer.innerHTML = ''; // Clear existing balls
 
-            // Re-create balls for the jackpot (6 balls for loto usually)
+            // Re-create balls for the jackpot
             data.numbers.forEach((num, index) => {
                 const ball = document.createElement('div');
                 ball.className = 'hero-ball';
+                ball.textContent = num; // Actual winning number injected
                 ball.style.animationDelay = `${index * 0.2}s`;
                 // If it's the extra/powerball
                 if (data.numbers.length > 5 && index === data.numbers.length - 1) {
@@ -217,18 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (index === 1) ball.style.borderColor = 'rgba(206, 17, 38, 0.5)';
                 }
 
-                ball.style.opacity = '0';
-                ball.textContent = num;
-                heroVisualContainer.appendChild(ball);
-
-                setTimeout(() => {
-                    ball.style.opacity = '1';
-                }, 300 + (index * 100));
-            });
-
-            // Re-bind mouse parallax to the new hero balls
-            const newHeroBalls = document.querySelectorAll('.hero-ball');
-            newHeroBalls.forEach(ball => {
+                // Add Parallax listener back
                 ball.addEventListener('mousemove', (e) => {
                     const rect = ball.getBoundingClientRect();
                     const x = e.clientX - rect.left - rect.width / 2;
@@ -245,9 +316,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     ball.style.transform = `perspective(200px) rotateX(0) rotateY(0) scale(1)`;
                     ball.style.boxShadow = '';
                 });
+
+                heroVisualContainer.appendChild(ball);
             });
         }
     }
+
 
     function buildCardHtml(lottery, meta) {
         const className = lottery.lottery_code;

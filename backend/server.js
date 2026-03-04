@@ -4,7 +4,7 @@ const { Server } = require('socket.io');
 const path = require('path');
 const cors = require('cors');
 const db = require('./db');
-const { initializeCrons } = require('./cronManager');
+const { initializeCrons, backfillAll } = require('./cronManager');
 
 const app = express();
 const server = http.createServer(app);
@@ -67,5 +67,9 @@ server.listen(PORT, () => {
     console.log(`🚀 Lottery Server running on http://localhost:${PORT}`);
 
     // Start Cron Jobs
-    initializeCrons();
+    initializeCrons(broadcastNewResult);
+
+    // Automatically perform an initial backfill without blocking the listener
+    // Note: Do not await here so the server immediately serves requests while fetching
+    backfillAll(broadcastNewResult);
 });
