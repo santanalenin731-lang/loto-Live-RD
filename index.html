@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es-DO">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de Lotería RD | Lotería Nacional, LEIDSA, Loteka y Más</title>
+    <meta name="description"
+        content="Resultados al instante de todas las loterías dominicanas. Lotería Nacional, LEIDSA, Loteka, Lotería Real, La Primera, LoteDom y New York. Revisa tus números y consulta nuestro diccionario de los sueños.">
+    <meta name="keywords"
+        content="loteria dominicana, loteria nacional, leidsa, loteka, la primera, gana mas, resultados loteria, numeros de hoy, sueños y numeros, pale, tripleta, loto">
+    <meta property="og:title" content="Resultados de Lotería en la República Dominicana">
+    <meta property="og:description"
+        content="Consulta los números ganadores de todas las loterías dominicanas al instante. ¡Descubre si hoy es tu día de suerte!">
+    <meta property="og:type" content="website">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <!-- Navigation Header -->
+    <nav class="top-nav">
+        <div class="h-container">
+            <div class="logo">
+                <i data-lucide="crosshairs" class="icon-accent"></i>
+                Loterías<span>RD</span>
+            </div>
+            <div class="nav-links">
+                <a href="/#" class="active">Resultados</a>
+                <a href="/#data-center">Data Center</a>
+                <a href="/#stats">Pronósticos</a>
+            </div>
+            <button class="menu-btn">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero glass-panel">
+            <main class="main-content">
+                <!-- View: Home -->
+                <div id="view-home">
+                    <!-- Hero Section -->
+                    <section class="hero container relative">
+                        <div class="badge fade-in">En Vivo</div>
+                        <h2 class="slide-up delay-1">
+                            Resultados de Loterías<br>
+                            <span>República Dominicana</span>
+                        </h2>
+                        <h3 id="hero-lottery-name" class="slide-up delay-2"
+                            style="font-size: 1.5rem; color: var(--accent-red); margin-top: -1rem; transition: opacity 0.3s;">
+                            Seleccionando...
+                        </h3>
+
+                        <div class="hero-visual fade-in delay-2">
+                            <!-- Balls will be injected via JS -->
+                        </div>
+
+                        <p class="slide-up delay-2">
+                            Consulta los resultados al instante de Nacional, LEIDSA, Loteka, Real y más.
+                        </p>
+                        <div class="hero-stats slide-up delay-2">
+                            <span class="stat-item"><i data-lucide="zap"></i> Actualización en tiempo real</span>
+                            <span class="stat-item"><i data-lucide="shield-check"></i> 100% Verificado</span>
+                        </div>
+                    </section>
+
+                    <!-- Filters -->
+                    <section class="filters container">
+                        <div class="filter-group">
+                            <button class="filter-btn active" data-filter="all">Todas</button>
+                            <button class="filter-btn" data-filter="Nacional">Nacional</button>
+                            <button class="filter-btn" data-filter="LEIDSA">LEIDSA</button>
+                            <button class="filter-btn" data-filter="Loteka">Loteka</button>
+                            <button class="filter-btn" data-filter="Real">Real</button>
+                        </div>
+                    </section>
+
+                    <!-- Loading State -->
+                    <div id="loading-spinner" class="spinner-container container">
+                        <i data-lucide="loader-2" class="spin"></i> Cargando resultados...
+                    </div>
+
+                    <!-- Daily Lotteries Section (Categorized by Time) -->
+                    <section id="daily-section" class="lottery-group container" style="display: none;">
+                        <div class="group-header">
+                            <h2>Sorteos Diarios</h2>
+                            <div class="time-filters mt-4">
+                                <button class="time-btn active" data-time="all">Todos</button>
+                                <button class="time-btn" data-time="morning">Mañana</button>
+                                <button class="time-btn" data-time="afternoon">Tarde</button>
+                                <button class="time-btn" data-time="night">Noche</button>
+                            </div>
+                        </div>
+
+                        <div class="time-group mt-4" id="group-morning">
+                            <h3 class="time-category-title">Sorteos de la Mañana</h3>
+                            <div id="morning-container" class="grid-layout mt-2"></div>
+                        </div>
+
+                        <div class="time-group mt-4" id="group-afternoon">
+                            <h3 class="time-category-title">Sorteos de la Tarde</h3>
+                            <div id="afternoon-container" class="grid-layout mt-2"></div>
+                        </div>
+
+                        <div class="time-group mt-4" id="group-night">
+                            <h3 class="time-category-title">Sorteos de la Noche</h3>
+                            <div id="night-container" class="grid-layout mt-2"></div>
+                        </div>
+                    </section>
+
+                    <!-- Jackpots Section -->
+                    <section id="jackpots-section" class="lottery-group container mt-xl" style="display: none;">
+                        <div class="group-header">
+                            <h2>Jackpots Acumulados</h2>
+                            <p>Las loterías millonarias</p>
+                        </div>
+                        <div id="jackpots-container" class="grid-layout"></div>
+                    </section>
+                </div>
+
+                <!-- View: Subpage (Lottery Detail) -->
+                <div id="view-subpage" style="display: none;">
+                    <div class="container mt-xl mb-xl">
+                        <div id="subpage-content">
+                            <!-- Content injected via JS routing -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View: Data Center -->
+                <div id="view-datacenter" style="display: none;">
+                    <div class="container mt-xl mb-xl">
+                        <div class="subpage-header"
+                            style="border-left: 4px solid var(--accent-purple); padding-left: 1rem; margin-bottom: 2rem;">
+                            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Data Center Pro</h1>
+                            <p style="color: var(--text-muted); font-size: 1.1rem;">Estadísticas Avanzadas, Números
+                                Calientes y Frecuencias</p>
+                        </div>
+
+                        <div class="glass-panel" style="padding: 2rem;">
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                                <select class="dc-select">
+                                    <option>Todas las Loterías</option>
+                                    <option>Loto Leidsa</option>
+                                    <option>Lotería Nacional</option>
+                                    <option>Loteka</option>
+                                </select>
+                                <select class="dc-select">
+                                    <option>Últimos 30 días</option>
+                                    <option>Últimos 3 meses</option>
+                                    <option>Este año</option>
+                                    <option>Histórico Completo</option>
+                                </select>
+                            </div>
+
+                            <div class="grid-layout">
+                                <!-- Heatmap Area -->
+                                <div
+                                    style="grid-column: span 2; background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;">
+                                    <h3 style="color: var(--accent-red); margin-bottom: 1rem;">Mapa de Calor Estructural
+                                    </h3>
+                                    <div class="heatmap-grid" id="heatmap-container">
+                                        <!-- Heat cells will be injected here via JS -->
+                                    </div>
+                                </div>
+
+                                <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;">
+                                    <h3 style="color: var(--success-green); margin-bottom: 1rem;">Números Más Calientes
+                                    </h3>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <div class="ball"
+                                            style="width: 40px; height: 40px; font-size: 1rem; --card-accent: var(--accent-red);">
+                                            15</div>
+                                        <div class="ball"
+                                            style="width: 40px; height: 40px; font-size: 1rem; --card-accent: var(--primary-orange);">
+                                            22</div>
+                                        <div class="ball"
+                                            style="width: 40px; height: 40px; font-size: 1rem; --card-accent: var(--secondary-yellow);">
+                                            07</div>
+                                        <div class="ball"
+                                            style="width: 40px; height: 40px; font-size: 1rem; --card-accent: var(--secondary-blue);">
+                                            89</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <footer>
+                <div class="container footer-content">
+                    <div class="footer-brand">
+                        <h2>Lotería<span>RD</span></h2>
+                        <p>Plataforma independiente de resultados.</p>
+                    </div>
+                    <p class="disclaimer">Los resultados mostrados son de carácter informativo. Consulte las fuentes
+                        oficiales
+                        para confirmación.</p>
+                </div>
+            </footer>
+
+            <!-- Scripts -->
+            <!-- Icons (Lucide) -->
+            <script src="https://unpkg.com/lucide@latest"></script>
+            <script>
+                lucide.createIcons();
+            </script>
+            <!-- WebSockets -->
+            <script src="http://localhost:4000/socket.io/socket.io.js"></script>
+            <!-- App Logic -->
+            <script src="js/app.js"></script>
+</body>
+
+</html>

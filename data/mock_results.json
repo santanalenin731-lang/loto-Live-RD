@@ -1,0 +1,318 @@
+{
+  "lastUpdate": "2026-03-02T16:00:00Z",
+  "lotteries": [
+    {
+      "id": "gana_mas",
+      "name": "Gana Más",
+      "provider": "Lotería Nacional",
+      "drawTime": "2:30 PM",
+      "results": [
+        45,
+        12,
+        88
+      ],
+      "previousResults": [
+        10,
+        55,
+        99
+      ],
+      "type": "Quiniela",
+      "color": "var(--primary-blue)"
+    },
+    {
+      "id": "loteria_nacional",
+      "name": "Lotería Nacional",
+      "provider": "Lotería Nacional",
+      "drawTime": "9:00 PM",
+      "results": [
+        14,
+        2,
+        67
+      ],
+      "previousResults": [
+        21,
+        33,
+        44
+      ],
+      "type": "Quiniela",
+      "color": "var(--primary-blue)"
+    },
+    {
+      "id": "leidsa_quiniela",
+      "name": "Quiniela LEIDSA",
+      "provider": "LEIDSA",
+      "drawTime": "8:55 PM",
+      "results": [
+        5,
+        30,
+        29
+      ],
+      "previousResults": [
+        11,
+        22,
+        33
+      ],
+      "type": "Quiniela Palé",
+      "color": "var(--secondary-yellow)"
+    },
+    {
+      "id": "loto_leidsa",
+      "name": "Loto",
+      "provider": "LEIDSA",
+      "drawTime": "8:55 PM",
+      "results": [
+        12,
+        15,
+        22,
+        28,
+        30,
+        36
+      ],
+      "extraBall": 5,
+      "previousResults": [
+        1,
+        5,
+        12,
+        15,
+        20,
+        25
+      ],
+      "type": "Loto / Loto Más",
+      "color": "var(--secondary-yellow)"
+    },
+    {
+      "id": "loteria_real",
+      "name": "Lotería Real",
+      "provider": "Lotería Real",
+      "drawTime": "12:55 PM",
+      "results": [
+        92,
+        10,
+        48
+      ],
+      "previousResults": [
+        50,
+        60,
+        70
+      ],
+      "type": "Quiniela Real",
+      "color": "var(--accent-red)"
+    },
+    {
+      "id": "loteka",
+      "name": "Loteka",
+      "provider": "Loteka",
+      "drawTime": "7:55 PM",
+      "results": [
+        23,
+        44,
+        55
+      ],
+      "previousResults": [
+        12,
+        34,
+        56
+      ],
+      "type": "Quiniela",
+      "color": "var(--primary-orange)"
+    },
+    {
+      "id": "mega_chance",
+      "name": "Mega Chance",
+      "provider": "Loteka",
+      "drawTime": "7:55 PM",
+      "results": [
+        10,
+        20,
+        30,
+        40,
+        50
+      ],
+      "type": "Chance",
+      "color": "var(--primary-orange)"
+    },
+    {
+      "id": "la_primera_dia",
+      "name": "La Primera Día",
+      "provider": "La Primera",
+      "drawTime": "12:00 PM",
+      "results": [
+        77,
+        88,
+        99
+      ],
+      "type": "Quiniela",
+      "color": "var(--success-green)"
+    },
+    {
+      "id": "la_suerte_dia",
+      "name": "La Suerte Día",
+      "provider": "La Suerte Dominicana",
+      "drawTime": "12:30 PM",
+      "results": [
+        11,
+        21,
+        31
+      ],
+      "type": "Quiniela",
+      "color": "var(--secondary-blue)"
+    },
+    {
+      "id": "lotedom",
+      "name": "LoteDom",
+      "provider": "LoteDom",
+      "drawTime": "1:55 PM",
+      "results": [
+        1,
+        19,
+        83
+      ],
+      "type": "Quiniela",
+      "color": "var(--accent-purple)"
+    },
+    {
+      "id": "quemaito",
+      "name": "El Quemaito Mayor",
+      "provider": "LoteDom",
+      "drawTime": "1:55 PM",
+      "results": [
+        42
+      ],
+      "type": "Único",
+      "color": "var(--accent-purple)"
+    },
+    {
+      "id": "new_york_tarde",
+      "name": "New York Tarde",
+      "provider": "Internacional",
+      "drawTime": "3:30 PM",
+      "results": [
+        61,
+        9,
+        24
+      ],
+      "type": "Quiniela",
+      "color": "var(--surface-color)"
+    },
+    {
+      "id": "new_york_noche",
+      "name": "New York Noche",
+      "provider": "Internacional",
+      "drawTime": "11:30 PM",
+      "results": [
+        39,
+        74,
+        18
+      ],
+      "type": "Quiniela",
+      "color": "var(--surface-color)"
+    },
+    {
+      "id": "florida_dia",
+      "name": "Florida Día",
+      "provider": "Internacional",
+      "drawTime": "1:30 PM",
+      "results": [
+        82,
+        5,
+        37
+      ],
+      "type": "Quiniela",
+      "color": "var(--surface-color)"
+    }
+  ],
+  "dreams": [
+    {
+      "symbol": "El Agua",
+      "number": 1
+    },
+    {
+      "symbol": "El Niño",
+      "number": 2
+    },
+    {
+      "symbol": "Los Huevos",
+      "number": 0
+    },
+    {
+      "symbol": "El Muerto",
+      "number": 47
+    },
+    {
+      "symbol": "El Muerto (2)",
+      "number": 48
+    },
+    {
+      "symbol": "La Culebra",
+      "number": 32
+    },
+    {
+      "symbol": "La Sangre",
+      "number": 18
+    },
+    {
+      "symbol": "El Gato",
+      "number": 5
+    },
+    {
+      "symbol": "El Gato (2)",
+      "number": 13
+    },
+    {
+      "symbol": "El Perro",
+      "number": 6
+    },
+    {
+      "symbol": "El Perro (2)",
+      "number": 11
+    },
+    {
+      "symbol": "La Mujer",
+      "number": 21
+    },
+    {
+      "symbol": "La Mujer (2)",
+      "number": 2
+    },
+    {
+      "symbol": "El Borracho",
+      "number": 14
+    },
+    {
+      "symbol": "El Dinero",
+      "number": 32
+    },
+    {
+      "symbol": "El Dinero (2)",
+      "number": 96
+    },
+    {
+      "symbol": "La Madre",
+      "number": 52
+    },
+    {
+      "symbol": "La Madre (2)",
+      "number": 42
+    },
+    {
+      "symbol": "La Fiesta",
+      "number": 20
+    },
+    {
+      "symbol": "El Ladrón",
+      "number": 79
+    },
+    {
+      "symbol": "El Ladrón (2)",
+      "number": 68
+    },
+    {
+      "symbol": "La Suerte",
+      "number": 37
+    },
+    {
+      "symbol": "El Pescado",
+      "number": 19
+    }
+  ]
+}

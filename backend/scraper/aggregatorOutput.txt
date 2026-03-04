@@ -1,0 +1,325 @@
+[AGGREGATOR] Connecting to loteriasdominicanas.com...
+Scraped Lotteries:
+ [
+  {
+    "title": "Juega + Pega +",
+    "numbers": [
+      "20",
+      "21",
+      "10",
+      "13",
+      "04"
+    ]
+  },
+  {
+    "title": "Gana Más",
+    "numbers": [
+      "55",
+      "51",
+      "91"
+    ]
+  },
+  {
+    "title": "Lotería Nacional",
+    "numbers": [
+      "30",
+      "68",
+      "44"
+    ]
+  },
+  {
+    "title": "Pega 3 Más",
+    "numbers": [
+      "25",
+      "37",
+      "20"
+    ]
+  },
+  {
+    "title": "Quiniela Leidsa",
+    "numbers": [
+      "11",
+      "14",
+      "74"
+    ]
+  },
+  {
+    "title": "Loto Pool",
+    "numbers": [
+      "01",
+      "02",
+      "09",
+      "11",
+      "18"
+    ]
+  },
+  {
+    "title": "Super Kino TV",
+    "numbers": [
+      "06",
+      "07",
+      "11",
+      "12",
+      "21",
+      "23",
+      "28",
+      "31",
+      "32",
+      "39",
+      "40",
+      "42",
+      "52",
+      "61",
+      "65",
+      "66",
+      "68",
+      "73",
+      "74",
+      "77"
+    ]
+  },
+  {
+    "title": "Loto - Super Loto Más",
+    "numbers": [
+      "17",
+      "20",
+      "28",
+      "30",
+      "36",
+      "39",
+      "08",
+      "08"
+    ]
+  },
+  {
+    "title": "Loto Pool",
+    "numbers": [
+      "36",
+      "18",
+      "05",
+      "46"
+    ]
+  },
+  {
+    "title": "Quiniela Real",
+    "numbers": [
+      "60",
+      "24",
+      "83"
+    ]
+  },
+  {
+    "title": "Quiniela Loteka",
+    "numbers": [
+      "74",
+      "02",
+      "97"
+    ]
+  },
+  {
+    "title": "Mega Chances",
+    "numbers": [
+      "12",
+      "64",
+      "98",
+      "89",
+      "68"
+    ]
+  },
+  {
+    "title": "MegaLotto",
+    "numbers": [
+      "01",
+      "17",
+      "18",
+      "22",
+      "26",
+      "29",
+      "01",
+      "02"
+    ]
+  },
+  {
+    "title": "Florida Día",
+    "numbers": [
+      "43",
+      "10",
+      "47"
+    ]
+  },
+  {
+    "title": "New York Tarde",
+    "numbers": [
+      "43",
+      "85",
+      "72"
+    ]
+  },
+  {
+    "title": "Florida Noche",
+    "numbers": [
+      "93",
+      "54",
+      "60"
+    ]
+  },
+  {
+    "title": "New York Noche",
+    "numbers": [
+      "89",
+      "73",
+      "58"
+    ]
+  },
+  {
+    "title": "Mega Millions",
+    "numbers": [
+      "11",
+      "18",
+      "39",
+      "43",
+      "67",
+      "23"
+    ]
+  },
+  {
+    "title": "PowerBall",
+    "numbers": [
+      "06",
+      "20",
+      "35",
+      "54",
+      "65",
+      "10",
+      "4X"
+    ]
+  },
+  {
+    "title": "La Primera Día",
+    "numbers": [
+      "06",
+      "69",
+      "18"
+    ]
+  },
+  {
+    "title": "Primera Noche",
+    "numbers": [
+      "25",
+      "77",
+      "07"
+    ]
+  },
+  {
+    "title": "Loto 5",
+    "numbers": [
+      "31",
+      "03",
+      "05",
+      "01",
+      "36",
+      "04"
+    ]
+  },
+  {
+    "title": "La Suerte 12:30",
+    "numbers": [
+      "85",
+      "63",
+      "72"
+    ]
+  },
+  {
+    "title": "La Suerte 18:00",
+    "numbers": [
+      "32",
+      "22",
+      "35"
+    ]
+  },
+  {
+    "title": "Quiniela LoteDom",
+    "numbers": [
+      "60",
+      "76",
+      "27"
+    ]
+  },
+  {
+    "title": "El Quemaito Mayor",
+    "numbers": [
+      "25"
+    ]
+  },
+  {
+    "title": "Anguila Mañana",
+    "numbers": [
+      "91",
+      "61",
+      "00"
+    ]
+  },
+  {
+    "title": "Anguila Medio Día",
+    "numbers": [
+      "02",
+      "64",
+      "41"
+    ]
+  },
+  {
+    "title": "Anguila Tarde",
+    "numbers": [
+      "57",
+      "33",
+      "92"
+    ]
+  },
+  {
+    "title": "Anguila Noche",
+    "numbers": [
+      "39",
+      "48",
+      "12"
+    ]
+  },
+  {
+    "title": "King Lottery 12:30",
+    "numbers": [
+      "69",
+      "81",
+      "74"
+    ]
+  },
+  {
+    "title": "King Lottery 7:30",
+    "numbers": [
+      "66",
+      "18",
+      "02"
+    ]
+  }
+]
+
+First Block HTML:
+ 
+							<!-- Start Game -->
+																					<div>
+								<div>
+									<div class="company-title p-2">
+										<div class="d-flex align-items-center">
+											<div>
+																																							<a href="/loteria-nacional">Nacional</a>																																				</div>&nbsp;
+																					</div>
+									</div>
+								</div>
+								<div class="game-info p-2">
+									<div class="d-flex flex-row">
+										<div class="d-flex flex-column align-items-start">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="session-date px-2">
+                                                                                                            02-03                                                    
+                                                                                                    </div>
+
+                                                
+       
