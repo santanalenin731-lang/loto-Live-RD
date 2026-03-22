@@ -502,8 +502,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        const urlSafeProvider = encodeURIComponent(meta.provider).toLowerCase().replace(/%20/g, '-').replace(/\./g, '');
+        const urlSafeName = encodeURIComponent(meta.name).toLowerCase().replace(/%20/g, '-').replace(/\./g, '');
+        const seoUrl = `/loterias/${urlSafeProvider}/${urlSafeName}`;
+
         return `
-            <a href="#lottery/${encodeURIComponent(meta.provider)}/${encodeURIComponent(meta.name)}" class="lottery-card glass-panel fade-in" data-lottery="${className}" style="--card-accent: ${accentColor}; --card-logo: url('${logoUrl}'); display: block;">
+            <a href="${seoUrl}" class="lottery-card glass-panel fade-in" data-lottery="${className}" style="--card-accent: ${accentColor}; --card-logo: url('${logoUrl}'); display: block;" onclick="window.navigateSpa(event, '${meta.provider}', '${meta.name}')">
                 <div class="card-header" style="margin-bottom: 1rem; align-items: flex-start;">
                     <div class="card-title-group" style="width: 100%;">
                         <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
@@ -1409,6 +1413,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
     }
+    // SPA Interceptor for SEO-friendly URLs
+    window.navigateSpa = function(event, provider, drawName) {
+        event.preventDefault();
+        const urlSafeProvider = encodeURIComponent(provider).toLowerCase().replace(/%20/g, '-').replace(/\./g, '');
+        const urlSafeName = encodeURIComponent(drawName).toLowerCase().replace(/%20/g, '-').replace(/\./g, '');
+        const seoUrl = `/loterias/${urlSafeProvider}/${urlSafeName}`;
+        
+        history.pushState(null, '', seoUrl);
+        
+        // Hide all views and show subpage
+        document.getElementById('view-home').style.display = 'none';
+        const datacenter = document.getElementById('view-datacenter');
+        if(datacenter) datacenter.style.display = 'none';
+        const historico = document.getElementById('view-historico');
+        if(historico) historico.style.display = 'none';
+        const pred = document.getElementById('view-pronosticos');
+        if(pred) pred.style.display = 'none';
+        
+        const viewSubpage = document.getElementById('view-subpage');
+        if (viewSubpage) viewSubpage.style.display = 'block';
+        
+        window.scrollTo(0, 0);
+        renderSubpage(provider, drawName);
+    }
 
     // Global UI Helper for Subpage Tabs
     window.switchTab = function (tabId, event) {
@@ -1438,5 +1466,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize SPA Router on Load and Hash Change
     window.addEventListener('hashchange', handleHashChange);
-    handleHashChange();
+    
+    // Also handle popstate (back button) for real URL changes
+    window.addEventListener('popstate', () => {
+        if (window.location.pathname.startsWith('/loterias/')) {
+            // Re-render subpage if navigating back into a lottery page
+            // We rely on window.location.pathname. We didn't store state, but we can parse URL
+            window.location.reload(); // Simple fallback for back button on real routes
+        } else {
+            handleHashChange();
+        }
+    });
+    
+    if (window.INITIAL_ROUTE) {
+        // Just show the subpage directly without mutating the nice URL
+        document.getElementById('view-home').style.display = 'none';
+        const viewSubpage = document.getElementById('view-subpage');
+        if (viewSubpage) viewSubpage.style.display = 'block';
+        window.scrollTo(0, 0);
+        renderSubpage(window.INITIAL_ROUTE.provider, window.INITIAL_ROUTE.draw);
+    } else {
+        handleHashChange();
+    }
 });

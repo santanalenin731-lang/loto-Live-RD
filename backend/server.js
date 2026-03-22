@@ -3,7 +3,9 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const cors = require('cors');
+const compression = require('compression');
 const db = require('./db');
+const LOTTERY_META = require('./meta');
 const { initializeCrons, backfillAll } = require('./cronManager');
 
 const app = express();
@@ -19,9 +21,94 @@ const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+app.use(compression());
 
-// Serve the frontend static files
-app.use(express.static(path.join(__dirname, '../')));
+// Set up EJS for dynamic SEO Headers
+app.set('views', path.join(__dirname, '../'));
+app.set('view engine', 'ejs');
+
+// --- SEO Dynamic Routes ---
+app.get('/', (req, res) => {
+    res.render('index.ejs', {
+        title: "Resultados de Loto Live RD | Lotería Nacional, LEIDSA, Loteka y Más",
+        description: "Resultados al instante de todas las loterías dominicanas. Lotería Nacional, LEIDSA, Loteka, Lotería Real, La Primera, LoteDom y New York. Revisa tus números y consulta nuestro diccionario de los sueños.",
+        initialScript: ""
+    });
+});
+
+app.get('/loterias/:provider/:drawID', (req, res) => {
+    const providerStr = decodeURIComponent(req.params.provider).replace(/-/g, ' ');
+    const drawStr = decodeURIComponent(req.params.drawID).replace(/-/g, ' ');
+
+    // Uppercase first letters naturally
+    const capitalize = (s) => s.replace(/\b\w/g, l => l.toUpperCase());
+    const humanProvider = capitalize(providerStr);
+    const humanDraw = capitalize(drawStr);
+
+    const dateToday = new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Santo_Domingo' });
+    const formattedDate = dateToday.replace(/\b\w/g, l => l.toUpperCase());
+
+    const title = `${humanDraw} | Resultados de Hoy ${formattedDate} | Loto Live RD`;
+    const description = `Revisa al instante los números ganadores de la Lotería ${humanDraw} de hoy en República Dominicana. Resultados 100% verificados en tiempo real. Ingresa ahora.`;
+
+    // Generar JSON-LD Schema
+    const schemaData = {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": `Resultados ${humanDraw} - ${humanProvider}`,
+        "startDate": new Date().toISOString(),
+        "location": {
+            "@type": "Place",
+            "name": "República Dominicana"
+        },
+        "description": description
+    };
+    const schemaScript = `<script type="application/ld+json">${JSON.stringify(schemaData)}</script>`;
+
+    // Inject state to direct JS
+    const initialScript = `<script>window.INITIAL_ROUTE = { provider: "${humanProvider}", draw: "${humanDraw}" };</script>\n${schemaScript}`;
+
+    res.render('index.ejs', {
+        title: title,
+        description: description,
+        initialScript: initialScript
+    });
+});
+
+// --- Dynamic Sitemap Route ---
+app.get('/sitemap.xml', (req, res) => {
+    db.getLatestResults((err, results) => {
+        if (err) return res.status(500).send('Error generating sitemap');
+        
+        res.header('Content-Type', 'application/xml');
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+        
+        xml += `  <url>\n    <loc>https://loto-live-rd.onrender.com/</loc>\n    <changefreq>always</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+        
+        results.forEach(lottery => {
+            const meta = LOTTERY_META[lottery.lottery_code] || LOTTERY_META['default'];
+            const urlSafeProvider = encodeURIComponent(meta.provider).toLowerCase().replace(/%20/g, '-');
+            const urlSafeDraw = encodeURIComponent(meta.name).toLowerCase().replace(/%20/g, '-');
+            const today = new Date().toISOString().split('T')[0];
+            
+            xml += `  <url>\n    <loc>https://loto-live-rd.onrender.com/loterias/${urlSafeProvider}/${urlSafeDraw}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+        });
+        
+        xml += `</urlset>`;
+        res.send(xml);
+    });
+});
+
+// Serve the frontend static files with aggressive caching for assets
+app.use(express.static(path.join(__dirname, '../'), {
+    maxAge: '7d', // Cache static assets for 7 days
+    setHeaders: function (res, filepath) {
+        if (filepath.endsWith('.html') || filepath.endsWith('.ejs')) {
+            // Do not cache HTML files aggressively to allow instant updates
+            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        }
+    }
+}));
 
 // API Endpoint for Uptime monitoring (cron-job.org)
 app.get('/ping', (req, res) => {

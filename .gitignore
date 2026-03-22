@@ -8,3 +8,6 @@ test*
 .puppeteerrc.cjs
 *.txt
 *.pdf
+
+SEO_PLAN.md
+SYSTEM.md

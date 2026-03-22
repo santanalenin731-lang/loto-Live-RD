@@ -224,8 +224,8 @@ async function backfillAll(broadcastCb) {
         scrapeKingPick3Noche, scrapeKingPick4Noche, scrapeKing7, scrapeKingPhilipsburgNoche, scrapeKingLotoPoolNoche
     ];
 
-    // Procesar en lotes de 4 para no saturar la memoria RAM del servidor con múltiples instancias de Puppeteer
-    const batchSize = 4;
+    // Procesar en lotes de 1 para NO saturar la memoria RAM del servidor (Render Free Tier tiene solo 512MB RAM)
+    const batchSize = 1;
     for (let i = 0; i < scrapers.length; i += batchSize) {
         const batch = scrapers.slice(i, i + batchSize);
         console.log(`[BACKFILL] Processing batch ${i / batchSize + 1} of ${Math.ceil(scrapers.length / batchSize)}...`);
@@ -243,10 +243,10 @@ async function backfillAll(broadcastCb) {
             }
         }));
 
-        // Pequeña pausa entre lotes para permitir recolección de basura (Garbage Collection)
+        // Pausa Larga entre lotes para recolección de basura (Garbage Collection) y liberar Chromium
         if (i + batchSize < scrapers.length) {
-            console.log('[BACKFILL] Pausing 5 seconds before next batch to free memory...');
-            await new Promise(res => setTimeout(res, 5000));
+            console.log('[BACKFILL] Pausing 7 seconds before next batch to free memory...');
+            await new Promise(res => setTimeout(res, 7000));
         }
     }
     console.log('✅ [BACKFILL] Finished initial data population.');

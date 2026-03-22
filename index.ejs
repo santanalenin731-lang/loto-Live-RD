@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resultados de Loto Live RD | Lotería Nacional, LEIDSA, Loteka y Más</title>
+    <title><%= title %></title>
     <meta name="description"
-        content="Resultados al instante de todas las loterías dominicanas. Lotería Nacional, LEIDSA, Loteka, Lotería Real, La Primera, LoteDom y New York. Revisa tus números y consulta nuestro diccionario de los sueños.">
+        content="<%= description %>">
     <meta name="keywords"
         content="loteria dominicana, loteria nacional, leidsa, loteka, la primera, gana mas, resultados loteria, numeros de hoy, sueños y numeros, pale, tripleta, loto">
-    <meta property="og:title" content="Resultados de Lotería en la República Dominicana">
+    <meta property="og:title" content="<%= title %>">
     <meta property="og:description"
-        content="Consulta los números ganadores de todas las loterías dominicanas al instante. ¡Descubre si hoy es tu día de suerte!">
+        content="<%= description %>">
     <meta property="og:type" content="website">
 
     <!-- Fonts -->
@@ -22,10 +22,13 @@
         rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
 
     <!-- Icons (Lucide) -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Dynamic SEO and Initial State Injection -->
+    <%- typeof initialScript !== 'undefined' ? initialScript : '' %>
 </head>
 
 <body>
@@ -553,9 +556,9 @@
         lucide.createIcons();
     </script>
     <!-- WebSockets -->
-    <script src="http://localhost:4000/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <!-- App Logic -->
-    <script src="js/app.js"></script>
+    <script src="/js/app.js"></script>
 </body>
 
 </html>
