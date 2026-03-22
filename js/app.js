@@ -773,6 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const isDataCenter = hash === '#data-center';
         const isHistorico = hash === '#historico';
         const isPronosticos = hash === '#pronosticos';
+        const isGenerador = hash === '#generador';
         const isSubpage = hash.startsWith('#lottery/');
 
         // Hide all views first
@@ -781,6 +782,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const viewDatacenter = document.getElementById('view-datacenter');
         const viewHistorico = document.getElementById('view-historico');
         const viewPronosticos = document.getElementById('view-pronosticos');
+        const viewGenerador = document.getElementById('view-generador');
 
         // Restore default SEO if going back home or datacenter
         if (!isSubpage) {
@@ -796,6 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewDatacenter) viewDatacenter.style.display = 'none';
         if (viewHistorico) viewHistorico.style.display = 'none';
         if (viewPronosticos) viewPronosticos.style.display = 'none';
+        if (viewGenerador) viewGenerador.style.display = 'none';
 
         // Update nav active states
         document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
@@ -818,6 +821,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (navLink) navLink.classList.add('active');
             window.scrollTo(0, 0);
             renderPronosticos();
+        } else if (isGenerador) {
+            if (viewGenerador) viewGenerador.style.display = 'block';
+            const navLink = document.querySelector('.nav-links a[href="/#generador"]');
+            if (navLink) navLink.classList.add('active');
+            window.scrollTo(0, 0);
+            document.title = "Generador de Jugadas | Loto Live RD";
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         } else if (isSubpage) {
             if (viewSubpage) viewSubpage.style.display = 'block';
             window.scrollTo(0, 0);
@@ -1530,4 +1540,76 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         handleHashChange();
     }
+
+    /* ------------------------------------------------------------------------
+       Generador Automático Logic
+       ------------------------------------------------------------------------ */
+    window.runGenerator = function() {
+        const btn = document.getElementById('btn-generate');
+        const status = document.getElementById('generator-status');
+        const balls = document.querySelectorAll('.generator-ball');
+        const provider = document.getElementById('generator-provider').value;
+
+        // Visual Reset and Lock
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        btn.innerHTML = `<i data-lucide="loader-2" class="spin"></i> <span>Calculando matriz...</span>`;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        // Slot Machine Animation 
+        let spins = 0;
+        const spinInterval = setInterval(() => {
+            balls.forEach(ball => {
+                ball.textContent = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+                ball.style.background = 'rgba(45, 55, 72, 0.5)';
+                ball.style.border = '2px dashed rgba(255,255,255,0.2)';
+                ball.style.color = 'var(--text-muted)';
+            });
+            spins++;
+
+            const statusMsgs = ['Alineando probabilidades...', 'Cruzando números calientes...', 'Analizando historial reciente...', 'Fijando resultados...'];
+            status.textContent = statusMsgs[Math.floor(spins / 5) % statusMsgs.length];
+
+        }, 100);
+
+        // Fetch Data from our Backend API Algorithm
+        fetch(`/api/generate-ticket?provider=${encodeURIComponent(provider)}`)
+            .then(res => res.json())
+            .then(data => {
+                // Minimum fake delay for UX "computation weight"
+                setTimeout(() => {
+                    clearInterval(spinInterval);
+                    const nums = data.numbers; // Expected to be an array of 3 strings like ["12", "04", "89"]
+                    
+                    balls.forEach((ball, i) => {
+                        ball.textContent = nums[i] || "00";
+                        ball.style.background = 'linear-gradient(135deg, var(--accent-blue), var(--accent-purple))';
+                        ball.style.border = 'none';
+                        ball.style.color = '#fff';
+                        ball.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.5)';
+                        // Add pop animation class
+                        ball.classList.remove('pop-animation');
+                        void ball.offsetWidth; // trigger reflow
+                        ball.classList.add('pop-animation');
+                    });
+
+                    status.textContent = "¡Jugada inteligente calculada con éxito!";
+                    
+                    // Unlock
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.innerHTML = `<i data-lucide="zap"></i> <span>GENERAR OTRA JUGADA</span>`;
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }, 1500);
+            })
+            .catch(err => {
+                clearInterval(spinInterval);
+                status.textContent = "Error de conexión. Intente de nuevo.";
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.innerHTML = `<i data-lucide="zap"></i> <span>REINTENTAR</span>`;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            });
+    }
+
 });

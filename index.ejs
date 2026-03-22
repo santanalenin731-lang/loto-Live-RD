@@ -41,6 +41,7 @@
             </a>
             <div class="nav-links">
                 <a href="/#" class="active">Resultados</a>
+                <a href="/#generador">Generador</a>
                 <a href="/#data-center">Data Center</a>
                 <a href="/#historico">Histórico</a>
                 <a href="/#pronosticos">Pronósticos</a>
@@ -522,6 +523,58 @@
             </div>
         </div>
 
+        <!-- View: Generador Automático -->
+        <div id="view-generador" class="fade-in" style="display: none; width: 100%;">
+            <section class="container mt-4 mb-4 text-center">
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: #fff;">Generador de<br><span class="gradient-text">Jugadas Inteligentes</span></h1>
+                <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                    Aumenta tus probabilidades utilizando nuestro algoritmo estadístico. Selecciona un proveedor y generaremos una jugada basándonos en números calientes, fríos y sorteos pasados.
+                </p>
+            </section>
+
+            <section class="container mb-4" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div class="glass-panel text-center" style="padding: 2.5rem; max-width: 600px; width: 100%; border-radius: 20px;">
+                    <div style="margin-bottom: 2rem;">
+                        <label for="generator-provider" style="display: block; margin-bottom: 0.75rem; color: var(--text-secondary); font-weight: 600; font-size: 1.1rem;">Selecciona tu proveedor preferido</label>
+                        <select id="generator-provider" style="width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.6); color: #fff; font-size: 1.1rem; cursor: pointer; outline: none; appearance: auto;">
+                            <option value="Nacional">Nacional (Gana Más / Lotería Nacional)</option>
+                            <option value="LEIDSA">LEIDSA (Quiniela / Palé / Tripleta)</option>
+                            <option value="Loteka">Loteka</option>
+                            <option value="Real">Real</option>
+                            <option value="La Primera">La Primera</option>
+                            <option value="La Suerte">La Suerte</option>
+                            <option value="LoteDom">LoteDom</option>
+                            <option value="USA">Americanas (NY / Florida)</option>
+                            <option value="Anguila">Anguila</option>
+                            <option value="King Lottery">King Lottery</option>
+                        </select>
+                    </div>
+
+                    <!-- Bolos Consola -->
+                    <div id="generator-console" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; min-height: 80px;">
+                        <div class="ball generator-ball" style="background: rgba(45, 55, 72, 0.5); color: #fff; border: 2px dashed rgba(255,255,255,0.2); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; font-weight: 800; box-shadow: none;">?</div>
+                        <div class="ball generator-ball" style="background: rgba(45, 55, 72, 0.5); color: #fff; border: 2px dashed rgba(255,255,255,0.2); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; font-weight: 800; box-shadow: none;">?</div>
+                        <div class="ball generator-ball" style="background: rgba(45, 55, 72, 0.5); color: #fff; border: 2px dashed rgba(255,255,255,0.2); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; font-weight: 800; box-shadow: none;">?</div>
+                    </div>
+
+                    <button id="btn-generate" class="tab-btn active" style="width: 100%; padding: 1.25rem; font-size: 1.2rem; font-weight: 800; border-radius: 16px; transition: transform 0.2s, filter 0.2s; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" onclick="window.runGenerator()">
+                        <i data-lucide="zap" style="width: 24px; height: 24px;"></i> <span>GENERAR MI JUGADA</span>
+                    </button>
+                    <div id="generator-status" style="margin-top: 1.5rem; font-size: 0.95rem; color: var(--accent-blue); font-style: italic; min-height: 24px;"></div>
+                </div>
+            </section>
+
+            <!-- Disclaimer -->
+            <section class="container mb-4">
+                <div class="glass-panel" style="max-width: 600px; margin: 0 auto; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); display: flex; gap: 1rem; align-items: flex-start; padding: 1.5rem; border-radius: 12px;">
+                    <i data-lucide="alert-triangle" style="color: var(--accent-red); width: 32px; height: 32px; flex-shrink: 0;"></i>
+                    <div>
+                        <h4 style="color: var(--accent-red); font-weight: 700; margin-bottom: 0.25rem;">Descargo de Responsabilidad Legal</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.5;">Esta herramienta utiliza un algoritmo interno (RNG Ponderado) sobre datos históricos para cruzar posibilidades matemáticas reales. Las loterías son juegos de azar. Loto Live RD no garantiza resultados y bajo ninguna circunstancia asume responsabilidad financiera. Juegue estrictamente para entretenimiento.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
     <footer>

@@ -164,6 +164,55 @@ app.get('/api/results/date/:date', (req, res) => {
     });
 });
 
+// API Endpoint para el Generador de Tickets Inteligentes
+app.get('/api/generate-ticket', (req, res) => {
+    Promise.all([
+        new Promise((resolve, reject) => db.getHotNumbers(30, 20, (err, rows) => err ? reject(err) : resolve(rows))),
+        new Promise((resolve, reject) => db.getColdNumbers(30, 20, (err, rows) => err ? reject(err) : resolve(rows))),
+        new Promise((resolve, reject) => db.getLatestResults((err, rows) => err ? reject(err) : resolve(rows)))
+    ])
+    .then(([hotRows, coldRows, latestRows]) => {
+        let weights = {};
+        for(let i=0; i<=99; i++) {
+            weights[i.toString().padStart(2, '0')] = 10; // Default weight
+        }
+        hotRows.forEach(r => { if(weights[r.number]) weights[r.number] += 15; });
+        coldRows.forEach(r => { if(weights[r.number]) weights[r.number] += 5; });
+        latestRows.forEach(draw => {
+            try {
+                const nums = typeof draw.numbers === 'string' ? JSON.parse(draw.numbers) : draw.numbers;
+                nums.forEach(n => { if(weights[n]) weights[n] = 1; });
+            } catch(e){}
+        });
+
+        let pool = [];
+        for(let num in weights) {
+            for(let i=0; i<weights[num]; i++) pool.push(num);
+        }
+
+        const picked = [];
+        while(picked.length < 3) {
+            if(pool.length === 0) break;
+            const r = Math.floor(Math.random() * pool.length);
+            const n = pool[r];
+            if(!picked.includes(n)) {
+                picked.push(n);
+                pool = pool.filter(x => x !== n);
+            }
+        }
+        res.json({ provider: req.query.provider || 'Nacional', numbers: picked });
+    })
+    .catch(err => {
+        console.error("Error generating ticket:", err);
+        const rng = [];
+        while(rng.length < 3) {
+            const s = Math.floor(Math.random()*100).toString().padStart(2, '0');
+            if(!rng.includes(s)) rng.push(s);
+        }
+        res.json({ provider: req.query.provider || 'Nacional', numbers: rng });
+    });
+});
+
 // API: Predictions (hot trend + overdue numbers)
 app.get('/api/predictions', (req, res) => {
     db.getPredictions((err, results) => {
