@@ -551,27 +551,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // New DOM Targets
         const jackpotsSection = document.getElementById('jackpots-section');
         const dailySection = document.getElementById('daily-section');
-
-        const jackpotsContainer = document.getElementById('jackpots-container');
-        const morningContainer = document.getElementById('morning-container');
-        const afternoonContainer = document.getElementById('afternoon-container');
-        const nightContainer = document.getElementById('night-container');
-
-        const groupMorning = document.getElementById('group-morning');
-        const groupAfternoon = document.getElementById('group-afternoon');
-        const groupNight = document.getElementById('group-night');
+        const dynamicGroupsContainer = document.getElementById('dynamic-groups-container');
 
         // Clear containers
+        const jackpotsContainer = document.getElementById('jackpots-container');
         jackpotsContainer.innerHTML = '';
-        morningContainer.innerHTML = '';
-        afternoonContainer.innerHTML = '';
-        nightContainer.innerHTML = '';
+        if (dynamicGroupsContainer) dynamicGroupsContainer.innerHTML = '';
+
+        const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+        const activeTimeFilter = document.querySelector('.time-btn.active')?.getAttribute('data-time') || 'all';
 
         // Render Jackpots
-        const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
         const displayJackpots = activeFilter === 'all' ? MOCK_JACKPOTS : MOCK_JACKPOTS.filter(j => getMeta(j.lottery_code).provider === activeFilter);
 
-        if (displayJackpots.length > 0) {
+        // Hide jackpots entirely if time-filter is not 'all'
+        if (displayJackpots.length > 0 && activeTimeFilter === 'all') {
             jackpotsSection.style.display = 'block';
             displayJackpots.forEach((jackpot, index) => {
                 const meta = getMeta(jackpot.lottery_code);
@@ -586,57 +580,77 @@ document.addEventListener('DOMContentLoaded', () => {
             jackpotsSection.style.display = 'none';
         }
 
-        // Hide jackpots entirely if time-filter is not 'all'
-        const activeTimeFilter = document.querySelector('.time-btn.active')?.getAttribute('data-time') || 'all';
-        if (activeTimeFilter !== 'all') {
-            jackpotsSection.style.display = 'none';
-        }
-
-
         // Render Dailies
-        let hasMorning = false, hasAfternoon = false, hasNight = false;
-
-        data.forEach((lottery, index) => {
-            const meta = getMeta(lottery.lottery_code);
-            const html = buildCardHtml(lottery, meta);
-
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html.trim();
-            const node = tempDiv.firstChild;
-            node.style.animationDelay = `${index * 0.1}s`;
-
-            if (meta.time === 'morning') {
-                morningContainer.appendChild(node);
-                hasMorning = true;
-            } else if (meta.time === 'afternoon') {
-                afternoonContainer.appendChild(node);
-                hasAfternoon = true;
-            } else if (meta.time === 'night') {
-                nightContainer.appendChild(node);
-                hasNight = true;
-            }
-        });
-
         if (data.length > 0) {
             dailySection.style.display = 'block';
 
-            const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+            // Order providers intuitively instead of arbitrarily
+            const PROVIDER_ORDER = [
+                'Nacional',
+                'LEIDSA',
+                'Loteka',
+                'Real',
+                'La Primera',
+                'La Suerte',
+                'LoteDom',
+                'USA',
+                'Anguila',
+                'King Lottery'
+            ];
 
-            // Manage Group display and hide their title if they are the only thing showing due to filter
-            [groupMorning, groupAfternoon, groupNight].forEach(group => {
-                const title = group.querySelector('.time-category-title');
-                if (title) {
-                    if (activeFilter !== 'all') {
-                        title.classList.add('hide-when-filtered');
-                    } else {
-                        title.classList.remove('hide-when-filtered');
-                    }
+            const providerGroups = {};
+            
+            data.forEach((lottery) => {
+                const meta = getMeta(lottery.lottery_code);
+                const provider = meta.provider || 'Lotería'; // Default fallback
+                if (!providerGroups[provider]) {
+                    providerGroups[provider] = [];
                 }
+                providerGroups[provider].push(lottery);
             });
 
-            groupMorning.style.display = hasMorning ? 'block' : 'none';
-            groupAfternoon.style.display = hasAfternoon ? 'block' : 'none';
-            groupNight.style.display = hasNight ? 'block' : 'none';
+            // Sort providers based on PROVIDER_ORDER, any unknown goes at the end
+            const groupedProviders = Object.keys(providerGroups).sort((a, b) => {
+                const indexA = PROVIDER_ORDER.indexOf(a);
+                const indexB = PROVIDER_ORDER.indexOf(b);
+                if (indexA === -1 && indexB !== -1) return 1;
+                if (indexB === -1 && indexA !== -1) return -1;
+                if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+                return indexA - indexB;
+            });
+
+            let globalIndex = 0;
+
+            groupedProviders.forEach(provider => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'time-group mt-4';
+                
+                // Show provider title if filter="all", otherwise hide it (as the user clicked that exact provider)
+                if (activeFilter === 'all') {
+                    const titleHtml = `<h3 class="time-category-title hide-when-filtered">${provider}</h3>`;
+                    groupDiv.innerHTML = titleHtml;
+                }
+
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'grid-layout mt-2';
+                
+                providerGroups[provider].forEach((lottery) => {
+                    const meta = getMeta(lottery.lottery_code);
+                    const html = buildCardHtml(lottery, meta);
+
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html.trim();
+                    const node = tempDiv.firstChild;
+                    node.style.animationDelay = `${globalIndex * 0.05}s`;
+                    
+                    gridDiv.appendChild(node);
+                    globalIndex++;
+                });
+
+                groupDiv.appendChild(gridDiv);
+                if (dynamicGroupsContainer) dynamicGroupsContainer.appendChild(groupDiv);
+            });
+
         } else {
             dailySection.style.display = 'none';
         }
