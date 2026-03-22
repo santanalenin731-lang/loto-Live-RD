@@ -46,10 +46,10 @@ const LOTTERY_META = {
         'powerball_double_play': { name: 'Powerball Double Play', provider: 'USA', type: 'Jackpot', color: '#6366f1', category: 'jackpot', time: 'night', balls: 6, schedule: '10:59 PM', logo: '/assets/images/logos/usa/Power ball .PNG' },
 
         // --- Caribeñas ---
-        'anguila_10': { name: 'Anguila (10:00 AM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'morning', schedule: '10:00 AM', logo: '/assets/images/logos/anguila/Águila .jpg' },
-        'anguila_1': { name: 'Anguila (1:00 PM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'afternoon', schedule: '1:00 PM', logo: '/assets/images/logos/anguila/Águila .jpg' },
-        'anguila_6': { name: 'Anguila (6:00 PM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'night', schedule: '6:00 PM', logo: '/assets/images/logos/anguila/Águila .jpg' },
-        'anguila_9': { name: 'Anguila (9:00 PM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'night', schedule: '9:00 PM', logo: '/assets/images/logos/anguila/Águila .jpg' },
+        'anguila_10': { name: 'Anguila (10:00 AM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'morning', schedule: '10:00 AM', logo: '/assets/images/logos/anguila/anguila.jpg' },
+        'anguila_1': { name: 'Anguila (1:00 PM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'afternoon', schedule: '1:00 PM', logo: '/assets/images/logos/anguila/anguila.jpg' },
+        'anguila_6': { name: 'Anguila (6:00 PM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'night', schedule: '6:00 PM', logo: '/assets/images/logos/anguila/anguila.jpg' },
+        'anguila_9': { name: 'Anguila (9:00 PM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'night', schedule: '9:00 PM', logo: '/assets/images/logos/anguila/anguila.jpg' },
         'king_pick_3_dia': { name: 'Pick 3 Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
         'king_pick_4_dia': { name: 'Pick 4 Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
         'king_12': { name: 'King Lottery (12:30 PM)', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
