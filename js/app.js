@@ -494,28 +494,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lottery.draw_time) {
             const dtLower = lottery.draw_time.toLowerCase();
 
-            // Determinar si el sorteo es realmente de hoy validando la fecha oficial si vino de la DB
-            const isTodayDate = lottery.draw_date === new Date().toISOString().split('T')[0];
-
-            if (dtLower.includes('hoy') || dtLower === 'hoy') {
-                statusBadgeHtml = `<span class="badge-status badge-today"><i data-lucide="check-circle-2" style="width: 13px; height: 13px;"></i> Salió Hoy</span>`;
-            } else if (dtLower.includes('ayer') || dtLower === 'ayer') {
-                statusBadgeHtml = `<span class="badge-status badge-yesterday"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> De Ayer (Juega a las ${scheduledTime})</span>`;
-            } else if (dtLower.includes('pendiente')) {
-                statusBadgeHtml = `<span class="badge-status badge-pending"><i data-lucide="hourglass" style="width: 13px; height: 13px;"></i> Juega a las ${scheduledTime}</span>`;
-            } else {
-                // Si llegamos a "else", la DB envió la hora exacta del scraper hoy. En vez de poner "07:35 PM", ponemos:
-                if (isTodayDate || lottery.draw_date) {
-                    if (isTodayDate) {
-                        statusBadgeHtml = `<span class="badge-status badge-today"><i data-lucide="check-circle-2" style="width: 13px; height: 13px;"></i> Salió Hoy</span>`;
-                    } else {
-                        // Es de otra fecha vieja, entonces no ha salido hoy
-                        statusBadgeHtml = `<span class="badge-status badge-yesterday"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> Pendiente (Juega a las ${scheduledTime})</span>`;
-                    }
-                } else {
-                    // Fallback visual agradable
-                    statusBadgeHtml = `<span class="badge-status badge-date"><i data-lucide="calendar" style="width: 13px; height: 13px;"></i> Sale a las ${scheduledTime}</span>`;
+            // Determinar si el sorteo es un "Salió Hoy" confiable analizando la hora oficial
+            let hasPassedSchedule = true;
+            if (scheduledTime) {
+                const match = scheduledTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                if (match) {
+                    let hours = parseInt(match[1]);
+                    const minutes = parseInt(match[2]);
+                    const period = match[3].toUpperCase();
+                    if (period === 'PM' && hours !== 12) hours += 12;
+                    if (period === 'AM' && hours === 12) hours = 0;
+                    
+                    const now = new Date();
+                    const scheduleDate = new Date();
+                    scheduleDate.setHours(hours, minutes, 0, 0);
+                    
+                    hasPassedSchedule = now >= scheduleDate;
                 }
+            }
+
+            if (dtLower.includes('pendiente')) {
+                statusBadgeHtml = `<span class="badge-status badge-pending"><i data-lucide="hourglass" style="width: 13px; height: 13px;"></i> Juega a las ${scheduledTime}</span>`;
+            } else if (hasPassedSchedule) {
+                statusBadgeHtml = `<span class="badge-status badge-today"><i data-lucide="check-circle-2" style="width: 13px; height: 13px;"></i> Salió Hoy</span>`;
+            } else {
+                statusBadgeHtml = `<span class="badge-status badge-yesterday"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> De Ayer (Juega a las ${scheduledTime})</span>`;
             }
         }
 
@@ -623,12 +626,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             groupedProviders.forEach(provider => {
                 const groupDiv = document.createElement('div');
-                groupDiv.className = 'time-group mt-4';
                 
                 // Show provider title if filter="all", otherwise hide it (as the user clicked that exact provider)
                 if (activeFilter === 'all') {
-                    const titleHtml = `<h3 class="time-category-title hide-when-filtered">${provider}</h3>`;
+                    // Convert into a distinct visual glass panel block
+                    groupDiv.className = 'time-group glass-panel mt-4 fade-in';
+                    groupDiv.style.padding = '1.5rem';
+                    groupDiv.style.borderRadius = '16px';
+                    groupDiv.style.background = 'rgba(31, 41, 55, 0.4)'; // Darker glass
+                    groupDiv.style.marginBottom = '2.5rem';
+
+                    const titleHtml = `<h2 class="provider-block-title hide-when-filtered" style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="layers" style="width: 22px; height: 22px; color: var(--accent-blue);"></i> ${provider}</h2>`;
                     groupDiv.innerHTML = titleHtml;
+                } else {
+                    groupDiv.className = 'time-group mt-4';
                 }
 
                 const gridDiv = document.createElement('div');
