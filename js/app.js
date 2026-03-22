@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fetch and render data
-    fetch('http://localhost:4000/api/results/latest')
+    fetch('/api/results/latest')
         .then(response => response.json())
         .then(data => {
             spinner.style.display = 'none';
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize WebSocket for Real-time Updates only if available
     let socket;
     try {
-        socket = io('http://localhost:4000', {
+        socket = io({
             reconnectionAttempts: 3,
             timeout: 5000
         });
@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Got new real-time result!', data);
 
             // In a real app we'd determine if the update is a jackpot or daily
-            fetch('http://localhost:4000/api/results/latest')
+            fetch('/api/results/latest')
                 .then(res => res.json())
                 .then(newData => {
                     // Update Mock Jackpots with real data if fetched
