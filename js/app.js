@@ -141,9 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const MOCK_JACKPOTS = [
-        { lottery_code: 'leidsa_loto', numbers: ['15', '22', '31', '34', '36', '06'], draw_time: 'Ayer', prize: '$35 Millones' },
-        { lottery_code: 'loteka_mega_lotto', numbers: ['01', '05', '07', '10', '25', '27', '01', '02'], draw_time: 'Ayer', prize: '$50 Millones' },
-        { lottery_code: 'real_loto', numbers: ['04', '11', '19', '25', '26', '30'], draw_time: 'Ayer', prize: '$10 Millones' },
+        { lottery_code: 'leidsa_loto', numbers: ['15', '22', '31', '34', '36', '06'], draw_time: 'Ayer', prize: 'Premio Acumulativo' },
+        { lottery_code: 'loteka_mega_lotto', numbers: ['01', '05', '07', '10', '25', '27', '01', '02'], draw_time: 'Ayer', prize: 'Premio Acumulativo' },
+        { lottery_code: 'real_loto', numbers: ['04', '11', '19', '25', '26', '30'], draw_time: 'Ayer', prize: 'Premio Acumulativo' },
     ];
 
     function mergeDataWithPlaceholders(apiData) {
