@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es-DO">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Número - Historial Completo del 00 al 99</title>
+    <meta name="description" content="Consulta el historial completo de cualquier número del 00 al 99 en las loterías dominicanas. Descubre en qué sorteos ha salido y cuándo fue la última vez.">
+    <meta name="keywords" content="consultar numero, historial numero loteria, numero 00, numero 99, cuando salio este numero, estadisticas numero especifico">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Consultar Número - Historial de Loterías">
+    <meta property="og:description" content="Consulta el historial de cualquier número en las loterías dominicanas.">
+    <link rel="canonical" href="/estadisticas/consultar-numero.html">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <nav class="top-nav">
+        <div class="h-container">
+            <div class="logo">
+                <a href="/" style="display: flex; align-items: center; gap: 0.5rem; color: inherit;">
+                    <i data-lucide="crosshairs" class="icon-accent"></i>
+                    Loterías<span>RD</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/">Resultados</a>
+                <a href="/estadisticas/numeros-calientes.html" class="active">Estadísticas</a>
+                <a href="/resultados/">Histórico</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+        <nav style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+            <a href="/" style="color: var(--accent-purple);">Inicio</a> 
+            <span style="margin: 0 0.5rem;">›</span> 
+            <span style="color: var(--text-primary);">Consultar Número</span>
+        </nav>
+
+        <header class="glass-panel" style="padding: 2rem; margin-bottom: 2rem; border-left: 4px solid #8b5cf6;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Consultar Número</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Ingresa un número del 00 al 99 para ver su historial completo</p>
+        </header>
+
+        <!-- Buscador -->
+        <section class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; justify-content: center;">
+                <input type="text" id="search-number" maxlength="2" placeholder="00" 
+                    style="width: 100px; height: 80px; text-align: center; font-size: 2.5rem; font-weight: 700; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 16px; color: var(--text-primary); outline: none; font-family: var(--font-mono);"
+                    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                <button onclick="buscarNumero()" class="filter-btn" style="padding: 1rem 3rem; font-size: 1.2rem; background: var(--accent-purple); color: #fff; border: none; border-radius: 12px; cursor: pointer;">
+                    <i data-lucide="search" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 0.5rem;"></i>
+                    Buscar
+                </button>
+            </div>
+            
+            <!-- Quick numbers -->
+            <div style="margin-top: 2rem;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; text-align: center;">O selecciona un número popular:</p>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                    <button onclick="buscarNumeroRapido('56')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">56</button>
+                    <button onclick="buscarNumeroRapido('02')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">02</button>
+                    <button onclick="buscarNumeroRapido('22')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">22</button>
+                    <button onclick="buscarNumeroRapido('64')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">64</button>
+                    <button onclick="buscarNumeroRapido('66')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">66</button>
+                    <button onclick="buscarNumeroRapido('98')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">98</button>
+                    <button onclick="buscarNumeroRapido('55')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">55</button>
+                    <button onclick="buscarNumeroRapido('03')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">03</button>
+                    <button onclick="buscarNumeroRapido('15')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">15</button>
+                    <button onclick="buscarNumeroRapido('54')" class="filter-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">54</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resultado -->
+        <section id="resultado-busqueda" class="glass-panel" style="padding: 2rem; margin-bottom: 2rem; display: none;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="history" style="color: var(--accent-purple);"></i>
+                Historial del Número <span id="numero-buscado" style="margin-left: 0.5rem; color: var(--accent-purple);"></span>
+            </h2>
+            
+            <!-- Stats summary -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div style="background: rgba(139, 92, 246, 0.1); border-radius: 12px; padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--accent-purple);" id="total-apariciones">--</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">Total Apariciones</div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.1); border-radius: 12px; padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--success-green);" id="ultima-vez">--</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">Última Vez</div>
+                </div>
+                <div style="background: rgba(234, 179, 8, 0.1); border-radius: 12px; padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #eab308;" id="dias-sin-salir">--</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">Días Sin Salir</div>
+                </div>
+            </div>
+
+            <!-- Tabla de apariciones -->
+            <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">Últimas Apariciones</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; min-width: 400px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--glass-border);">
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Fecha</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Lotería</th>
+                            <th style="text-align: center; padding: 0.75rem; color: var(--text-muted);">Posición</th>
+                            <th style="text-align: center; padding: 0.75rem; color: var(--text-muted);">Números</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historial">
+                        <!-- Resultados se insertan aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SEO Content -->
+        <article class="glass-panel" style="padding: 2rem;">
+            <h2 style="font-size: 1.4rem; margin-bottom: 1rem;">Acerca de Consultar Número</h2>
+            <div style="color: var(--text-secondary); line-height: 1.8;">
+                <p style="margin-bottom: 1rem;">
+                    Nuestra herramienta de <strong>consultar número</strong> te permite ver el historial completo de cualquier número del 00 al 99 en todas las loterías dominicanas. Puedes verificar cuántas veces ha salido, en qué posición (primera, segunda o tercera) y cuándo fue la última vez que apareció.
+                </p>
+                <p style="margin-bottom: 1rem;">
+                    Esta herramienta es especialmente útil para los jugadores que desean hacer análisis estadísticos más detallados. Por ejemplo, si un número no ha salido en varios días, podría estar "vencido" y tener más probabilidades de salir pronto, aunque los sorteos son completamente aleatorios.
+                </p>
+                <p>
+                    Consulta también nuestros <a href="/estadisticas/numeros-calientes.html" style="color: var(--accent-purple);">números calientes</a>, <a href="/estadisticas/numeros-frios.html" style="color: var(--accent-purple);">números fríos</a> y <a href="/estadisticas/pronosticos.html" style="color: var(--accent-purple);">pronósticos</a> para un análisis más completo.
+                </p>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <h2>Lotería<span>RD</span></h2>
+                <p>Plataforma independiente de resultados.</p>
+            </div>
+            <p class="disclaimer">Resultados informativos. Consulta fuentes oficiales.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+        
+        function buscarNumero() {
+            const numero = document.getElementById('search-number').value.padStart(2, '0');
+            if (numero.length !== 2) {
+                alert('Por favor ingresa un número válido del 00 al 99');
+                return;
+            }
+            buscarNumeroRapido(numero);
+        }
+        
+        function buscarNumeroRapido(numero) {
+            document.getElementById('search-number').value = numero;
+            document.getElementById('resultado-busqueda').style.display = 'block';
+            document.getElementById('numero-buscado').textContent = numero;
+            
+            // Simular datos (en producción vendría de la API)
+            document.getElementById('total-apariciones').textContent = Math.floor(Math.random() * 30) + 10;
+            document.getElementById('ultima-vez').textContent = '16/03/2026';
+            document.getElementById('dias-sin-salir').textContent = Math.floor(Math.random() * 10);
+            
+            // Generar tabla de ejemplo
+            const tabla = document.getElementById('tabla-historial');
+            tabla.innerHTML = `
+                <tr style="border-bottom: 1px solid var(--glass-border);">
+                    <td style="padding: 0.75rem;">17/03/2026</td>
+                    <td style="padding: 0.75rem;">Nacional</td>
+                    <td style="text-align: center; padding: 0.75rem;">1ra</td>
+                    <td style="text-align: center; padding: 0.75rem;"><span style="background: #1e3a8a; color: white; padding: 0.25rem 0.5rem; border-radius: 4px;">${numero}</span> 45 78</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--glass-border);">
+                    <td style="padding: 0.75rem;">16/03/2026</td>
+                    <td style="padding: 0.75rem;">LEIDSA</td>
+                    <td style="text-align: center; padding: 0.75rem;">2da</td>
+                    <td style="text-align: center; padding: 0.75rem;">23 <span style="background: #eab308; color: black; padding: 0.25rem 0.5rem; border-radius: 4px;">${numero}</span> 67</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--glass-border);">
+                    <td style="padding: 0.75rem;">15/03/2026</td>
+                    <td style="padding: 0.75rem;">Real</td>
+                    <td style="text-align: center; padding: 0.75rem;">3ra</td>
+                    <td style="text-align: center; padding: 0.75rem;">12 34 <span style="background: #b91c1c; color: white; padding: 0.25rem 0.5rem; border-radius: 4px;">${numero}</span></td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+
+</html>

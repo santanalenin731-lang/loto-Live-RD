@@ -3,7 +3,7 @@ const path = require('path');
 
 const LOTTERIES = [
     'nacional_ganamas', 'nacional_noche', 'nacional_juega_pega_mas', 'nacional_billetes', 'nacional_zodiaco',
-    'leidsa_pega_3_mas', 'leidsa_loto_pool', 'leidsa_super_kino_tv', 'leidsa_quiniela', 'leidsa_loto',
+    'leidsa_pega_3_mas', 'leidsa_loto_pool', 'leidsa_super_kino_tv', 'leidsa', 'leidsa_loto', 'leidsa_super_pale',
     'loteka_quiniela', 'loteka_mega_chances', 'loteka_mega_chances_repartidera', 'loteka_toca_3', 'loteka_mega_lotto',
     'real_quiniela', 'real_loto', 'real_tu_fecha', 'real_pega_4',
     'primera_dia', 'primera_noche',

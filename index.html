@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resultados de Lotería RD | Lotería Nacional, LEIDSA, Loteka y Más</title>
+    <title>Resultados de Loto Live RD | Lotería Nacional, LEIDSA, Loteka y Más</title>
     <meta name="description"
         content="Resultados al instante de todas las loterías dominicanas. Lotería Nacional, LEIDSA, Loteka, Lotería Real, La Primera, LoteDom y New York. Revisa tus números y consulta nuestro diccionario de los sueños.">
     <meta name="keywords"
@@ -18,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Outfit:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
     <!-- Styles -->
@@ -32,14 +32,15 @@
     <!-- Navigation Header -->
     <nav class="top-nav">
         <div class="h-container">
-            <div class="logo">
-                <i data-lucide="crosshairs" class="icon-accent"></i>
-                Loterías<span>RD</span>
-            </div>
+            <a href="#" class="logo" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;" onclick="if(window.location.hash && window.location.hash !== '#') { history.back(); return false; } else if (window.location.pathname !== '/' && window.location.pathname !== '/index.html' && window.location.pathname.length > 1) { history.back(); return false; } window.scrollTo(0,0); return false;">
+                <img src="/assets/images/logos/LotoliveRD/LotoliveRD.png" alt="Loto Live RD Logo" style="height: 40px; width: auto; object-fit: contain;">
+                <span style="color: #3b82f6; font-weight: 800;">Loto</span> <span style="color: #ffffff; font-weight: 800;">Live</span> <span style="color: #ef4444; font-weight: 800;">RD</span>
+            </a>
             <div class="nav-links">
                 <a href="/#" class="active">Resultados</a>
                 <a href="/#data-center">Data Center</a>
-                <a href="/#stats">Pronósticos</a>
+                <a href="/#historico">Histórico</a>
+                <a href="/#pronosticos">Pronósticos</a>
             </div>
             <button class="menu-btn">
                 <i data-lucide="menu"></i>
@@ -47,185 +48,514 @@
         </div>
     </nav>
 
-    <main>
-        <!-- Hero Section -->
-        <section class="hero glass-panel">
-            <main class="main-content">
-                <!-- View: Home -->
-                <div id="view-home">
-                    <!-- Hero Section -->
-                    <section class="hero container relative">
-                        <div class="badge fade-in">En Vivo</div>
-                        <h2 class="slide-up delay-1">
-                            Resultados de Loterías<br>
-                            <span>República Dominicana</span>
-                        </h2>
-                        <h3 id="hero-lottery-name" class="slide-up delay-2"
-                            style="font-size: 1.5rem; color: var(--accent-red); margin-top: -1rem; transition: opacity 0.3s;">
-                            Seleccionando...
-                        </h3>
+    <main class="main-content">
+        <!-- View: Home -->
+        <div id="view-home">
+            <!-- Hero Section -->
+            <section class="hero glass-panel container relative">
+                <div class="badge fade-in">En Vivo</div>
+                <h2 class="slide-up delay-1">
+                    Resultados de Loterías<br>
+                    <span class="text-rep">República</span> <span class="text-dom">Dominicana</span>
+                </h2>
+                <h3 id="hero-lottery-name" class="slide-up delay-2"
+                    style="font-size: 1.5rem; color: var(--accent-red); margin-top: -1rem; transition: opacity 0.3s;">
+                    Seleccionando...
+                </h3>
 
-                        <div class="hero-visual fade-in delay-2">
-                            <!-- Balls will be injected via JS -->
+                <div class="hero-visual fade-in delay-2">
+                    <!-- Balls will be injected via JS -->
+                </div>
+
+                <p class="slide-up delay-2">
+                    Consulta los resultados al instante de Nacional, LEIDSA, Loteka, Real y más.
+                </p>
+                <div class="hero-stats slide-up delay-2">
+                    <span class="stat-item"><i data-lucide="zap"></i> Actualización en tiempo real</span>
+                    <span class="stat-item"><i data-lucide="shield-check"></i> 100% Verificado</span>
+                </div>
+            </section>
+
+            <!-- Filters -->
+            <section class="filters container">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">Todas</button>
+                    <button class="filter-btn" data-filter="Nacional">Nacional</button>
+                    <button class="filter-btn" data-filter="LEIDSA">LEIDSA</button>
+                    <button class="filter-btn" data-filter="Loteka">Loteka</button>
+                    <button class="filter-btn" data-filter="Real">Real</button>
+                    <button class="filter-btn" data-filter="La Primera">La Primera</button>
+                    <button class="filter-btn" data-filter="La Suerte">La Suerte</button>
+                    <button class="filter-btn" data-filter="LoteDom">LoteDom</button>
+                    <button class="filter-btn" data-filter="USA">Americanas</button>
+                    <button class="filter-btn" data-filter="Anguila">Anguila</button>
+                    <button class="filter-btn" data-filter="King Lottery">King Lottery</button>
+                </div>
+            </section>
+
+            <!-- Loading State (Skeleton Loaders) -->
+            <div id="loading-spinner" class="container mt-xl">
+                <div class="grid-layout">
+                    <div class="lottery-card glass-panel skeleton-active" style="height: 180px;"></div>
+                    <div class="lottery-card glass-panel skeleton-active" style="height: 180px;"></div>
+                    <div class="lottery-card glass-panel skeleton-active" style="height: 180px;"></div>
+                    <div class="lottery-card glass-panel skeleton-active" style="height: 180px;"></div>
+                    <div class="lottery-card glass-panel skeleton-active" style="height: 180px;"></div>
+                    <div class="lottery-card glass-panel skeleton-active" style="height: 180px;"></div>
+                </div>
+            </div>
+
+            <!-- Daily Lotteries Section (Categorized by Time) -->
+            <section id="daily-section" class="lottery-group container" style="display: none;">
+                <div class="group-header">
+                    <h2>Sorteos Diarios</h2>
+                    <div class="time-filters mt-4">
+                        <button class="time-btn active" data-time="all">Todos</button>
+                        <button class="time-btn" data-time="morning">Mañana</button>
+                        <button class="time-btn" data-time="afternoon">Tarde</button>
+                        <button class="time-btn" data-time="night">Noche</button>
+                    </div>
+                </div>
+
+                <div class="time-group mt-4" id="group-morning">
+                    <h3 class="time-category-title">Sorteos de la Mañana</h3>
+                    <div id="morning-container" class="grid-layout mt-2"></div>
+                </div>
+
+                <div class="time-group mt-4" id="group-afternoon">
+                    <h3 class="time-category-title">Sorteos de la Tarde</h3>
+                    <div id="afternoon-container" class="grid-layout mt-2"></div>
+                </div>
+
+                <div class="time-group mt-4" id="group-night">
+                    <h3 class="time-category-title">Sorteos de la Noche</h3>
+                    <div id="night-container" class="grid-layout mt-2"></div>
+                </div>
+            </section>
+
+            <!-- Jackpots Section -->
+            <section id="jackpots-section" class="lottery-group container mt-xl" style="display: none;">
+                <div class="group-header">
+                    <h2>Jackpots Acumulados</h2>
+                    <p>Las loterías millonarias</p>
+                </div>
+                <div id="jackpots-container" class="grid-layout"></div>
+            </section>
+        </div>
+
+        <!-- View: Subpage (Lottery Detail) -->
+        <div id="view-subpage" style="display: none;">
+            <div class="container mt-xl mb-xl">
+                <div id="subpage-content">
+                    <!-- Content injected via JS routing -->
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Data Center -->
+        <div id="view-datacenter" style="display: none;">
+            <div class="container mt-xl mb-xl">
+                <div class="subpage-header"
+                    style="border-left: 4px solid var(--accent-purple); padding-left: 1rem; margin-bottom: 2rem;">
+                    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Estadísticas de Loto Live RD</h1>
+                    <p style="color: var(--text-muted); font-size: 1.1rem;">Números calientes, fríos y frecuencias en
+                        tiempo real</p>
+                </div>
+
+                <!-- Time Range Tabs -->
+                <div style="display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                    <button class="filter-btn dc-range-btn active" data-days="1"
+                        onclick="window.loadStatsData(1, this)">Hoy</button>
+                    <button class="filter-btn dc-range-btn" data-days="7"
+                        onclick="window.loadStatsData(7, this)">Semana</button>
+                    <button class="filter-btn dc-range-btn" data-days="30"
+                        onclick="window.loadStatsData(30, this)">Mes</button>
+                    <button class="filter-btn dc-range-btn" data-days="90" onclick="window.loadStatsData(90, this)">3
+                        Meses</button>
+                </div>
+
+                <!-- Hot Numbers -->
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <i data-lucide="flame" style="color: var(--accent-red); width: 28px; height: 28px;"></i>
+                        <h2 style="color: var(--text-primary); font-size: 1.5rem; margin: 0;">Números Más Calientes</h2>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">Los números que más
+                        han salido en todas las loterías dominicanas</p>
+                    <div id="dc-hot-numbers"
+                        style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                        <!-- Injected by JS -->
+                        <div style="padding: 2rem; width: 100%; text-align: center;">
+                            <i data-lucide="loader-2" class="spin"
+                                style="color: var(--accent-blue); width: 32px; height: 32px;"></i>
                         </div>
+                    </div>
+                </div>
 
-                        <p class="slide-up delay-2">
-                            Consulta los resultados al instante de Nacional, LEIDSA, Loteka, Real y más.
+                <!-- Cold Numbers -->
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <i data-lucide="snowflake" style="color: #38bdf8; width: 28px; height: 28px;"></i>
+                        <h2 style="color: var(--text-primary); font-size: 1.5rem; margin: 0;">Números Más Fríos</h2>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">Los números con
+                        menor frecuencia de aparición — ¿están por salir?</p>
+                    <div id="dc-cold-numbers"
+                        style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                        <div style="padding: 2rem; width: 100%; text-align: center;">
+                            <i data-lucide="loader-2" class="spin"
+                                style="color: var(--accent-blue); width: 32px; height: 32px;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full Heatmap -->
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <i data-lucide="grid-3x3" style="color: var(--accent-purple); width: 28px; height: 28px;"></i>
+                        <h2 style="color: var(--text-primary); font-size: 1.5rem; margin: 0;">Mapa de Calor 00-99</h2>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">Visualización
+                        completa de la frecuencia de todos los números</p>
+                    <div class="heatmap-grid" id="heatmap-container">
+                        <!-- Heat cells will be injected here via JS -->
+                    </div>
+                </div>
+
+                <!-- Consultar Número -->
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <i data-lucide="search" style="color: #f59e0b; width: 28px; height: 28px;"></i>
+                        <h2 style="color: var(--text-primary); font-size: 1.5rem; margin: 0;">Consultar Número</h2>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">Ingresa un número
+                        del 00 al 99 para ver su historial completo</p>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="dc-number-input" maxlength="2" placeholder="00"
+                            style="width: 80px; height: 60px; text-align: center; font-size: 2rem; font-weight: 700; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); border-radius: 12px; color: var(--text-primary); outline: none; font-family: var(--font-mono);"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                        <button onclick="window.lookupNumber()" class="filter-btn"
+                            style="padding: 0.75rem 2rem; font-size: 1rem; background: var(--accent-purple); color: #fff; border: none;">
+                            Buscar
+                        </button>
+                    </div>
+                    <div id="dc-number-results" style="margin-top: 1.5rem;"></div>
+                </div>
+
+                <!-- SEO Content -->
+                <div class="glass-panel" style="padding: 2rem;">
+                    <h2 style="color: var(--text-primary); font-size: 1.4rem; margin-bottom: 1rem;">
+                        Estadísticas de Loterías Dominicanas — Números Calientes y Fríos
+                    </h2>
+                    <div style="color: var(--text-secondary); line-height: 1.8; font-size: 1rem;">
+                        <p class="mb-4">
+                            Aquí encontrarás las <strong>estadísticas actualizadas en tiempo real</strong> de todas las
+                            loterías de República Dominicana, incluyendo <strong>Lotería Nacional, LEIDSA, Loteka,
+                                Lotería Real, La Primera, La Suerte, LoteDom, Anguila</strong> y más. Los
+                            <strong>números calientes</strong> representan los que han salido con mayor frecuencia en
+                            los últimos días, mientras que los <strong>números fríos</strong> son aquellos que llevan
+                            más tiempo sin aparecer.
                         </p>
-                        <div class="hero-stats slide-up delay-2">
-                            <span class="stat-item"><i data-lucide="zap"></i> Actualización en tiempo real</span>
-                            <span class="stat-item"><i data-lucide="shield-check"></i> 100% Verificado</span>
-                        </div>
-                    </section>
-
-                    <!-- Filters -->
-                    <section class="filters container">
-                        <div class="filter-group">
-                            <button class="filter-btn active" data-filter="all">Todas</button>
-                            <button class="filter-btn" data-filter="Nacional">Nacional</button>
-                            <button class="filter-btn" data-filter="LEIDSA">LEIDSA</button>
-                            <button class="filter-btn" data-filter="Loteka">Loteka</button>
-                            <button class="filter-btn" data-filter="Real">Real</button>
-                        </div>
-                    </section>
-
-                    <!-- Loading State -->
-                    <div id="loading-spinner" class="spinner-container container">
-                        <i data-lucide="loader-2" class="spin"></i> Cargando resultados...
-                    </div>
-
-                    <!-- Daily Lotteries Section (Categorized by Time) -->
-                    <section id="daily-section" class="lottery-group container" style="display: none;">
-                        <div class="group-header">
-                            <h2>Sorteos Diarios</h2>
-                            <div class="time-filters mt-4">
-                                <button class="time-btn active" data-time="all">Todos</button>
-                                <button class="time-btn" data-time="morning">Mañana</button>
-                                <button class="time-btn" data-time="afternoon">Tarde</button>
-                                <button class="time-btn" data-time="night">Noche</button>
-                            </div>
-                        </div>
-
-                        <div class="time-group mt-4" id="group-morning">
-                            <h3 class="time-category-title">Sorteos de la Mañana</h3>
-                            <div id="morning-container" class="grid-layout mt-2"></div>
-                        </div>
-
-                        <div class="time-group mt-4" id="group-afternoon">
-                            <h3 class="time-category-title">Sorteos de la Tarde</h3>
-                            <div id="afternoon-container" class="grid-layout mt-2"></div>
-                        </div>
-
-                        <div class="time-group mt-4" id="group-night">
-                            <h3 class="time-category-title">Sorteos de la Noche</h3>
-                            <div id="night-container" class="grid-layout mt-2"></div>
-                        </div>
-                    </section>
-
-                    <!-- Jackpots Section -->
-                    <section id="jackpots-section" class="lottery-group container mt-xl" style="display: none;">
-                        <div class="group-header">
-                            <h2>Jackpots Acumulados</h2>
-                            <p>Las loterías millonarias</p>
-                        </div>
-                        <div id="jackpots-container" class="grid-layout"></div>
-                    </section>
-                </div>
-
-                <!-- View: Subpage (Lottery Detail) -->
-                <div id="view-subpage" style="display: none;">
-                    <div class="container mt-xl mb-xl">
-                        <div id="subpage-content">
-                            <!-- Content injected via JS routing -->
-                        </div>
+                        <p class="mb-4">
+                            Nuestro <strong>mapa de calor</strong> exclusivo te permite ver de un vistazo la
+                            distribución completa de todos los números del 00 al 99, coloreados según su frecuencia de
+                            aparición. Utiliza la herramienta para <strong>consultar cualquier número</strong> y obtener
+                            su historial detallado: en qué loterías salió, en qué posición (1ra, 2da, 3ra) y en qué
+                            fecha exacta.
+                        </p>
+                        <p class="mb-4">
+                            Estos datos estadísticos son herramientas de análisis. Recuerda que los sorteos son
+                            aleatorios y los resultados pasados no garantizan resultados futuros. Consulta los <a
+                                href="/#" style="color: var(--accent-purple);">resultados de las loterías dominicanas de
+                                hoy</a> en nuestra página principal.
+                        </p>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- View: Data Center -->
-                <div id="view-datacenter" style="display: none;">
-                    <div class="container mt-xl mb-xl">
-                        <div class="subpage-header"
-                            style="border-left: 4px solid var(--accent-purple); padding-left: 1rem; margin-bottom: 2rem;">
-                            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Data Center Pro</h1>
-                            <p style="color: var(--text-muted); font-size: 1.1rem;">Estadísticas Avanzadas, Números
-                                Calientes y Frecuencias</p>
-                        </div>
+        <!-- View: Histórico -->
+        <div id="view-historico" style="display: none;">
+            <div class="container mt-xl mb-xl">
 
-                        <div class="glass-panel" style="padding: 2rem;">
-                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
-                                <select class="dc-select">
-                                    <option>Todas las Loterías</option>
-                                    <option>Loto Leidsa</option>
-                                    <option>Lotería Nacional</option>
-                                    <option>Loteka</option>
-                                </select>
-                                <select class="dc-select">
-                                    <option>Últimos 30 días</option>
-                                    <option>Últimos 3 meses</option>
-                                    <option>Este año</option>
-                                    <option>Histórico Completo</option>
-                                </select>
-                            </div>
+                <!-- Header -->
+                <div class="subpage-header"
+                    style="border-left: 4px solid var(--success-green); padding-left: 1rem; margin-bottom: 2rem;">
+                    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Resultados Históricos de Loto Live RD</h1>
+                    <p style="color: var(--text-muted); font-size: 1.1rem;">Selecciona una fecha para ver todos los
+                        resultados de ese día</p>
+                </div>
 
-                            <div class="grid-layout">
-                                <!-- Heatmap Area -->
-                                <div
-                                    style="grid-column: span 2; background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;">
-                                    <h3 style="color: var(--accent-red); margin-bottom: 1rem;">Mapa de Calor Estructural
-                                    </h3>
-                                    <div class="heatmap-grid" id="heatmap-container">
-                                        <!-- Heat cells will be injected here via JS -->
-                                    </div>
-                                </div>
+                <!-- Calendar Panel -->
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
 
-                                <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px;">
-                                    <h3 style="color: var(--success-green); margin-bottom: 1rem;">Números Más Calientes
-                                    </h3>
-                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                        <div class="ball"
-                                            style="width: 40px; height: 40px; font-size: 1rem; --card-accent: var(--accent-red);">
-                                            15</div>
-                                        <div class="ball"
-                                            style="width: 40px; height: 40px; font-size: 1rem; --card-accent: var(--primary-orange);">
-                                            22</div>
-                                        <div class="ball"
-                                            style="width: 40px; height: 40px; font-size: 1rem; --card-accent: var(--secondary-yellow);">
-                                            07</div>
-                                        <div class="ball"
-                                            style="width: 40px; height: 40px; font-size: 1rem; --card-accent: var(--secondary-blue);">
-                                            89</div>
-                                    </div>
-                                </div>
+                    <!-- Month Navigation -->
+                    <div class="calendar-nav" style="margin-bottom: 1.5rem;">
+                        <button class="cal-arrow-btn" onclick="window.navigateMonth(-1)">
+                            <i data-lucide="chevron-left" style="width: 20px; height: 20px;"></i>
+                        </button>
+                        <h2 id="cal-month-label" style="font-size: 1.4rem; color: var(--text-primary); margin: 0;">—
+                        </h2>
+                        <button class="cal-arrow-btn" onclick="window.navigateMonth(1)">
+                            <i data-lucide="chevron-right" style="width: 20px; height: 20px;"></i>
+                        </button>
+                    </div>
 
-                            </div>
-                        </div>
+                    <!-- Day Headers -->
+                    <div class="calendar-grid" style="margin-bottom: 0.25rem;">
+                        <div class="cal-header-day">Lu</div>
+                        <div class="cal-header-day">Ma</div>
+                        <div class="cal-header-day">Mi</div>
+                        <div class="cal-header-day">Ju</div>
+                        <div class="cal-header-day">Vi</div>
+                        <div class="cal-header-day">Sa</div>
+                        <div class="cal-header-day">Do</div>
+                    </div>
+
+                    <!-- Day Grid (injected by JS) -->
+                    <div class="calendar-grid" id="cal-grid"></div>
+
+                    <!-- Legend -->
+                    <div
+                        style="display: flex; gap: 1.5rem; margin-top: 1.25rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap;">
+                        <span style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span
+                                style="width: 10px; height: 10px; border-radius: 50%; background: var(--success-green); display: inline-block;"></span>
+                            Con resultados
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span
+                                style="width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--accent-red); display: inline-block;"></span>
+                            Hoy
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span
+                                style="width: 10px; height: 10px; border-radius: 50%; background: var(--text-primary); display: inline-block;"></span>
+                            Seleccionado
+                        </span>
                     </div>
                 </div>
 
-            </main>
-
-            <footer>
-                <div class="container footer-content">
-                    <div class="footer-brand">
-                        <h2>Lotería<span>RD</span></h2>
-                        <p>Plataforma independiente de resultados.</p>
-                    </div>
-                    <p class="disclaimer">Los resultados mostrados son de carácter informativo. Consulte las fuentes
-                        oficiales
-                        para confirmación.</p>
+                <!-- Quick action: Ver Hoy -->
+                <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
+                    <button class="filter-btn" id="btn-ver-hoy"
+                        style="padding: 0.6rem 2rem; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;"
+                        onclick="window.selectDate('hoy')">
+                        <i data-lucide="calendar-check-2" style="width: 16px; height: 16px;"></i>
+                        Ver Hoy
+                    </button>
                 </div>
-            </footer>
 
-            <!-- Scripts -->
-            <!-- Icons (Lucide) -->
-            <script src="https://unpkg.com/lucide@latest"></script>
-            <script>
-                lucide.createIcons();
-            </script>
-            <!-- WebSockets -->
-            <script src="http://localhost:4000/socket.io/socket.io.js"></script>
-            <!-- App Logic -->
-            <script src="js/app.js"></script>
+                <!-- Results Panel -->
+                <div id="hist-results"></div>
+
+                <!-- SEO Content -->
+                <div class="glass-panel" style="padding: 2rem; margin-top: 2rem;">
+                    <h2 style="color: var(--text-primary); font-size: 1.4rem; margin-bottom: 1rem;">
+                        Consulta el Histórico Completo de Todas las Loterías Dominicanas
+                    </h2>
+                    <div style="color: var(--text-secondary); line-height: 1.8; font-size: 1rem;">
+                        <p class="mb-4">
+                            Bienvenido al <strong>histórico de resultados de loterías dominicanas</strong>, la
+                            herramienta más completa para consultar los números ganadores de cualquier fecha pasada.
+                            Aquí encontrarás los resultados oficiales de <strong>Lotería Nacional, LEIDSA, Loteka,
+                                Lotería Real, La Primera, La Suerte, LoteDom</strong>, las loterías americanas de
+                            <strong>New York y Florida</strong>, <strong>Anguila</strong> y
+                            <strong>King Lottery</strong>, todo en un solo lugar.
+                        </p>
+                        <p class="mb-4">
+                            Para usar el histórico, simplemente selecciona una fecha en el <strong>calendario
+                                interactivo</strong> que aparece arriba. Los días marcados en
+                            <strong style="color: var(--success-green);">verde</strong> indican que ya tenemos
+                            resultados registrados en nuestra base de datos. Al hacer clic en cualquier día,
+                            verás instantáneamente todos los <strong>sorteos de quiniela, palé, tripleta y
+                                jackpots</strong> que se celebraron ese día, con los números ganadores presentados
+                            como <strong>bolas 3D</strong> igual que en los resultados en vivo.
+                        </p>
+                        <p class="mb-4">
+                            Los <strong>resultados históricos de la lotería</strong> son una herramienta
+                            fundamental para los jugadores que desean <strong>analizar tendencias</strong>,
+                            verificar si un billete fue ganador en fechas pasadas, o simplemente llevar un
+                            registro de los sorteos. Combinado con nuestro
+                            <a href="/#data-center" style="color: var(--accent-purple);">Data Center de
+                                Estadísticas</a>, donde puedes consultar los <strong>números más calientes y
+                                fríos</strong>, tienes a tu disposición la suite de análisis más completa disponible
+                            para las loterías de República Dominicana.
+                        </p>
+                        <p class="mb-4">
+                            Nuestra base de datos se actualiza automáticamente todos los días mediante scrapers
+                            en tiempo real que recopilan los resultados oficiales publicados por cada proveedor.
+                            Si el día que buscas aparece sin datos, es posible que el sorteo aún no haya
+                            ocurrido o que estemos procesando los resultados. Regresa más tarde o consulta los
+                            <a href="/#" style="color: var(--accent-purple);">resultados del día de hoy</a> en
+                            nuestra página principal.
+                        </p>
+                        <p>
+                            Recuerda que los <strong>resultados de lotería</strong> mostrados son de carácter
+                            informativo. Siempre verifica con las fuentes oficiales de cada proveedor. El juego
+                            de azar es exclusivo para mayores de 18 años. Si crees que tienes un problema con
+                            el juego, busca ayuda profesional.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- View: Pronósticos -->
+        <div id="view-pronosticos" style="display: none;">
+            <div class="container mt-xl mb-xl">
+
+                <!-- Header -->
+                <div class="subpage-header"
+                    style="border-left: 4px solid var(--secondary-yellow); padding-left: 1rem; margin-bottom: 2rem;">
+                    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Pronósticos de Loto Live RD</h1>
+                    <p style="color: var(--text-muted); font-size: 1.1rem;">Números sugeridos por algoritmo estadístico
+                        — actualizados diariamente</p>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="glass-panel"
+                    style="padding: 1.25rem 1.5rem; margin-bottom: 2rem; border-left: 4px solid var(--primary-orange); display: flex; align-items: flex-start; gap: 1rem;">
+                    <i data-lucide="triangle-alert"
+                        style="width: 22px; height: 22px; color: var(--primary-orange); flex-shrink: 0; margin-top: 2px;"></i>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.6;">
+                        <strong style="color: var(--text-primary);">Aviso:</strong> Los pronósticos son puramente
+                        estadísticos y <strong>no garantizan resultados</strong>. Los sorteos son aleatorios. Juega con
+                        responsabilidad.
+                    </p>
+                </div>
+
+                <!-- Score Legend -->
+                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem; font-size: 0.85rem;">
+                    <span style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);">
+                        <span
+                            style="background: rgba(234,179,8,0.2); border: 1px solid rgba(234,179,8,0.4); padding: 0.15rem 0.6rem; border-radius: 6px; font-size: 0.75rem; color: var(--secondary-yellow); font-weight: 700;">Score</span>
+                        Puntuación compuesta (0–100)
+                    </span>
+                    <span style="color: var(--text-muted);">🔥 Tendencia = alto en los últimos 7 días</span>
+                    <span style="color: var(--text-muted);">❄️ Sobredue = días sin aparecer</span>
+                </div>
+
+                <!-- Prediction Cards Grid -->
+                <div id="pred-container"
+                    style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2rem;">
+                    <!-- Skeleton placeholders -->
+                    <div style="padding: 3rem; width: 100%; text-align: center;">
+                        <i data-lucide="loader-2" class="spin"
+                            style="color: var(--accent-blue); width: 36px; height: 36px;"></i>
+                    </div>
+                </div>
+
+                <!-- Method Explanation -->
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+                        <i data-lucide="cpu" style="color: var(--accent-purple); width: 24px; height: 24px;"></i>
+                        <h2 style="font-size: 1.3rem; margin: 0;">Cómo Funciona el Algoritmo</h2>
+                    </div>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+                        <div
+                            style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔥</div>
+                            <h3 style="color: var(--text-primary); font-size: 1rem; margin-bottom: 0.5rem;">Factor
+                                Tendencia</h3>
+                            <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6;">Números que han
+                                aparecido con más frecuencia en los últimos 7 días en todas las loterías dominicanas.
+                            </p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">❄️</div>
+                            <h3 style="color: var(--text-primary); font-size: 1rem; margin-bottom: 0.5rem;">Factor
+                                Vencido</h3>
+                            <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6;">Números que
+                                llevan más días sin aparecer dentro de los últimos 30 días — candidatos a “saltar”.</p>
+                        </div>
+                        <div
+                            style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎯</div>
+                            <h3 style="color: var(--text-primary); font-size: 1rem; margin-bottom: 0.5rem;">Score
+                                Compuesto</h3>
+                            <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6;">Cada número
+                                recibe puntos por tendencia + puntos por ausencia. Los 20 con mayor puntuación se
+                                presentan como sugerencias.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEO Content -->
+                <div class="glass-panel" style="padding: 2rem;">
+                    <h2 style="color: var(--text-primary); font-size: 1.4rem; margin-bottom: 1rem;">
+                        Pronósticos y Estadísticas para Loterías Dominicanas
+                    </h2>
+                    <div style="color: var(--text-secondary); line-height: 1.8; font-size: 1rem;">
+                        <p class="mb-4">
+                            Nuestra herramienta de <strong>pronósticos de lotería dominicana</strong> utiliza un
+                            algoritmo estadístico que analiza los resultados históricos de todas las loterías de
+                            República Dominicana, incluyendo <strong>Lotería Nacional, LEIDSA, Loteka, Lotería Real,
+                                La Primera, La Suerte, LoteDom</strong> y las loterías internacionales de <strong>New
+                                York,
+                                Florida, Anguila y King Lottery</strong>.
+                        </p>
+                        <p class="mb-4">
+                            El sistema combina dos factores clave: los <strong>números en tendencia</strong>
+                            (aquellos que han salido con mayor frecuencia en los últimos 7 días) y los
+                            <strong>números vencidos</strong> (aquellos que llevan varios días sin aparecer y
+                            podrían estar “a punto de salir” según el comportamiento histórico). Cada número
+                            recibe un <em>score compuesto</em> que combina ambos factores.
+                        </p>
+                        <p class="mb-4">
+                            Para aprovechar mejor estas sugerencias, te recomendamos combinarlos con nuestro
+                            <a href="/#data-center" style="color: var(--accent-purple);">Data Center de
+                                Estadísticas</a>, donde puedes ver el mapa de calor completo de todos los números
+                            y consultar el historial de cualquier número específico. También puedes revisar los
+                            <a href="/#historico" style="color: var(--accent-purple);">resultados históricos</a>
+                            para validar si los números sugeridos han tenido buenos resultados en fechas anteriores.
+                        </p>
+                        <p class="mb-4">
+                            Los <strong>números sugeridos para quiniela</strong> se actualizan automáticamente
+                            cada vez que se registran nuevos sorteos en nuestra base de datos. El algoritmo
+                            funciona con <strong>datos reales</strong> recopilados de los sitios oficiales de cada
+                            proveedor mediante scraping en tiempo real, garantizando que las sugerencias se basen
+                            siempre en la información más reciente disponible.
+                        </p>
+                        <p>
+                            <strong>Recuerda siempre:</strong> los sorteos de lotería son completamente
+                            aleatorios. Los pronósticos son herramientas de análisis estadístico, no garantías
+                            de ganancia. Juega con responsabilidad y dentro de tus posibilidades. El juego es
+                            exclusivo para mayores de 18 años.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <h2><span style="color: #3b82f6; font-weight: 800;">Loto</span> <span style="color: #ffffff; font-weight: 800;">Live</span> <span style="color: #ef4444; font-weight: 800;">RD</span></h2>
+                <p>Plataforma independiente de resultados.</p>
+            </div>
+            <p class="disclaimer">Los resultados mostrados son de carácter informativo. Consulte las fuentes
+                oficiales
+                para confirmación.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <!-- WebSockets -->
+    <script src="http://localhost:4000/socket.io/socket.io.js"></script>
+    <!-- App Logic -->
+    <script src="js/app.js"></script>
 </body>
 
 </html>

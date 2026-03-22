@@ -11,18 +11,45 @@ const puppeteer = require('puppeteer');
             const blocks = document.querySelectorAll('.bloque-loteria');
             const info = [];
             for (let block of blocks) {
-                const nameNode = block.querySelector('.name-sorteo, h1, h2, h3, h4, .title');
-                const name = nameNode ? nameNode.innerText.trim() : 'UNKNOWN';
+                // Modificado para obtener imágenes si no hay texto
+                const nameNode = block.querySelector('.name-sorteo img');
+                let name = 'UNKNOWN';
+                
+                if(nameNode) {
+                  name = nameNode.src.toLowerCase();
+                  if(name.includes('chanceexpress')) name = "Chance Express";
+                  if(name.includes('loteka_rep')) name = "Mega Chances Repartidera";
+                  if(name.includes('repartidera')) name = "Mega Chances Repartidera";
+                  if(name.includes('lottoloteka')) name = "Lotto Loteka";
+                  if(name.includes('megachance')) name = "Mega Chances";
+                  if(name.includes('megalotto')) name = "MegaLotto";
+                  if(name.includes('toca3')) name = "Toca 3";
+                  if(name.includes('quiniela')) name = "Quiniela Loteka";
+                }
+
+                // Si no hay img checa text
+                if (name === 'UNKNOWN') {
+                   const txtNode = block.querySelector('.name-sorteo, h1, h2, h3, h4, .title');
+                   if (txtNode) name = txtNode.innerText.trim();
+                }
 
                 const numbersNodes = block.querySelectorAll('.bola, .numero');
-                const numbers = Array.from(numbersNodes).map(n => n.innerText.trim());
+                const numbers = Array.from(numbersNodes).map(n => n.innerText.trim().replace(/\D+/g, '')); // Limpiar "1er", "2do", etc.
+                
+                // Hacky cleanup to only pick numbers
+                const finalNumbers = Array.from(numbersNodes).map(n => {
+                    const match = n.innerText.match(/(\d+)/g);
+                    return match ? match[match.length - 1].padStart(2, '0') : null;
+                }).filter(n => n!== null);
 
-                info.push({ name, numbers });
+                info.push({ name, finalNumbers, rawNumbers: numbers });
             }
             return info;
         });
 
+        console.log("------------------------");
         console.log(JSON.stringify(details, null, 2));
+        console.log("------------------------");
 
     } catch (err) {
         console.error('Error:', err);

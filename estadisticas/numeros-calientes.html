@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es-DO">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Números Calientes - Los Más Frecuentes en Loterías Dominicanas</title>
+    <meta name="description" content="Descubre los números que más han salido en las loterías dominicanas en los últimos 30 días. Estadísticas actualizadas de Nacional, LEIDSA, Loteka, Real y más.">
+    <meta name="keywords" content="numeros calientes, numeros que mas salen, estadisticas loteria, frecuencia loteria, numeros quentes republica dominicana">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Números Calientes - Estadísticas de Loterías">
+    <meta property="og:description" content="Los números más frecuentes en todas las loterías dominicanas.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="/estadisticas/numeros-calientes.html">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Números Calientes - Loto Live RD",
+        "description": "Estadísticas de los números más frecuentes en loterías dominicanas"
+    }
+    </script>
+</head>
+
+<body>
+    <nav class="top-nav">
+        <div class="h-container">
+            <a href="#" class="logo" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;" onclick="history.back(); return false;">
+                <img src="/assets/LotoliveRD.png" alt="Loto Live RD Logo" style="height: 40px; width: auto; object-fit: contain;">
+                <span style="color: #3b82f6; font-weight: 800;">Loto</span> <span style="color: #ffffff; font-weight: 800;">Live</span> <span style="color: #ef4444; font-weight: 800;">RD</span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Resultados</a>
+                <a href="/estadisticas/numeros-calientes.html" class="active">Estadísticas</a>
+                <a href="/resultados/">Histórico</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+        <nav style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+            <a href="/" style="color: var(--accent-purple);">Inicio</a> 
+            <span style="margin: 0 0.5rem;">›</span> 
+            <span style="color: var(--text-primary);">Números Calientes</span>
+        </nav>
+
+        <header style="background-color: #0B1120; padding: 3rem 2.5rem; margin-bottom: 2rem; position: relative; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div style="position: absolute; top: 0; left: 0; width: 60%; height: 2px; background: linear-gradient(90deg, #A855F7 0%, #3B82F6 100%, transparent); border-top-left-radius: 12px;"></div>
+            <h1 style="color: #FFFFFF; font-family: var(--font-heading); font-size: 2.8rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.02em;">Estadísticas de Loto Live RD</h1>
+            <p style="color: #94A3B8; font-size: 1.15rem; font-family: var(--font-sans);">Números calientes, fríos y frecuencias en tiempo real</p>
+        </header>
+
+        <!-- Time Range -->
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <a href="/estadisticas/numeros-calientes.html" class="filter-btn active" style="padding: 0.5rem 1.5rem;">30 Días</a>
+            <a href="/estadisticas/numeros-calientes-7.html" class="filter-btn" style="padding: 0.5rem 1.5rem;">7 Días</a>
+            <a href="/estadisticas/numeros-calientes-90.html" class="filter-btn" style="padding: 0.5rem 1.5rem;">90 Días</a>
+        </div>
+
+        <section class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="flame" style="color: var(--accent-red);"></i>
+                Top 25 - Números Más Frecuentes
+            </h2>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <th style="text-align: left; padding: 1rem; color: var(--text-muted);">#</th>
+                        <th style="text-align: left; padding: 1rem; color: var(--text-muted);">Número</th>
+                        <th style="text-align: center; padding: 1rem; color: var(--text-muted);">Cantidad</th>
+                        <th style="text-align: center; padding: 1rem; color: var(--text-muted);">1ra Posición</th>
+                        <th style="text-align: center; padding: 1rem; color: var(--text-muted);">2da Posición</th>
+                        <th style="text-align: center; padding: 1rem; color: var(--text-muted);">3ra Posición</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <td style="padding: 1rem; color: var(--secondary-yellow);">1</td>
+                        <td style="padding: 1rem;"><span class="lottery-ball" style="background: var(--accent-red); color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700;">56</span></td>
+                        <td style="text-align: center; padding: 1rem; font-weight: 600;">29</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">13</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">8</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">8</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <td style="padding: 1rem; color: var(--secondary-yellow);">2</td>
+                        <td style="padding: 1rem;"><span class="lottery-ball" style="background: var(--accent-red); color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700;">02</span></td>
+                        <td style="text-align: center; padding: 1rem; font-weight: 600;">28</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">10</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">10</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">8</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <td style="padding: 1rem; color: var(--secondary-yellow);">3</td>
+                        <td style="padding: 1rem;"><span class="lottery-ball" style="background: var(--accent-red); color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700;">22</span></td>
+                        <td style="text-align: center; padding: 1rem; font-weight: 600;">26</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">6</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">10</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">10</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <td style="padding: 1rem; color: var(--secondary-yellow);">4</td>
+                        <td style="padding: 1rem;"><span class="lottery-ball" style="background: var(--accent-red); color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700;">64</span></td>
+                        <td style="text-align: center; padding: 1rem; font-weight: 600;">25</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">7</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">8</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">10</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <td style="padding: 1rem; color: var(--secondary-yellow);">5</td>
+                        <td style="padding: 1rem;"><span class="lottery-ball" style="background: var(--accent-red); color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700;">66</span></td>
+                        <td style="text-align: center; padding: 1rem; font-weight: 600;">25</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">8</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">9</td>
+                        <td style="text-align: center; padding: 1rem; color: var(--text-muted);">8</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem; text-align: center;">
+                <em>Nota: El número que más dinero ha dejado no es necesariamente el que más veces ha salido.</em>
+            </p>
+        </section>
+
+        <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Estadísticas Relacionadas</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+                <a href="/estadisticas/numeros-frios.html" class="glass-panel" style="padding: 1.5rem; display: block;">
+                    <h3 style="color: #38bdf8; font-size: 1.1rem; margin-bottom: 0.5rem;">Números Fríos</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Los números que menos han salido</p>
+                </a>
+                <a href="/estadisticas/pronosticos.html" class="glass-panel" style="padding: 1.5rem; display: block;">
+                    <h3 style="color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 0.5rem;">Pronósticos</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Números sugeridos por algoritmo</p>
+                </a>
+            </div>
+        </section>
+
+        <article class="glass-panel" style="padding: 2rem;">
+            <h2 style="font-size: 1.4rem; margin-bottom: 1rem;">Acerca de los Números Calientes</h2>
+            <div style="color: var(--text-secondary); line-height: 1.8;">
+                <p style="margin-bottom: 1rem;">
+                    Los <strong>números calientes</strong> son aquellos que han salido con mayor frecuencia en las loterías dominicanas durante un período determinado. Esta estadística se basa en el análisis de las 7 quinielas principales: <strong>Gana Más, Lotería Nacional, LEIDSA, Loteka, Lotería Real, La Primera</strong> y <strong>New York</strong>.
+                </p>
+                <p style="margin-bottom: 1rem;">
+                    En nuestra plataforma, analizamos los últimos 30, 7 y 90 días para ofrecerte una visión completa de las tendencias. Los números que aparecen con más frecuencia pueden ser una herramienta útil para tus análisis, aunque recuerda que los sorteos son completamente aleatorios.
+                </p>
+                <p>
+                    Combina esta información con nuestros <a href="/estadisticas/numeros-frios.html" style="color: var(--accent-purple);">números fríos</a> y <a href="/estadisticas/pronosticos.html" style="color: var(--accent-purple);">pronósticos</a> para un análisis más completo.
+                </p>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <img src="/assets/LotoliveRD.png" alt="Loto Live RD" style="height: 40px; margin-bottom: 1rem;">
+                <p>Plataforma independiente de resultados.</p>
+            </div>
+            <p class="disclaimer">Resultados informativos. Consulta fuentes oficiales.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

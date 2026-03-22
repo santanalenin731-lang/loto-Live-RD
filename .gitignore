@@ -1,0 +1,10 @@
+node_modules/
+.env
+loteria.db
+database.sqlite
+backend.log
+tmp_*
+test*
+.puppeteerrc.cjs
+*.txt
+*.pdf

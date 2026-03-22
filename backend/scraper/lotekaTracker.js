@@ -3,75 +3,128 @@ const db = require('../db');
 
 async function scrapeLoteka() {
     console.log('[LOTEKA] Starting scraper...');
-    const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
-    const page = await browser.newPage();
-    let result = null;
+    let browser = null;
+    let results = [];
 
     try {
-        await page.goto('https://loteka.com.do/', { waitUntil: 'networkidle2', timeout: 30000 });
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--disable-gpu'
+            ]
+        });
+
+        const page = await browser.newPage();
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+            if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+                req.abort();
+            } else {
+                req.continue();
+            }
+        });
+        await page.goto('https://loteka.com.do/', { waitUntil: 'domcontentloaded', timeout: 45000 });
         await new Promise(r => setTimeout(r, 4000));
 
-        result = await page.evaluate(() => {
+        results = await page.evaluate(() => {
             const blocks = document.querySelectorAll('.bloque-loteria');
+            const info = [];
             for (let block of blocks) {
+                const nameNode = block.querySelector('.name-sorteo img');
+                let name = 'UNKNOWN';
+                
+                if(nameNode) {
+                  name = nameNode.src.toLowerCase();
+                  if(name.includes('chanceexpress')) name = "Chance Express";
+                  if(name.includes('loteka_rep')) name = "Mega Chances Repartidera";
+                  if(name.includes('repartidera')) name = "Mega Chances Repartidera";
+                  if(name.includes('lottoloteka')) name = "Lotto Loteka";
+                  if(name.includes('megachance')) name = "Mega Chances";
+                  if(name.includes('megalotto')) name = "MegaLotto";
+                  if(name.includes('toca3')) name = "Toca 3";
+                  if(name.includes('quiniela')) name = "Quiniela Loteka";
+                }
+
+                if (name === 'UNKNOWN') {
+                   const txtNode = block.querySelector('.name-sorteo, h1, h2, h3, h4, .title');
+                   if (txtNode) name = txtNode.innerText.trim();
+                }
+
                 const numbersNodes = block.querySelectorAll('.bola, .numero');
-                const rawNumbers = Array.from(numbersNodes).map(n => n.innerText.trim());
+                
+                const finalNumbers = Array.from(numbersNodes).map(n => {
+                    const match = n.innerText.match(/(\d+)/g);
+                    return match ? match[match.length - 1].padStart(2, '0') : null;
+                }).filter(n => n!== null);
 
-                // Identify Quiniela by checking for 1er, 2do, 3er markers
-                // e.g. ["1er.\n74", "2do.\n02", "3er.\n97"]
-                if (rawNumbers.length === 3 && rawNumbers[0].includes('1er')) {
-                    // Clean up string to just digits
-                    const numbers = rawNumbers.map(n => {
-                        const match = n.match(/\d+$/); // Match digits at the end
-                        return match ? match[0].padStart(2, '0') : null;
-                    });
+                if (finalNumbers.length > 0) {
+                     let lotteryCode = '';
+                     if (name === 'Quiniela Loteka') lotteryCode = 'loteka';
+                     else if (name === 'Mega Chances') lotteryCode = 'loteka_mega_chances';
+                     else if (name === 'Mega Chances Repartidera') lotteryCode = 'loteka_mega_chances_repartidera';
+                     else if (name === 'MegaLotto' || name === 'Lotto Loteka') lotteryCode = 'loteka_mega_lotto';
+                     else if (name === 'Toca 3') lotteryCode = 'loteka_toca_3';
 
-                    if (numbers.every(n => n !== null)) {
-                        return {
-                            lotteryCode: 'loteka',
-                            numbers: numbers
-                        };
-                    }
+                     if (lotteryCode) {
+                         info.push({
+                             lotteryCode: lotteryCode,
+                             numbers: finalNumbers,
+                             name: name
+                         });
+                     }
                 }
             }
-            return null;
+            return info;
         });
 
     } catch (err) {
         console.error('[LOTEKA] Scraping error:', err.message);
     } finally {
-        await browser.close();
+        if (browser) {
+            const pages = await browser.pages();
+            await Promise.all(pages.map(p => p.close()));
+            await browser.close();
+        }
     }
 
-    if (result) {
-        console.log('[LOTEKA] Successfully scraped:', result.numbers);
+    if (results && results.length > 0) {
+        console.log(`[LOTEKA] Successfully scraped ${results.length} games.`);
 
-        // Get today's date in YYYY-MM-DD for DR timezone (approx by using local if server is local, or standard offset)
         const dateObj = new Date();
         const drawDate = dateObj.toISOString().split('T')[0];
         const drawTime = dateObj.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
 
-        // Save to Database
-        db.saveResult(result.lotteryCode, drawDate, drawTime, result.numbers, (err) => {
-            if (err) {
-                console.error('[LOTEKA] DB Save Error:', err.message);
-            } else {
-                console.log('[LOTEKA] Result saved to DB for', drawDate);
-                // In a full implementation, we would broadcast the result to WebSockets here if the server module was passed in.
-            }
-        });
-
+        for (const result of results) {
+            // Modify DB save to use Promises to ensure completion before returning
+            await new Promise((resolve) => {
+                db.saveResult(result.lotteryCode, drawDate, drawTime, result.numbers, (err) => {
+                    if (err && !err.message.includes('SQLITE_CONSTRAINT')) {
+                        console.error(`[LOTEKA] DB Save Error for ${result.name}:`, err.message);
+                    } else if (err && err.message.includes('SQLITE_CONSTRAINT')) {
+                         console.log(`[LOTEKA] Notice: Results for ${result.name} already exist in DB for today.`);
+                    } else {
+                        console.log(`[LOTEKA] Result saved to DB for ${result.name} (${drawDate})`);
+                    }
+                    resolve();
+                });
+            });
+        }
     } else {
-        console.log('[LOTEKA] Could not find Quiniela results on page.');
+        console.log('[LOTEKA] Could not find results on page.');
     }
 
-    return result;
+    // Return the specific Loteka Quiniela result to be backwards compatible 
+    // and broadcasted correctly if needed by the cron manager format
+    const quinielaResult = results.find(r => r.lotteryCode === 'loteka');
+    return quinielaResult || null;
 }
 
-// Run if called directly
 if (require.main === module) {
     scrapeLoteka().then(() => {
-        // Wait 2 sec for db save to finish before exiting process
         setTimeout(() => process.exit(0), 2000);
     });
 }

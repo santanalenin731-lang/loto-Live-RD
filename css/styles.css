@@ -9,18 +9,19 @@
     --accent-purple: #8B5CF6;
 
     /* Backgrounds & Surfaces */
-    --bg-color: #030712;
-    --surface-color: rgba(17, 24, 39, 0.7);
-    --surface-hover: rgba(31, 41, 55, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --bg-color: #0B1120;
+    --surface-color: rgba(15, 23, 42, 0.7);
+    --surface-hover: rgba(30, 41, 59, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.08);
 
     /* Text */
-    --text-primary: #F9FAFB;
-    --text-secondary: #9CA3AF;
-    --text-muted: #6B7280;
+    --text-primary: #FFFFFF;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
 
     /* Typography */
     --font-sans: 'Inter', system-ui, sans-serif;
+    --font-heading: 'Outfit', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
     /* Effects */
@@ -67,7 +68,8 @@ h1,
 h2,
 h3,
 h4 {
-    font-weight: 900;
+    font-family: var(--font-heading);
+    font-weight: 800;
     letter-spacing: -0.02em;
 }
 
@@ -134,6 +136,7 @@ a {
     align-items: center;
     gap: 0.5rem;
     font-size: 1.5rem;
+    font-family: var(--font-heading);
     font-weight: 800;
     color: var(--text-primary);
 }
@@ -240,8 +243,14 @@ a {
     line-height: 1.1;
 }
 
-.hero h2 span {
-    background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
+.hero h2 span.text-rep {
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero h2 span.text-dom {
+    background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -397,6 +406,10 @@ a {
     margin-bottom: 2rem;
 }
 
+.group-header.hide-when-filtered {
+    display: none !important;
+}
+
 .group-header h2 {
     font-size: 2rem;
     background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
@@ -413,10 +426,12 @@ a {
 .time-category-title {
     font-size: 1.25rem;
     color: var(--text-primary);
-    border-left: 4px solid var(--accent-red);
-    padding-left: 0.75rem;
     margin-bottom: 1rem;
     font-weight: 700;
+}
+
+.time-category-title.hide-when-filtered {
+    display: none !important;
 }
 
 /* Lottery Grid */
@@ -433,6 +448,35 @@ a {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    --card-logo: none; /* Default no logo */
+}
+
+.lottery-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: var(--card-logo);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    opacity: 0.15; /* Reduced slightly since it's much larger now */
+    z-index: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    filter: grayscale(1) invert(1) brightness(1.1);
+    mix-blend-mode: screen;
+}
+
+.lottery-card:hover::after {
+    opacity: 0.25;
+    transform: scale(1.05);
 }
 
 /* Jackpot Cards styling - bigger everything */
@@ -473,6 +517,48 @@ a {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
+/* Subtle Card Glow Behind Jackpots */
+.lottery-card[data-lottery^="loto_"]::after,
+.lottery-card[data-lottery="mega_chances"]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--card-accent, rgba(255, 255, 255, 0.1));
+    filter: blur(80px);
+    opacity: 0.15;
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-smooth);
+}
+
+.lottery-card[data-lottery^="loto_"]:hover::after,
+.lottery-card[data-lottery="mega_chances"]:hover::after {
+    opacity: 0.3;
+}
+
+/* Skeleton Loaders */
+@keyframes shimmer {
+    0% {
+        background-position: -800px 0;
+    }
+
+    100% {
+        background-position: 800px 0;
+    }
+}
+
+.skeleton-active {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.03) 8%, rgba(255, 255, 255, 0.08) 18%, rgba(255, 255, 255, 0.03) 33%);
+    background-size: 800px 104px;
+    animation: shimmer 1.5s linear infinite;
+    pointer-events: none;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.skeleton-active * {
+    opacity: 0 !important;
+}
+
 .lottery-card:hover::before {
     opacity: 0.15;
 }
@@ -494,6 +580,19 @@ a {
 .lottery-card[data-lottery="mega_chances"] .card-title-group h3 {
     font-size: 1.8rem;
     text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient text for Jackpot Prize */
+.jackpot-prize {
+    font-size: 1.25rem;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    margin-top: 0.5rem;
+    background: linear-gradient(135deg, #10B981 0%, #EAB308 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 10px rgba(16, 185, 129, 0.15);
+    display: inline-block;
 }
 
 .card-provider {
@@ -527,10 +626,9 @@ a {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    /* Create a 3D sphere look: highlight at top-left, base color, dark shadow at bottom-right */
-    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 20%),
-        radial-gradient(circle at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.4) 100%),
-        var(--card-accent, #374151);
+    /* Create a smoother Neumorphic/Glassmorphic look */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.05)), var(--card-accent, #374151);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
     display: flex;
     align-items: center;
@@ -538,12 +636,12 @@ a {
     font-family: var(--font-mono);
     font-size: 1.25rem;
     font-weight: 700;
-    /* Combine inset shadows for spherical effect and drop shadow for depth */
+    /* Soft inner light and shadow for an elegant modern effect */
     box-shadow:
-        inset -5px -5px 12px rgba(0, 0, 0, 0.5),
-        inset 2px 2px 6px rgba(255, 255, 255, 0.3),
-        0 4px 10px rgba(0, 0, 0, 0.3);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        inset 0 2px 3px rgba(255, 255, 255, 0.3),
+        inset 0 -3px 4px rgba(0, 0, 0, 0.2),
+        0 4px 6px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
     cursor: default;
     will-change: transform, box-shadow;
@@ -558,9 +656,50 @@ a {
 }
 
 .ball.extra {
-    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 20%),
-        radial-gradient(circle at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.4) 100%),
-        var(--accent-red);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.05)), var(--accent-red);
+}
+
+.ball.super-extra {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.05)), #1d4ed8;
+    /* Blue accent */
+}
+
+.ball.string-ball {
+    width: auto;
+    padding: 0 1.25rem;
+    /* Wider padding for rectangle look */
+    border-radius: 6px;
+    /* Slightly rounded rectangle */
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.05)), #64748b;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.2),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.1),
+        0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Specific String Ball Colors for Nueva Yol Real */
+.ball.string-ball.string-amarilla {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.05)), #eab308;
+}
+
+.ball.string-ball.string-roja {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.05)), #ef4444;
+}
+
+.ball.string-ball.string-verde {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.05)), #16a34a;
+}
+
+.ball.string-ball.string-azul {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.05)), #1d4ed8;
 }
 
 .card-footer {
@@ -605,6 +744,22 @@ a {
 @keyframes spin {
     100% {
         transform: rotate(360deg);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -867,3 +1022,193 @@ footer {
         display: none;
     }
 }
+
+/* Data Center Stat Balls */
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dc-stat-ball {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+    transition: transform 0.2s ease;
+}
+
+.dc-stat-ball:hover {
+    transform: scale(1.1);
+}
+
+#dc-number-input:focus {
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+}
+
+/* ── Calendario Histórico ─────────────────────────────── */
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.cal-arrow-btn {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.cal-arrow-btn:hover {
+    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.cal-header-day {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0;
+}
+
+.cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    position: relative;
+}
+
+.cal-day:hover:not(.empty) {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.cal-day.empty {
+    opacity: 0;
+    pointer-events: none;
+    cursor: default;
+}
+
+.cal-day.has-data {
+    color: var(--success-green);
+    font-weight: 700;
+}
+
+.cal-day.has-data::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--success-green);
+    opacity: 0.8;
+}
+
+.cal-day.today {
+    border-color: rgba(206, 17, 38, 0.6);
+    color: var(--text-primary);
+    background: rgba(206, 17, 38, 0.08);
+}
+
+.cal-day.selected {
+    background: var(--text-primary);
+    color: var(--bg-color);
+    font-weight: 700;
+    border-color: var(--text-primary);
+}
+
+.cal-day.selected::after {
+    display: none;
+}
+
+/* Estado vacío del panel de resultados históricos */
+.hist-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.hist-empty p {
+    max-width: 360px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Título de sección de resultados históricos */
+.hist-section-title {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+@media (max-width: 480px) {
+    .cal-day {
+        font-size: 0.78rem;
+        border-radius: 7px;
+    }
+}
+
+/* Card Badges (Hoy, Ayer, Tandas) */
+.badge-tanda, .badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    line-height: 1;
+}
+
+.badge-morning { background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
+.badge-afternoon { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); }
+.badge-moon { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+
+.badge-today { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); font-weight: 700; box-shadow: 0 0 10px rgba(34, 197, 94, 0.1); }
+.badge-yesterday { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+.badge-pending { background: rgba(156, 163, 175, 0.15); color: #9ca3af; border: 1px solid rgba(156, 163, 175, 0.3); }
+.badge-date { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }

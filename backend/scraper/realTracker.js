@@ -1,0 +1,116 @@
+const puppeteer = require('puppeteer');
+const db = require('../db');
+
+/**
+ * Scrapes Lotería Real directly from conectate.com.do/loterias/loto-real
+ * which contains all the specialized Real games.
+ */
+async function scrapeRealConectate(targetTitle, lotteryCode) {
+    console.log(`[REAL TRACKER] Fetching ${targetTitle} from conectate.com.do/loterias/loto-real...`);
+    let browser = null;
+    try {
+        browser = await puppeteer.launch({
+            headless: 'new',
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--disable-gpu'
+            ]
+        });
+
+        const page = await browser.newPage();
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+            if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+                req.abort();
+            } else {
+                req.continue();
+            }
+        });
+
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36');
+
+        // Timeout is long because we block assets, but conectate might be slow
+        await page.goto(`https://www.conectate.com.do/loterias/loto-real`, { waitUntil: 'domcontentloaded', timeout: 45000 });
+
+        // Extract numbers based on target title
+        const numbers = await page.evaluate((title) => {
+            const blocks = document.querySelectorAll('.game-block');
+            for (let b of blocks) {
+                // The title in conectate might just be text inside a.game-title
+                const titleNode = b.querySelector('.game-title');
+                if (!titleNode) continue;
+
+                let gameTitle = titleNode.innerText.trim();
+
+                // If it happens to be an image logo, Conectate usually provides alt text or it is sibling text. 
+                // But from our prev checks .game-title exists and has text.
+                if (gameTitle.toLowerCase().includes(title.toLowerCase()) || title.toLowerCase().includes(gameTitle.toLowerCase())) {
+                    // It's a match! Collect numbers inside this block
+                    const numNodes = Array.from(b.querySelectorAll('.score, .ball.real'));
+                    if (numNodes.length === 0) {
+                        // Sometimes conectate uses just numbers inside spans without standard classes
+                        // But typically they use .score
+                        const altScoreNodes = Array.from(b.querySelectorAll('.score'));
+                        if (altScoreNodes.length > 0) return altScoreNodes.map(n => n.innerText.trim());
+
+                        // What if they use a table?
+                        const tableNodes = Array.from(b.querySelectorAll('td.point, td.premio, td .ball'));
+                        if (tableNodes.length > 0) return tableNodes.map(n => n.innerText.trim());
+                    } else {
+                        return numNodes.map(n => n.innerText.trim());
+                    }
+                }
+            }
+            return null;
+        }, targetTitle);
+
+        if (numbers && numbers.length > 0) {
+            // Validate and clean up extracted numbers
+            // Some lotteries have specific limits, but generally conectate shows exactly what was drawn
+            let finalNumbers = numbers;
+            if (targetTitle === 'Pega 4 Real' && finalNumbers.length > 4) finalNumbers = finalNumbers.slice(0, 4);
+            if (targetTitle === 'Loto Pool' && finalNumbers.length > 5) finalNumbers = finalNumbers.slice(0, 5);
+            if (targetTitle === 'Tu Fecha Real' && finalNumbers.length > 1) finalNumbers = finalNumbers.slice(0, 1);
+            if (targetTitle === 'Quiniela Real' && finalNumbers.length > 3) finalNumbers = finalNumbers.slice(0, 3);
+            if (targetTitle === 'Loto Real' || targetTitle === 'Loto') finalNumbers = finalNumbers.slice(0, 6);
+
+            console.log(`[REAL TRACKER] Success! Extracted numbers for ${targetTitle}:`, finalNumbers);
+
+            const drawDate = new Date().toISOString().split('T')[0];
+            const drawTime = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+
+            return new Promise((resolve, reject) => {
+                db.saveResult(lotteryCode, drawDate, drawTime, finalNumbers, (err) => {
+                    if (err && !err.message.includes('SQLITE_CONSTRAINT')) {
+                        console.error(`[REAL TRACKER] DB Error for ${lotteryCode}:`, err.message);
+                        reject(err);
+                    } else {
+                        if (err && err.message.includes('SQLITE_CONSTRAINT')) {
+                            console.log(`[REAL TRACKER] Notice: Results for ${targetTitle} already exist in DB for today.`);
+                        } else {
+                            console.log(`[REAL TRACKER] Database write success for ${targetTitle} (${lotteryCode}).`);
+                        }
+                        resolve({ lotteryCode, numbers: finalNumbers });
+                    }
+                });
+            });
+        } else {
+            console.log(`[REAL TRACKER] Warning: Could not locate visual results block for ${targetTitle} today yet.`);
+            return null;
+        }
+    } catch (error) {
+        console.error(`[REAL TRACKER] HTTP/Puppeteer Scrape Error for ${targetTitle}:`, error.message);
+        return null;
+    } finally {
+        if (browser) {
+            const pages = await browser.pages();
+            await Promise.all(pages.map(p => p.close())); // Close explicit for RAM
+            await browser.close();
+        }
+    }
+}
+
+module.exports = scrapeRealConectate;

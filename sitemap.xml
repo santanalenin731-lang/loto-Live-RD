@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    
+    <!-- Página Principal -->
+    <url>
+        <loc>/</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <!-- Páginas de Loterías -->
+    <url>
+        <loc>/loterias/nacional.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>/loterias/leidsa.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>/loterias/loteka.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>/loterias/real.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>/loterias/primera.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>/loterias/suerte.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>/loterias/lotedom.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>/loterias/king-lottery.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>/loterias/anguila.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>/loterias/americanas.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Páginas de Estadísticas -->
+    <url>
+        <loc>/estadisticas/numeros-calientes.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>/estadisticas/numeros-frios.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>/estadisticas/pronosticos.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>/estadisticas/consultar-numero.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Glosario -->
+    <url>
+        <loc>/glosario.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Páginas de Resultados Históricos -->
+    <url>
+        <loc>/resultados/2026/03/17.html</loc>
+        <lastmod>2026-03-17</lastmod>
+        <changefreq>never</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>/resultados/2026/03/16.html</loc>
+        <lastmod>2026-03-16</lastmod>
+        <changefreq>never</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+</urlset>
