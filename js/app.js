@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let calMonth = new Date().getMonth(); // 0-based
     let calSelectedDate = null; // 'YYYY-MM-DD' | null
 
+    let currentSubpageProvider = null;
+    let currentSubpageDrawName = null;
+
     // Metadata mapping since the DB only stores the code
     const LOTTERY_META = {
         // --- Clásicas ---
@@ -193,6 +196,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Render regular lottery list
             applyFilters();
 
+            // Refresh subpage if currently on one
+            if (currentSubpageProvider && currentSubpageDrawName) {
+                renderSubpage(currentSubpageProvider, currentSubpageDrawName);
+            }
+
             // Start the Hero Carousel
             startHeroCarousel();
 
@@ -270,6 +278,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const mergedData = mergeDataWithPlaceholders(newData);
                     allLotteries = mergedData;
                     applyFilters();
+                    if (currentSubpageProvider && currentSubpageDrawName) {
+                        try { renderSubpage(currentSubpageProvider, currentSubpageDrawName); } catch(e){}
+                    }
                     // We keep the jackpot in the hero, so we might not update hero here unless the jackpot itself updated
                     lucide.createIcons();
                 })
@@ -296,7 +307,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const lotteryNameNode = document.getElementById('hero-lottery-name');
             const prizeNode = document.getElementById('hero-prize');
-            const heroVisualContainer = document.querySelector('.hero-visual');
+            const heroWrapper = document.getElementById('hero-image-wrapper');
+            const heroVisualContainer = heroWrapper ? heroWrapper : document.querySelector('.hero-visual');
 
             // 1. Add Exit Animation
             if (lotteryNameNode) {
@@ -317,6 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateHeroSection(MOCK_JACKPOTS[currentJackpotIndex]);
 
                 const newPrizeNode = document.getElementById('hero-prize');
+                const newHeroWrapper = document.getElementById('hero-image-wrapper');
+                const newHeroVisualContainer = newHeroWrapper ? newHeroWrapper : document.querySelector('.hero-visual');
 
                 if (lotteryNameNode) {
                     lotteryNameNode.classList.remove('carousel-exit');
@@ -326,9 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     newPrizeNode.classList.remove('carousel-exit');
                     newPrizeNode.classList.add('carousel-enter');
                 }
-                if (heroVisualContainer) {
-                    heroVisualContainer.classList.remove('carousel-exit');
-                    heroVisualContainer.classList.add('carousel-enter');
+                if (newHeroVisualContainer) {
+                    newHeroVisualContainer.classList.remove('carousel-exit');
+                    newHeroVisualContainer.classList.add('carousel-enter');
                 }
             }, 300); // 300ms matches exit animation duration
         }, 5000); // 5 seconds per slide
@@ -371,7 +385,78 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Banner Image Logic
+        const bannerMap = {
+            'leidsa_loto': '/assets/images/logos/banner/Loto_mas.PNG',
+            'real_loto': '/assets/images/logos/banner/Loto_real.PNG',
+            'loteka_mega_lotto': '/assets/images/logos/banner/Mega_lotto.PNG'
+        };
+
         const heroVisualContainer = document.querySelector('.hero-visual');
+        let heroWrapper = document.getElementById('hero-image-wrapper');
+        
+        if (!heroWrapper && heroVisualContainer) {
+            // Destroy standalone img from earlier versions
+            const oldImg = document.getElementById('hero-banner-image');
+            if (oldImg) oldImg.remove();
+
+            heroWrapper = document.createElement('div');
+            heroWrapper.id = 'hero-image-wrapper';
+            heroWrapper.style.position = 'relative';
+            heroWrapper.style.width = '100%';
+            heroWrapper.style.maxWidth = '550px';
+            heroWrapper.style.margin = '1.5rem auto 1.5rem auto';
+            heroWrapper.style.borderRadius = '16px';
+            heroWrapper.style.overflow = 'hidden';
+            heroWrapper.style.boxShadow = '0 15px 35px rgba(0,0,0,0.6)';
+            heroWrapper.style.transition = 'opacity 0.3s ease';
+
+            const newImg = document.createElement('img');
+            newImg.id = 'hero-banner-image';
+            newImg.style.width = '100%';
+            newImg.style.display = 'block';
+            
+            heroVisualContainer.parentNode.insertBefore(heroWrapper, heroVisualContainer);
+            heroWrapper.appendChild(newImg);
+            heroWrapper.appendChild(heroVisualContainer);
+        }
+
+        let bannerImageNode = document.getElementById('hero-banner-image');
+        if (heroWrapper && bannerImageNode && heroVisualContainer) {
+            // Make the wrapper clickable and interactive
+            heroWrapper.style.cursor = 'pointer';
+            heroWrapper.onclick = (e) => {
+                e.preventDefault();
+                if (meta && window.navigateSpa) {
+                    window.navigateSpa(e, meta.provider, meta.name);
+                }
+            };
+
+            if (bannerMap[data.lottery_code]) {
+                bannerImageNode.src = bannerMap[data.lottery_code];
+                bannerImageNode.style.display = 'block';
+                heroWrapper.style.boxShadow = '0 15px 35px rgba(0,0,0,0.6)';
+                
+                // Position visual container absolutely over the bottom of the image
+                heroVisualContainer.style.position = 'absolute';
+                heroVisualContainer.style.bottom = '0';
+                heroVisualContainer.style.left = '0';
+                heroVisualContainer.style.width = '100%';
+                heroVisualContainer.style.margin = '0';
+                heroVisualContainer.style.padding = '1.5rem 0 1rem 0';
+                heroVisualContainer.style.background = 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%)';
+            } else {
+                bannerImageNode.style.display = 'none';
+                heroWrapper.style.boxShadow = 'none';
+                
+                // Revert visual container to natural flow if no banner
+                heroVisualContainer.style.position = 'relative';
+                heroVisualContainer.style.margin = '2rem 0';
+                heroVisualContainer.style.background = 'transparent';
+                heroVisualContainer.style.padding = '0';
+            }
+        }
+
         if (heroVisualContainer) {
             heroVisualContainer.innerHTML = ''; // Clear existing balls
 
@@ -799,6 +884,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewHistorico) viewHistorico.style.display = 'none';
         if (viewPronosticos) viewPronosticos.style.display = 'none';
         if (viewGenerador) viewGenerador.style.display = 'none';
+        
+        if (!isSubpage) {
+            currentSubpageProvider = null;
+            currentSubpageDrawName = null;
+        }
 
         // Update nav active states
         document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
@@ -1327,34 +1417,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function renderSubpage(provider, drawName) {
+        currentSubpageProvider = provider;
+        currentSubpageDrawName = drawName;
+        
         const container = document.getElementById('subpage-content');
         if (!container) return;
 
         // Find meta securely
-        let meta = Object.values(LOTTERY_META).find(m => m.name === drawName);
-        if (!meta) {
-            meta = { name: drawName, provider: provider, type: 'diario', color: '#374151', category: 'daily' };
+        let metaCode = null;
+        let meta = Object.values(LOTTERY_META).find(m => m.name === drawName && m.provider === provider);
+        
+        if (!meta) meta = Object.values(LOTTERY_META).find(m => m.name === drawName); // Fallback
+        
+        if (meta) {
+            for (const [key, value] of Object.entries(LOTTERY_META)) {
+                if (value.name === meta.name && value.provider === meta.provider) {
+                    metaCode = key; break;
+                }
+            }
+        } else {
+            meta = { name: drawName, provider: provider, type: 'diario', color: '#374151', category: 'daily', balls: 3 };
         }
 
-        let mockBalls = ['14', '56', '78'];
-        if (meta.category === 'jackpot') mockBalls = ['05', '12', '24', '35', '41', '08'];
-        if (meta.name === 'Juega + Pega +') mockBalls = ['24', '21', '05', '20', '16'];
-        if (meta.name === 'Loto Pool' || meta.name === 'Mega Chances') mockBalls = ['01', '02', '03', '04', '05'];
-        if (meta.name === 'Super Kino TV') mockBalls = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
-        if (meta.name === 'Super Palé') mockBalls = ['81', '22'];
-        if (meta.name === 'MegaLotto') mockBalls = ['01', '17', '18', '22', '26', '29', '01', '02'];
-        if (meta.name === 'Toca 3') mockBalls = ['04', '09', '02'];
-        if (meta.name === 'Tu Fecha Real') mockBalls = ['22'];
-        if (meta.name === 'Pega 4 Real') mockBalls = ['04', '05', '03', '09'];
-        if (meta.name === 'Nueva Yol Real') mockBalls = ['19', '52', '22', 'Amarilla'];
-        if (meta.lottery_code === 'real_loto_pool') mockBalls = ['04', '86', '83', '93']; // wait, earlier it used meta.name, but name is 'Loto Pool', which overlaps with Leidsa
-        if (meta.name === 'Quiniela Real') mockBalls = ['23', '82', '36'];
-        if (meta.name === 'Loto Pool' && meta.provider === 'Real') mockBalls = ['04', '86', '83', '93'];
+        let theBalls = [];
+        let theDate = '';
+        let thePrize = meta.category === 'jackpot' ? 'Premio Acumulativo' : null;
+        
+        let drawData = null;
+        if (metaCode && allLotteries && allLotteries.length > 0) {
+             drawData = allLotteries.find(l => l.lottery_code === metaCode);
+        }
+        
+        if (drawData && drawData.numbers && drawData.numbers.length > 0 && drawData.numbers[0] !== '--') {
+            theBalls = drawData.numbers;
+            // Use time directly if populated, else use full date
+            if (drawData.draw_time && drawData.draw_time !== 'Pendiente') {
+                theDate = "Sorteo del " + new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' });
+            } else {
+                theDate = new Date().toLocaleDateString('es-DO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+            if (drawData.prize) thePrize = drawData.prize;
+            
+            // Re-store previousResults in mockDrawData so we can use it in historical stats below if we expand it
+        } else {
+             // Fallbacks for loading or pending
+             const ballCount = meta.balls || 3;
+             theBalls = Array(ballCount).fill('--');
+             theDate = "Sorteo " + (drawData && drawData.draw_time ? drawData.draw_time : "Pendiente");
+             
+             if (meta.name === 'Super Kino TV') theBalls = Array(20).fill('--');
+             if (meta.name === 'Super Palé') theBalls = Array(2).fill('--');
+             if (meta.name === 'MegaLotto') theBalls = Array(8).fill('--');
+             if (meta.name === 'Loto Pool' || meta.name === 'Mega Chances') theBalls = Array(5).fill('--');
+             if (meta.name === 'Pega 4 Real' || meta.name === 'Agarra 4') theBalls = Array(4).fill('--');
+             if (meta.name === 'El Quemaito Mayor' || meta.name === 'El Quinielón Día' || meta.name === 'El Quinielón Noche') theBalls = Array(1).fill('--');
+        }
 
         const mockDrawData = {
-            date: new Date().toLocaleDateString('es-DO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
-            balls: mockBalls,
-            prize: meta.category === 'jackpot' ? '$150 Millones' : null
+            date: theDate,
+            balls: theBalls,
+            prize: thePrize
         };
 
         // Balls to HTML mapping with specific coloring
@@ -1386,8 +1508,6 @@ document.addEventListener('DOMContentLoaded', () => {
             metaDesc.content = `Revisa al instante los números ganadores de la Lotería ${drawName} de hoy en República Dominicana. Resultados 100% verificados en tiempo real. Ingresa ahora.`;
         }
 
-        const prizeBadge = mockDrawData.prize ? `<div class="badge" style="background: var(--accent-red); margin-left: auto;">Acumulado: ${mockDrawData.prize}</div>` : '';
-
         let html = `
             <div class="subpage-header fade-in" style="border-left: 4px solid ${meta.color}">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
@@ -1395,14 +1515,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h1 style="color: var(--text-primary); font-size: 2.2rem; margin-bottom: 0.5rem; line-height: 1.2;">Resultados de ${drawName} Hoy República Dominicana</h1>
                         <p style="color: var(--text-secondary); font-size: 1.1rem;"><span style="color: var(--accent-blue);">${provider}</span> • ${meta.type}</p>
                     </div>
-                    ${prizeBadge}
                 </div>
             </div>
 
             <div class="tabs mt-xl">
                 <button class="tab-btn active" onclick="switchTab('tab-hoy', event)">Resultados de Hoy</button>
                 <button class="tab-btn" onclick="switchTab('tab-comojugar', event)">Cómo Jugar y Premios</button>
-                <button class="tab-btn" onclick="switchTab('tab-historico', event)">Histórico</button>
             </div>
 
             <div id="tab-hoy" class="tab-content mt-4" style="display: block;">
@@ -1419,16 +1537,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div id="comojugar-dynamic-content">
                     <div class="glass-panel" style="padding: 2rem; display: flex; justify-content: center; align-items: center; gap: 1rem;">
                         <i data-lucide="loader-2" class="spin" style="color: var(--accent-blue);"></i> <span style="color: var(--text-muted);">Cargando información...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-historico" class="tab-content mt-4" style="display: none;">
-                <div class="glass-panel" style="padding: 2rem;">
-                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Sorteos Anteriores</h3>
-                    <p style="color: var(--text-muted);">El historial detallado se cargará pronto.</p>
-                    <div style="height: 200px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 8px; margin-top: 1rem;">
-                        <i data-lucide="database" style="color: var(--glass-border); width: 48px; height: 48px;"></i>
                     </div>
                 </div>
             </div>

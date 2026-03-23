@@ -61,49 +61,56 @@ const scrapePowerballDP = () => scrapeAggregator('Powerball Double Play', 'power
 
 console.log('📅 Initializing Cron Schedule Manager...');
 
-// Helper to run a scraper with retries if it fails to find results or the site is down
-async function runWithRetries(scraperFunc, broadcastCb, maxRetries = 15) {
-    let attempts = 0;
-    let isRunning = false;
+// Global queue to prevent Out Of Memory (OOM) on free Render instance (512MB RAM)
+// By restricting to 1 concurrent Puppeteer instance at all times.
+const scraperQueue = [];
+let isProcessingQueue = false;
 
-    // An interval that runs every 1 minute until success or max retries
-    const poller = setInterval(async () => {
-        if (isRunning) {
-            console.log(`[POLLER] ⚠️ Skip attempt for ${scraperFunc.name} - previous instance still running.`);
-            return;
-        }
-        attempts++;
-        console.log(`[POLLER] Attempt ${attempts}/${maxRetries} for ${scraperFunc.name}...`);
-        isRunning = true;
+async function processQueue() {
+    if (isProcessingQueue) return;
+    isProcessingQueue = true;
 
+    while (scraperQueue.length > 0) {
+        const { scraperFunc, broadcastCb, maxRetries, attempts } = scraperQueue.shift();
+
+        console.log(`[QUEUE] Processing ${scraperFunc.name} (Attempt ${attempts + 1}/${maxRetries})...`);
         try {
-            // Force timeout exactly at 50 seconds to free up for the next minute's attempt
+            // Force timeout exactly at 50 seconds to free up
             const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Scraper Execution Timeout (50s)')), 50000));
             const result = await Promise.race([scraperFunc(), timeoutPromise]);
 
             if (result && result.numbers && result.numbers.length > 0) {
-                console.log(`[POLLER] Success! Got results on attempt ${attempts}. Broadcasting to WebSockets...`);
-
-                // Get current time
+                console.log(`[QUEUE] Success! Got results for ${scraperFunc.name}. Broadcasting to WebSockets...`);
                 const drawTime = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
-
-                // Alert connected frontends
                 if (broadcastCb) broadcastCb(result.lotteryCode, result.numbers, drawTime);
-
-                clearInterval(poller); // Stop polling for today
-            } else if (attempts >= maxRetries) {
-                console.log(`[POLLER] Max retries reached for ${scraperFunc.name}. Giving up.`);
-                clearInterval(poller);
+            } else {
+                 throw new Error("No results obtained or site is not updated yet.");
             }
         } catch (error) {
-            console.error(`[POLLER] Error during attempt ${attempts}:`, error.message);
-            if (attempts >= maxRetries) {
-                clearInterval(poller);
+            console.error(`[QUEUE] Error during ${scraperFunc.name}:`, error.message);
+            if (attempts + 1 < maxRetries) {
+                console.log(`[QUEUE] Re-queueing ${scraperFunc.name} for attempt ${attempts + 2} in 60s...`);
+                setTimeout(() => {
+                    scraperQueue.push({ scraperFunc, broadcastCb, maxRetries, attempts: attempts + 1 });
+                    processQueue(); // Ensure queue runs after timeout
+                }, 60000);
+            } else {
+                console.log(`[QUEUE] Max retries reached for ${scraperFunc.name}. Giving up.`);
             }
-        } finally {
-            isRunning = false;
         }
-    }, 60000); // 1 minute interval
+
+        // 5 seconds pause between executions to help Garbage Collector free RAM
+        console.log(`[QUEUE] Pausing 5 seconds to free Chromium RAM...`);
+        await new Promise(res => setTimeout(res, 5000));
+    }
+
+    isProcessingQueue = false;
+    console.log(`[QUEUE] Queue is now empty. Waiting for next cron task.`);
+}
+
+function runWithRetries(scraperFunc, broadcastCb, maxRetries = 15) {
+    scraperQueue.push({ scraperFunc, broadcastCb, maxRetries, attempts: 0 });
+    processQueue();
 }
 
 function initializeCrons(broadcastCb) {
