@@ -29,10 +29,25 @@ app.set('view engine', 'ejs');
 
 // --- SEO Dynamic Routes ---
 app.get('/', (req, res) => {
+    const websiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Loto Live RD",
+        "url": "https://loto-live-rd.onrender.com/",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://loto-live-rd.onrender.com/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    };
+    const schemaScript = `<script type="application/ld+json">${JSON.stringify(websiteSchema)}</script>`;
+
     res.render('index.ejs', {
         title: "Resultados de Loto Live RD | Lotería Nacional, LEIDSA, Loteka y Más",
         description: "Resultados al instante de todas las loterías dominicanas. Lotería Nacional, LEIDSA, Loteka, Lotería Real, La Primera, LoteDom y New York. Revisa tus números y consulta nuestro diccionario de los sueños.",
-        initialScript: ""
+        url: "https://loto-live-rd.onrender.com/",
+        imageUrl: "https://loto-live-rd.onrender.com/assets/images/logos/LotoliveRD/LotoliveRD.png",
+        initialScript: schemaScript
     });
 });
 
@@ -68,9 +83,13 @@ app.get('/loterias/:provider/:drawID', (req, res) => {
     // Inject state to direct JS
     const initialScript = `<script>window.INITIAL_ROUTE = { provider: "${humanProvider}", draw: "${humanDraw}" };</script>\n${schemaScript}`;
 
+    const seoUrl = `https://loto-live-rd.onrender.com/loterias/${encodeURIComponent(req.params.provider)}/${encodeURIComponent(req.params.drawID)}`;
+
     res.render('index.ejs', {
         title: title,
         description: description,
+        url: seoUrl,
+        imageUrl: "https://loto-live-rd.onrender.com/assets/images/logos/LotoliveRD/LotoliveRD.png",
         initialScript: initialScript
     });
 });

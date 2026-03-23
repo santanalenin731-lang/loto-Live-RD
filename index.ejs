@@ -9,10 +9,23 @@
         content="<%= description %>">
     <meta name="keywords"
         content="loteria dominicana, loteria nacional, leidsa, loteka, la primera, gana mas, resultados loteria, numeros de hoy, sueños y numeros, pale, tripleta, loto">
+    <!-- SEO: Crawling and Canonicalization -->
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="<%= typeof url !== 'undefined' ? url : 'https://loto-live-rd.onrender.com/' %>">
+
+    <!-- Open Graph -->
     <meta property="og:title" content="<%= title %>">
-    <meta property="og:description"
-        content="<%= description %>">
+    <meta property="og:description" content="<%= description %>">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= typeof url !== 'undefined' ? url : 'https://loto-live-rd.onrender.com/' %>">
+    <meta property="og:site_name" content="Loto Live RD">
+    <meta property="og:image" content="<%= typeof imageUrl !== 'undefined' ? imageUrl : 'https://loto-live-rd.onrender.com/assets/images/logos/LotoliveRD/LotoliveRD.png' %>">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= title %>">
+    <meta name="twitter:description" content="<%= description %>">
+    <meta name="twitter:image" content="<%= typeof imageUrl !== 'undefined' ? imageUrl : 'https://loto-live-rd.onrender.com/assets/images/logos/LotoliveRD/LotoliveRD.png' %>">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
