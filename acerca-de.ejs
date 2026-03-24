@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es-DO">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <meta name="description"
+        content="<%= description %>">
+    <meta name="keywords"
+        content="acerca de loto live rd, loteria dominicana, legal, plataforma de resultados">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="<%= typeof url !== 'undefined' ? url : 'https://loto-live-rd.onrender.com/acerca-de' %>">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="<%= description %>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= typeof url !== 'undefined' ? url : 'https://loto-live-rd.onrender.com/acerca-de' %>">
+    <meta property="og:site_name" content="Loto Live RD">
+    <meta property="og:image" content="<%= typeof imageUrl !== 'undefined' ? imageUrl : 'https://loto-live-rd.onrender.com/assets/images/logos/LotoliveRD/LotoliveRD.png' %>">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= title %>">
+    <meta name="twitter:description" content="<%= description %>">
+    <meta name="twitter:image" content="<%= typeof imageUrl !== 'undefined' ? imageUrl : 'https://loto-live-rd.onrender.com/assets/images/logos/LotoliveRD/LotoliveRD.png' %>">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/styles.css?v=1.9">
+
+    <!-- Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Dynamic SEO and Initial State Injection -->
+    <%- typeof initialScript !== 'undefined' ? initialScript : '' %>
+</head>
+
+<body>
+    <!-- Navigation Header -->
+    <nav class="top-nav">
+        <div class="h-container">
+            <a href="/" class="logo" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                <img src="/assets/images/logos/LotoliveRD/LotoliveRD.png" alt="Loto Live RD Logo" style="height: 40px; width: auto; object-fit: contain;">
+                <span style="color: #3b82f6; font-weight: 800;">Loto</span> <span style="color: #ffffff; font-weight: 800;">Live</span> <span style="color: #ef4444; font-weight: 800;">RD</span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Resultados</a>
+                <a href="/#generador">Generador</a>
+                <a href="/#data-center">Data Center</a>
+                <a href="/#historico">Histórico</a>
+                <a href="/#pronosticos">Pronósticos</a>
+            </div>
+            <button class="menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content" style="padding-top: 100px; padding-bottom: 50px;">
+        <div class="container">
+            <section class="glass-panel" style="text-align: center; padding: 4rem 2rem; border-radius: 20px;">
+                <img src="/assets/images/logos/LotoliveRD/LotoliveRD.png" alt="Loto Live RD Logo Grande" style="max-width: 100%; width: 350px; height: auto; margin-bottom: 2rem; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));">
+                
+                <h1 style="color: white; font-size: 3rem; margin-bottom: 1.5rem; font-weight: 900; line-height: 1.2;">
+                    Acerca de Loto Live RD
+                </h1>
+                
+                <p style="color: var(--text-secondary); font-size: 1.2rem; max-width: 800px; margin: 0 auto 3rem auto; line-height: 1.6;">
+                    Loto Live RD es una plataforma informativa independiente dedicada a la recopilación y publicación de resultados de las diferentes loterías de la República Dominicana en tiempo real.
+                </p>
+
+                <div style="background: rgba(0, 0, 0, 0.2); text-align: left; padding: 2.5rem; border-radius: 16px; border: 1px solid var(--glass-border); max-width: 800px; margin: 0 auto;">
+                    <h3 style="color: white; margin-bottom: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.8rem; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i data-lucide="scale" style="color: var(--accent-blue);"></i> Nuestra Misión y Certificación Legal
+                    </h3>
+                    
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.2rem; font-size: 1.05rem;">
+                        Nuestra misión fundamental es proveer a los usuarios un acceso rápido, confiable y transparente a los resultados de los sorteos diarios (Lotería Nacional, LEIDSA, Loteka, Lotería Real, La Primera, etc.). 
+                        <strong style="color: var(--accent-red); display: block; margin-top: 0.8rem; font-weight: 700;">Loto Live RD no realiza, patrocina ni administra sorteos propios ni operaciones de apuestas o banca.</strong> Somos estrictamente un portal de consulta tecnológica.
+                    </p>
+                    
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0; font-size: 1.05rem;">
+                        Todo dato publicado en nuestro sitio web o aplicaciones es extraído y verificado cuidadosamente contra las fuentes y transmisiones oficiales. Sin embargo, en caso fortuito de existir alguna discrepancia técnica u omisión, <strong>la información contenida en las fuentes de cada Institución Oficial prevalecerá</strong> de forma legal en todo momento.
+                    </p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-content" style="text-align: center; padding: 2rem 0;">
+            <div class="footer-brand" style="margin-bottom: 1rem;">
+                <h2><span style="color: #3b82f6; font-weight: 800;">Loto</span> <span style="color: #ffffff; font-weight: 800;">Live</span> <span style="color: #ef4444; font-weight: 800;">RD</span></h2>
+                <p>Plataforma independiente de resultados.</p>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <a href="/acerca-de" style="color: var(--text-secondary); text-decoration: none; font-weight: 600; font-size: 0.95rem; display: inline-block;">Acerca de Nosotros / Legal</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

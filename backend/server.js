@@ -94,6 +94,25 @@ app.get('/loterias/:provider/:drawID', (req, res) => {
     });
 });
 
+app.get('/acerca-de', (req, res) => {
+    const websiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "name": "Acerca de Loto Live RD",
+        "url": "https://loto-live-rd.onrender.com/acerca-de",
+        "description": "Conoce más sobre Loto Live RD, plataforma transparente e independiente de resultados de loterías en República Dominicana."
+    };
+    const schemaScript = `<script type="application/ld+json">${JSON.stringify(websiteSchema)}</script>`;
+
+    res.render('acerca-de.ejs', {
+        title: "Acerca de Nosotros | Loto Live RD",
+        description: "En Loto Live RD recopilamos resultados de Lotería Nacional, LEIDSA, Loteka y más. Plataforma independiente sin relación a bancas de apuestas.",
+        url: "https://loto-live-rd.onrender.com/acerca-de",
+        imageUrl: "https://loto-live-rd.onrender.com/assets/images/logos/LotoliveRD/LotoliveRD.png",
+        initialScript: schemaScript
+    });
+});
+
 // --- Dynamic Sitemap Route ---
 app.get('/sitemap.xml', (req, res) => {
     db.getLatestResults((err, results) => {
@@ -103,6 +122,7 @@ app.get('/sitemap.xml', (req, res) => {
         let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
         
         xml += `  <url>\n    <loc>https://loto-live-rd.onrender.com/</loc>\n    <changefreq>always</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>https://loto-live-rd.onrender.com/acerca-de</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
         
         results.forEach(lottery => {
             const meta = LOTTERY_META[lottery.lottery_code] || LOTTERY_META['default'];

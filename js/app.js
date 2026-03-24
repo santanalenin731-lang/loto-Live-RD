@@ -567,14 +567,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const logoUrl = meta.logo || 'assets/images/logos/default.png';
 
-        // Badges Logic
-        let timeBadgeHtml = '';
-        if (meta.time === 'morning') timeBadgeHtml = `<span class="badge-tanda badge-morning"><i data-lucide="sun" style="width: 12px; height: 12px;"></i> Mañana</span>`;
-        else if (meta.time === 'afternoon') timeBadgeHtml = `<span class="badge-tanda badge-afternoon"><i data-lucide="sunset" style="width: 12px; height: 12px;"></i> Tarde</span>`;
-        else if (meta.time === 'night') timeBadgeHtml = `<span class="badge-tanda badge-moon"><i data-lucide="moon" style="width: 12px; height: 12px;"></i> Noche</span>`;
-
         let statusBadgeHtml = '';
         const scheduledTime = meta.schedule || '';
+
+        // Badges Logic
+        let timeBadgeHtml = '';
+        if (meta.time === 'morning') timeBadgeHtml = `<span class="badge-tanda badge-morning">${scheduledTime || 'Mañana'}</span>`;
+        else if (meta.time === 'afternoon') timeBadgeHtml = `<span class="badge-tanda badge-afternoon">${scheduledTime || 'Tarde'}</span>`;
+        else if (meta.time === 'night') timeBadgeHtml = `<span class="badge-tanda badge-moon">${scheduledTime || 'Noche'}</span>`;
 
         if (lottery.draw_time) {
             const dtLower = lottery.draw_time.toLowerCase();
@@ -601,9 +601,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dtLower.includes('pendiente')) {
                 statusBadgeHtml = `<span class="badge-status badge-pending"><i data-lucide="hourglass" style="width: 13px; height: 13px;"></i> Juega a las ${scheduledTime}</span>`;
             } else if (hasPassedSchedule) {
-                statusBadgeHtml = `<span class="badge-status badge-today"><i data-lucide="check-circle-2" style="width: 13px; height: 13px;"></i> Salió Hoy</span>`;
+                statusBadgeHtml = `<span class="badge-status text-pulsing-today">Hoy</span>`;
             } else {
-                statusBadgeHtml = `<span class="badge-status badge-yesterday"><i data-lucide="clock" style="width: 13px; height: 13px;"></i> De Ayer (Juega a las ${scheduledTime})</span>`;
+                statusBadgeHtml = `<span class="badge-status badge-yesterday">De Ayer</span>`;
             }
         }
 
@@ -647,13 +647,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dynamicGroupsContainer) dynamicGroupsContainer.innerHTML = '';
 
         const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
-        const activeTimeFilter = document.querySelector('.time-btn.active')?.getAttribute('data-time') || 'all';
 
         // Render Jackpots
         const displayJackpots = activeFilter === 'all' ? MOCK_JACKPOTS : MOCK_JACKPOTS.filter(j => getMeta(j.lottery_code).provider === activeFilter);
 
-        // Hide jackpots entirely if time-filter is not 'all'
-        if (displayJackpots.length > 0 && activeTimeFilter === 'all') {
+        // Render jackpots directly based on displayJackpots length
+        if (displayJackpots.length > 0) {
             jackpotsSection.style.display = 'block';
             displayJackpots.forEach((jackpot, index) => {
                 const meta = getMeta(jackpot.lottery_code);
@@ -802,44 +801,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // New Time Filter Logic
-    const timeBtns = document.querySelectorAll('.time-btn');
-    const timeGroups = {
-        'morning': document.getElementById('group-morning'),
-        'afternoon': document.getElementById('group-afternoon'),
-        'night': document.getElementById('group-night')
-    };
 
-    timeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            timeBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            const timeFilter = btn.getAttribute('data-time');
-
-            if (timeFilter === 'all') {
-                const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
-                const hasJackpots = activeFilter === 'all' ? MOCK_JACKPOTS.length > 0 : MOCK_JACKPOTS.filter(j => getMeta(j.lottery_code).provider === activeFilter).length > 0;
-                jackpotsSection.style.display = hasJackpots ? 'block' : 'none';
-                Object.values(timeGroups).forEach(group => {
-                    if (group.querySelector('.lottery-card')) {
-                        group.style.display = 'block';
-                    }
-                });
-            } else {
-                jackpotsSection.style.display = 'none'; // Only show jackpots when user wants "all" times
-                Object.entries(timeGroups).forEach(([key, group]) => {
-                    if (key === timeFilter && group.querySelector('.lottery-card')) {
-                        group.style.display = 'block';
-                    } else {
-                        group.style.display = 'none';
-                    }
-                });
-            }
-            animateSection(dailySection);
-            animateSection(jackpotsSection);
-        });
-    });
 
     // Initial helper to clear empty state if data exists
     function checkEmptyState() {
@@ -1450,12 +1412,27 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (drawData && drawData.numbers && drawData.numbers.length > 0 && drawData.numbers[0] !== '--') {
             theBalls = drawData.numbers;
-            // Use time directly if populated, else use full date
-            if (drawData.draw_time && drawData.draw_time !== 'Pendiente') {
-                theDate = "Sorteo del " + new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' });
-            } else {
-                theDate = new Date().toLocaleDateString('es-DO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            // Calculate true local date strictly based on the target schedule (avoids UTC timezone bugs from the DB)
+            let drawDateObj = new Date();
+            if (meta.schedule) {
+                const match = meta.schedule.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                if (match) {
+                    let h = parseInt(match[1]);
+                    const m = parseInt(match[2]);
+                    const p = match[3].toUpperCase();
+                    if (p === 'PM' && h !== 12) h += 12;
+                    if (p === 'AM' && h === 12) h = 0;
+                    
+                    const scheduleDate = new Date();
+                    scheduleDate.setHours(h, m, 0, 0);
+                    
+                    // If the schedule hasn't happened yet today, the data corresponds strictly to yesterday's draw
+                    if (new Date() < scheduleDate) {
+                        drawDateObj.setDate(drawDateObj.getDate() - 1);
+                    }
+                }
             }
+            theDate = "Sorteo del " + drawDateObj.toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' });
             if (drawData.prize) thePrize = drawData.prize;
             
             // Re-store previousResults in mockDrawData so we can use it in historical stats below if we expand it
@@ -1512,28 +1489,26 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="subpage-header fade-in" style="border-left: 4px solid ${meta.color}">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
                     <div>
-                        <h1 style="color: var(--text-primary); font-size: 2.2rem; margin-bottom: 0.5rem; line-height: 1.2;">Resultados de ${drawName} Hoy República Dominicana</h1>
+                        <h1 style="color: var(--text-primary); font-size: 2.2rem; margin-bottom: 0.5rem; line-height: 1.2;">Resultados de ${drawName}</h1>
                         <p style="color: var(--text-secondary); font-size: 1.1rem;"><span style="color: var(--accent-blue);">${provider}</span> • ${meta.type}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="tabs mt-xl">
-                <button class="tab-btn active" onclick="switchTab('tab-hoy', event)">Resultados de Hoy</button>
-                <button class="tab-btn" onclick="switchTab('tab-comojugar', event)">Cómo Jugar y Premios</button>
-            </div>
-
-            <div id="tab-hoy" class="tab-content mt-4" style="display: block;">
-                <div class="glass-panel" style="padding: 2rem;">
-                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Sorteo de Hoy</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem;">${mockDrawData.date}</p>
+            <div class="mt-xl">
+                <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.8rem; margin-bottom: 1.2rem;">
+                        <i data-lucide="calendar" style="width: 20px; color: var(--accent-blue); margin-right: 0.5rem;"></i>
+                        <h3 style="color: var(--text-primary); margin: 0; font-size: 1.3rem;">Último Sorteo</h3>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem; text-transform: capitalize;">${mockDrawData.date}</p>
                     <div class="card-results" style="justify-content: flex-start; flex-wrap: wrap;">
                         ${subpageBallsHtml}
                     </div>
                 </div>
             </div>
 
-            <div id="tab-comojugar" class="tab-content mt-4" style="display: none;">
+            <div class="mt-4">
                 <div id="comojugar-dynamic-content">
                     <div class="glass-panel" style="padding: 2rem; display: flex; justify-content: center; align-items: center; gap: 1rem;">
                         <i data-lucide="loader-2" class="spin" style="color: var(--accent-blue);"></i> <span style="color: var(--text-muted);">Cargando información...</span>
@@ -1598,15 +1573,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSubpage(provider, drawName);
     }
 
-    // Global UI Helper for Subpage Tabs
-    window.switchTab = function (tabId, event) {
-        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabId).style.display = 'block';
-        if (event && event.currentTarget) {
-            event.currentTarget.classList.add('active');
-        }
-    }
+
 
     // Navigation is now handled natively via standard <a> tags on .lottery-card
     // Mobile Menu Toggle
@@ -1706,7 +1673,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Unlock
                     btn.disabled = false;
                     btn.style.opacity = '1';
-                    btn.innerHTML = `<i data-lucide="zap"></i> <span>GENERAR OTRA JUGADA</span>`;
+                    btn.innerHTML = `<span>GENERAR OTRA JUGADA</span>`;
                     if (typeof lucide !== 'undefined') lucide.createIcons();
                 }, 1500);
             })
@@ -1715,7 +1682,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 status.textContent = "Error de conexión. Intente de nuevo.";
                 btn.disabled = false;
                 btn.style.opacity = '1';
-                btn.innerHTML = `<i data-lucide="zap"></i> <span>REINTENTAR</span>`;
+                btn.innerHTML = `<span>REINTENTAR</span>`;
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             });
     }

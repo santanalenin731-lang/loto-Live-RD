@@ -35,7 +35,7 @@
         rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/css/styles.css?v=1.6">
+    <link rel="stylesheet" href="/css/styles.css?v=2.0">
 
     <!-- Icons (Lucide) -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -88,7 +88,7 @@
                     Consulta los resultados al instante de Nacional, LEIDSA, Loteka, Real y más.
                 </p>
                 <div class="hero-stats slide-up delay-2">
-                    <span class="stat-item"><i data-lucide="zap"></i> Actualización en tiempo real</span>
+                    <span class="stat-item">Actualización en tiempo real</span>
                     <span class="stat-item"><i data-lucide="shield-check"></i> 100% Verificado</span>
                 </div>
             </section>
@@ -126,12 +126,7 @@
             <section id="daily-section" class="lottery-group container" style="display: none;">
                 <div class="group-header">
                     <h2>Sorteos Diarios</h2>
-                    <div class="time-filters mt-4">
-                        <button class="time-btn active" data-time="all">Todos</button>
-                        <button class="time-btn" data-time="morning">Mañana</button>
-                        <button class="time-btn" data-time="afternoon">Tarde</button>
-                        <button class="time-btn" data-time="night">Noche</button>
-                    </div>
+
                 </div>
 
                 <div id="dynamic-groups-container"></div>
@@ -570,8 +565,8 @@
                         <div class="ball generator-ball" style="background: rgba(45, 55, 72, 0.5); color: #fff; border: 2px dashed rgba(255,255,255,0.2); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; font-weight: 800; box-shadow: none;">?</div>
                     </div>
 
-                    <button id="btn-generate" class="tab-btn active" style="width: 100%; padding: 1.25rem; font-size: 1.2rem; font-weight: 800; border-radius: 16px; transition: transform 0.2s, filter 0.2s; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" onclick="window.runGenerator()">
-                        <i data-lucide="zap" style="width: 24px; height: 24px;"></i> <span>GENERAR MI JUGADA</span>
+                    <button id="btn-generate" class="btn-generator-pulse" style="width: 100%; padding: 1.25rem; font-size: 1.2rem; font-weight: 800; border-radius: 16px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; justify-content: center; border: none;" onclick="window.runGenerator()">
+                        <span>GENERAR JUGADA</span>
                     </button>
                     <div id="generator-status" style="margin-top: 1.5rem; font-size: 0.95rem; color: var(--accent-blue); font-style: italic; min-height: 24px;"></div>
                 </div>
@@ -596,9 +591,9 @@
                 <h2><span style="color: #3b82f6; font-weight: 800;">Loto</span> <span style="color: #ffffff; font-weight: 800;">Live</span> <span style="color: #ef4444; font-weight: 800;">RD</span></h2>
                 <p>Plataforma independiente de resultados.</p>
             </div>
-            <p class="disclaimer">Los resultados mostrados son de carácter informativo. Consulte las fuentes
-                oficiales
-                para confirmación.</p>
+            <div style="margin: 1rem 0; text-align: center;">
+                <a href="/acerca-de" style="color: var(--text-secondary); text-decoration: none; font-weight: 600; font-size: 0.95rem; display: inline-block;">Acerca de Nosotros / Legal</a>
+            </div>
         </div>
     </footer>
 
@@ -611,7 +606,7 @@
     <!-- WebSockets -->
     <script src="/socket.io/socket.io.js"></script>
     <!-- App Logic -->
-    <script src="/js/app.js?v=2.3"></script>
+    <script src="/js/app.js?v=2.9"></script>
 </body>
 
 </html>
