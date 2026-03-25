@@ -52,9 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'loteka_mega_lotto': { name: 'MegaLotto', provider: 'Loteka', type: 'Jackpot', color: '#f97316', category: 'jackpot', balls: 8, schedule: '7:55 PM', logo: '/assets/images/logos/loteka/mega_lotto.png' },
         'loteka_toca_3': { name: 'Toca 3', provider: 'Loteka', type: 'Sorteo', color: '#f97316', category: 'daily', time: 'night', schedule: '7:55 PM', logo: '/assets/images/logos/loteka/toca_3.jpg' },
         'loteka_mega_chances_repartidera': { name: 'Mega Chances Repartidera', provider: 'Loteka', type: 'Sorteo', color: '#f97316', category: 'daily', time: 'night', schedule: '7:55 PM', logo: '/assets/images/logos/loteka/mega_chances_repartidera.jpg' },
-        'nacional': { name: 'Gana Más', provider: 'Nacional', type: 'Quiniela', color: '#1e3a8a', category: 'daily', time: 'afternoon', schedule: '2:30 PM', logo: '/assets/images/logos/nacional/Gana_mas.PNG?v=new' },
-        'nacional_juega_pega_mas': { name: 'Juega + Pega +', provider: 'Nacional', type: 'Sorteo', color: '#16a34a', category: 'daily', time: 'afternoon', schedule: '2:30 PM', logo: '/assets/images/logos/nacional/Juega_pega_mas.PNG?v=new' },
-        'nacional_noche': { name: 'Lotería Nacional', provider: 'Nacional', type: 'Quiniela', color: '#1e3a8a', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/nacional/Nacional_noche .PNG?v=new' },
+        'nacional': { name: 'Gana Más', provider: 'Nacional', type: 'Quiniela', color: '#1e3a8a', category: 'daily', time: 'afternoon', schedule: '2:30 PM', logo: '/assets/images/logos/nacional/gana_mas.png?v=new2' },
+        'nacional_juega_pega_mas': { name: 'Juega + Pega +', provider: 'Nacional', type: 'Sorteo', color: '#16a34a', category: 'daily', time: 'afternoon', schedule: '2:30 PM', logo: '/assets/images/logos/nacional/juega_pega_mas.png?v=new2' },
+        'nacional_noche': { name: 'Lotería Nacional', provider: 'Nacional', type: 'Quiniela', color: '#1e3a8a', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/nacional/nacional_noche.png?v=new2' },
         // --- LEIDSA ---
         'leidsa': { name: 'Quiniela Leidsa', provider: 'LEIDSA', type: 'Quiniela', color: '#eab308', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/leidsa/quiniela.png' },
         'leidsa_pega_3_mas': { name: 'Pega 3 Más', provider: 'LEIDSA', type: 'Sorteo', color: '#eab308', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/leidsa/pega_3_mas.png' },
