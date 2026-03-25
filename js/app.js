@@ -55,19 +55,22 @@ document.addEventListener('DOMContentLoaded', () => {
         'nacional': { name: 'Gana Más', provider: 'Nacional', type: 'Quiniela', color: '#1e3a8a', category: 'daily', time: 'afternoon', schedule: '2:30 PM', logo: '/assets/images/logos/nacional/Gana_mas.PNG?v=new' },
         'nacional_juega_pega_mas': { name: 'Juega + Pega +', provider: 'Nacional', type: 'Sorteo', color: '#16a34a', category: 'daily', time: 'afternoon', schedule: '2:30 PM', logo: '/assets/images/logos/nacional/Juega_pega_mas.PNG?v=new' },
         'nacional_noche': { name: 'Lotería Nacional', provider: 'Nacional', type: 'Quiniela', color: '#1e3a8a', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/nacional/Nacional_noche .PNG?v=new' },
+        // --- LEIDSA ---
         'leidsa': { name: 'Quiniela Leidsa', provider: 'LEIDSA', type: 'Quiniela', color: '#eab308', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/leidsa/quiniela.png' },
         'leidsa_pega_3_mas': { name: 'Pega 3 Más', provider: 'LEIDSA', type: 'Sorteo', color: '#eab308', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/leidsa/pega_3_mas.png' },
         'leidsa_loto_pool': { name: 'Loto Pool', provider: 'LEIDSA', type: 'Sorteo', color: '#eab308', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/leidsa/loto_pool.png' },
         'leidsa_super_kino_tv': { name: 'Super Kino TV', provider: 'LEIDSA', type: 'Sorteo', color: '#eab308', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/leidsa/super_kino_tv.webp' },
-        'leidsa_loto': { name: 'Loto - Loto Más', provider: 'LEIDSA', type: 'Jackpot', color: '#eab308', category: 'jackpot', schedule: '8:55 PM', logo: '/assets/images/logos/leidsa/loto.png' },
+        'leidsa_loto': { name: 'Loto - Loto Más', provider: 'LEIDSA', type: 'Jackpot', color: '#eab308', category: 'jackpot', drawDays: [3, 6], schedule: '8:55 PM', logo: '/assets/images/logos/leidsa/loto.png' },
         'leidsa_super_pale': { name: 'Super Palé', provider: 'LEIDSA', type: 'Sorteo', color: '#eab308', category: 'daily', time: 'night', schedule: '8:55 PM', logo: '/assets/images/logos/leidsa/super_pale.png' },
+        
+        // --- Real ---
         'real': { name: 'Quiniela Real', provider: 'Real', type: 'Quiniela', color: '#b91c1c', category: 'daily', time: 'afternoon', schedule: '1:00 PM', logo: '/assets/images/logos/real/quiniela.jpg' },
         'real_tu_fecha': { name: 'Tu Fecha Real', provider: 'Real', type: 'Sorteo', color: '#b91c1c', category: 'daily', time: 'afternoon', schedule: '1:00 PM', logo: '/assets/images/logos/real/tu_fecha.png' },
         'real_pega_4': { name: 'Pega 4 Real', provider: 'Real', type: 'Sorteo', color: '#b91c1c', category: 'daily', time: 'afternoon', schedule: '1:00 PM', logo: '/assets/images/logos/real/pega_4.png' },
         'real_nueva_yol': { name: 'Nueva Yol Real', provider: 'Real', type: 'Sorteo', color: '#b91c1c', category: 'daily', time: 'afternoon', schedule: '1:00 PM', logo: '/assets/images/logos/real/nueva_yol.png' },
         'real_loto_pool': { name: 'Loto Pool', provider: 'Real', type: 'Sorteo', color: '#b91c1c', category: 'daily', time: 'afternoon', schedule: '1:00 PM', logo: '/assets/images/logos/real/loto_pool.png' },
         'real_super_pale': { name: 'Super Palé', provider: 'Real', type: 'Sorteo', color: '#16a34a', category: 'daily', time: 'afternoon', schedule: '1:00 PM', logo: '/assets/images/logos/real/super_pale.png' },
-        'real_loto': { name: 'Loto Real', provider: 'Real', type: 'Jackpot', color: '#b91c1c', category: 'jackpot', schedule: '1:00 PM', logo: '/assets/images/logos/real/loto.jpg' },
+        'real_loto': { name: 'Loto Real', provider: 'Real', type: 'Jackpot', color: '#b91c1c', category: 'jackpot', drawDays: [2, 5], schedule: '1:00 PM', logo: '/assets/images/logos/real/loto.jpg' },
 
         // --- Nuevas Privadas ---
         // --- La Primera ---
@@ -76,8 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
         'primera_quinielon_noche': { name: 'El Quinielón Noche', provider: 'La Primera', type: 'Sorteo', color: '#16a34a', category: 'daily', time: 'night', balls: 1, schedule: '8:00 PM', logo: '/assets/images/logos/la_primera/El_quinielon_noche.PNG' },
         'primera_noche': { name: 'La Primera Noche', provider: 'La Primera', type: 'Quiniela', color: '#00aaeb', category: 'daily', time: 'night', balls: 3, schedule: '8:00 PM', logo: '/assets/images/logos/la_primera/La_primera_noche.PNG' },
         'primera_loto_5': { name: 'Loto 5', provider: 'La Primera', type: 'Jackpot', color: '#00aaeb', category: 'jackpot', time: 'night', balls: 6, schedule: '8:00 PM', logo: '/assets/images/logos/la_primera/Loto_5.PNG' },
+        
+        // --- La Suerte ---
         'suerte_dia': { name: 'La Suerte MD', provider: 'La Suerte', type: 'Quiniela', color: '#10b981', category: 'daily', time: 'afternoon', schedule: '12:30 PM', logo: '/assets/images/logos/la_suerte/La_suerte_MD.jpg' },
         'suerte_tarde': { name: 'La Suerte 6PM', provider: 'La Suerte', type: 'Quiniela', color: '#10b981', category: 'daily', time: 'afternoon', schedule: '6:00 PM', logo: '/assets/images/logos/la_suerte/La_suerte_6pm.jpg' },
+        
+        // --- LoteDom ---
         'lotedom': { name: 'Quiniela LoteDom', provider: 'LoteDom', type: 'Quiniela', color: '#f43f5e', category: 'daily', time: 'afternoon', schedule: '1:55 PM', logo: '/assets/images/logos/lotedom/Quiniela_lotedom.PNG' },
         'lotedom_quemaito_mayor': { name: 'El Quemaito Mayor', provider: 'LoteDom', type: 'Sorteo', color: '#f43f5e', category: 'daily', time: 'afternoon', balls: 1, schedule: '1:55 PM', logo: '/assets/images/logos/lotedom/El_quemaito_mayor.PNG' },
         'lotedom_super_pale': { name: 'Super Palé', provider: 'LoteDom', type: 'Sorteo', color: '#f43f5e', category: 'daily', time: 'afternoon', balls: 2, schedule: '1:55 PM', logo: '/assets/images/logos/lotedom/Super_pale.PNG' },
@@ -88,9 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'ny_noche': { name: 'New York Noche', provider: 'USA', type: 'Internacional', color: '#6366f1', category: 'daily', time: 'night', schedule: '10:30 PM', logo: '/assets/images/logos/usa/New York .jpg' },
         'fl_dia': { name: 'Florida Día', provider: 'USA', type: 'Internacional', color: '#8b5cf6', category: 'daily', time: 'afternoon', schedule: '1:30 PM', logo: '/assets/images/logos/usa/Florida .PNG' },
         'fl_noche': { name: 'Florida Noche', provider: 'USA', type: 'Internacional', color: '#8b5cf6', category: 'daily', time: 'night', schedule: '9:40 PM', logo: '/assets/images/logos/usa/Florida .PNG' },
-        'mega_millions': { name: 'Mega Millions', provider: 'USA', type: 'Jackpot', color: '#6366f1', category: 'jackpot', time: 'night', balls: 6, schedule: '11:00 PM', logo: '/assets/images/logos/usa/Mega millions .jpg' },
-        'powerball': { name: 'PowerBall', provider: 'USA', type: 'Jackpot', color: '#6366f1', category: 'jackpot', time: 'night', balls: 6, schedule: '10:59 PM', logo: '/assets/images/logos/usa/Power ball .PNG' },
-        'powerball_double_play': { name: 'Powerball Double Play', provider: 'USA', type: 'Jackpot', color: '#6366f1', category: 'jackpot', time: 'night', balls: 6, schedule: '10:59 PM', logo: '/assets/images/logos/usa/Power ball .PNG' },
+        'mega_millions': { name: 'Mega Millions', provider: 'USA', type: 'Jackpot', color: '#6366f1', category: 'jackpot', drawDays: [2, 5], time: 'night', balls: 6, schedule: '11:00 PM', logo: '/assets/images/logos/usa/Mega millions .jpg' },
+        'powerball': { name: 'PowerBall', provider: 'USA', type: 'Jackpot', color: '#6366f1', category: 'jackpot', drawDays: [1, 3, 6], time: 'night', balls: 6, schedule: '10:59 PM', logo: '/assets/images/logos/usa/Power ball .PNG' },
+        'powerball_double_play': { name: 'Powerball Double Play', provider: 'USA', type: 'Jackpot', color: '#6366f1', category: 'jackpot', drawDays: [1, 3, 6], time: 'night', balls: 6, schedule: '10:59 PM', logo: '/assets/images/logos/usa/Power ball .PNG' },
 
         // --- Caribeñas ---
         'anguila_10': { name: 'Anguila (10:00 AM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'morning', schedule: '10:00 AM', logo: '/assets/images/logos/anguila/anguila.jpg' },
@@ -606,11 +613,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+            
+            // Determinar día actual en RD (0=Domingo, 1=Lunes, ..., 6=Sábado)
+            const currentDayFormat = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santo_Domingo', weekday: 'short' }).format(new Date());
+            const daysMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
+            const currentDay = daysMap[currentDayFormat];
+
+            // Check if lottery plays today
+            let isDrawDay = true;
+            if (meta.drawDays && !meta.drawDays.includes(currentDay)) {
+                isDrawDay = false;
+            }
+
             let isDelayed = false;
 
-            // Si la hora de juego ya pasó, pero la fecha del sorteo que tenemos en DB es anterior a HOY,
+            // Si la hora de juego ya pasó, HOY ES DÍA DE SORTEO, pero la fecha del sorteo en DB es anterior a HOY,
             // entonces el sorteo está RETRASADO.
-            if (hasPassedSchedule) {
+            if (hasPassedSchedule && isDrawDay) {
                 if (!lottery.draw_date || lottery.draw_date < todayStr) {
                     isDelayed = true;
                 }
@@ -638,10 +657,10 @@ document.addEventListener('DOMContentLoaded', () => {
                  
             } else if (dtLower.includes('pendiente')) {
                 statusBadgeHtml = `<span class="badge-status badge-pending"><i data-lucide="hourglass" style="width: 13px; height: 13px;"></i> Juega a las ${scheduledTime}</span>`;
-            } else if (hasPassedSchedule) {
+            } else if (hasPassedSchedule && isDrawDay && lottery.draw_date === todayStr) {
                 statusBadgeHtml = `<span class="badge-status text-pulsing-today">Hoy</span>`;
             } else {
-                statusBadgeHtml = `<span class="badge-status badge-yesterday">De Ayer</span>`;
+                statusBadgeHtml = `<span class="badge-status badge-yesterday">Anterior</span>`;
             }
         }
 
