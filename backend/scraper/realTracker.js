@@ -88,15 +88,21 @@ async function scrapeRealConectate(targetTitle, lotteryCode) {
 
         if (numbers && numbers.length > 0) {
             // Validate and clean up extracted numbers
-            // Some lotteries have specific limits, but generally conectate shows exactly what was drawn
             let finalNumbers = numbers;
-            if (targetTitle === 'Pega 4 Real' && finalNumbers.length > 4) finalNumbers = finalNumbers.slice(0, 4);
-            if (targetTitle === 'Loto Pool' && finalNumbers.length > 5) finalNumbers = finalNumbers.slice(0, 5);
-            if (targetTitle === 'Tu Fecha Real' && finalNumbers.length > 1) finalNumbers = finalNumbers.slice(0, 1);
-            if (targetTitle === 'Quiniela Real' && finalNumbers.length > 3) finalNumbers = finalNumbers.slice(0, 3);
-            if (targetTitle === 'Loto Real' || targetTitle === 'Loto') finalNumbers = finalNumbers.slice(0, 6);
+            let expectedLength = 3; // Default
+            if (targetTitle === 'Pega 4 Real') expectedLength = 4;
+            else if (targetTitle === 'Loto Pool') expectedLength = 5;
+            else if (targetTitle === 'Tu Fecha Real') expectedLength = 1;
+            else if (targetTitle === 'Quiniela Real') expectedLength = 3;
+            else if (targetTitle === 'Loto Real' || targetTitle === 'Loto') expectedLength = 6;
 
-            console.log(`[REAL TRACKER] Success! Extracted numbers for ${targetTitle}:`, finalNumbers);
+            if (finalNumbers.length >= expectedLength) {
+                finalNumbers = finalNumbers.slice(0, expectedLength);
+                console.log(`[REAL TRACKER] Success! Extracted numbers for ${targetTitle}:`, finalNumbers);
+            } else {
+                console.log(`[REAL TRACKER] Partial result detected for ${targetTitle} (Expected ${expectedLength}, got ${finalNumbers.length}). Rejecting so cron retries.`);
+                return null;
+            }
 
             const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
             const drawTime = now.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });

@@ -68,20 +68,20 @@ async function scrapeAggregator(targetTitle, lotteryCode, sitePath = '/') {
             return null;
         }, targetTitle, expectedDate);
 
-        // Validate we got actual numbers back
-        if (numbers && numbers.length >= 1) {
-            // Dynamic slice length based on the game type
-            let maxLength = 3; // Default for Quinielas, Pega 3, etc.
-            if (targetTitle.includes('Kino')) maxLength = 20;
-            else if (targetTitle.includes('Loto - Super Loto')) maxLength = 8;
-            else if (targetTitle.includes('MegaLotto')) maxLength = 8;
-            else if (targetTitle.includes('Loto 5') || targetTitle.includes('Mega Millions') || targetTitle.includes('Powerball') || targetTitle.includes('PowerBall')) maxLength = 6;
-            else if (targetTitle.includes('Pool') || targetTitle.includes('Juega + Pega +') || targetTitle.includes('Mega Chances')) maxLength = 5;
-            else if (targetTitle.includes('Palé')) maxLength = 2;
-            else if (targetTitle.includes('Quemaito Mayor')) maxLength = 1;
-            else if (targetTitle.includes('Agarra 4') || targetTitle.includes('Pick 4')) maxLength = 4;
-            else if (targetTitle.includes('Quinielón')) maxLength = 1;
+        // Dynamic slice length based the game type
+        let maxLength = 3; // Default for Quinielas, Pega 3, etc.
+        if (targetTitle.includes('Kino')) maxLength = 20;
+        else if (targetTitle.includes('Loto - Super Loto')) maxLength = 8;
+        else if (targetTitle.includes('MegaLotto')) maxLength = 8;
+        else if (targetTitle.includes('Loto 5') || targetTitle.includes('Mega Millions') || targetTitle.includes('Powerball') || targetTitle.includes('PowerBall')) maxLength = 6;
+        else if (targetTitle.includes('Pool') || targetTitle.includes('Juega + Pega +') || targetTitle.includes('Mega Chances')) maxLength = 5;
+        else if (targetTitle.includes('Palé')) maxLength = 2;
+        else if (targetTitle.includes('Quemaito Mayor')) maxLength = 1;
+        else if (targetTitle.includes('Agarra 4') || targetTitle.includes('Pick 4')) maxLength = 4;
+        else if (targetTitle.includes('Quinielón')) maxLength = 1;
 
+        // Validate we got actual numbers back and they meet the required length for this specific lottery
+        if (numbers && numbers.length >= maxLength) {
             const finalNumbers = numbers.slice(0, maxLength);
             console.log(`[AGGREGATOR] Success! Extracted numbers for ${targetTitle}:`, finalNumbers);
 
