@@ -190,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (found) {
                     jackpot.numbers = found.numbers;
                     jackpot.draw_time = found.draw_time;
+                    jackpot.draw_date = found.draw_date;
                 }
             });
 
@@ -272,12 +273,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (found) {
                             jackpot.numbers = found.numbers;
                             jackpot.draw_time = found.draw_time;
+                            jackpot.draw_date = found.draw_date;
                         }
                     });
 
                     const mergedData = mergeDataWithPlaceholders(newData);
                     allLotteries = mergedData;
                     applyFilters();
+                    
+                    // Force hero container to update if it's currently showing delayed/old jackpot
+                    if (MOCK_JACKPOTS.length > 0) {
+                        updateHeroSection(MOCK_JACKPOTS[currentJackpotIndex]);
+                    }
                     if (currentSubpageProvider && currentSubpageDrawName) {
                         try { renderSubpage(currentSubpageProvider, currentSubpageDrawName); } catch(e){}
                     }
@@ -523,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let isJackpot = meta.category === 'jackpot';
 
-        const ballsHtml = lottery.numbers.map((num, i) => {
+        let ballsHtml = lottery.numbers.map((num, i) => {
             let extraClass = '';
             if (className === 'leidsa_loto') {
                 if (i === 6) extraClass = ' extra'; // Red
@@ -598,7 +605,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (dtLower.includes('pendiente')) {
+            const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+            let isDelayed = false;
+
+            // Si la hora de juego ya pasó, pero la fecha del sorteo que tenemos en DB es anterior a HOY,
+            // entonces el sorteo está RETRASADO.
+            if (hasPassedSchedule) {
+                if (!lottery.draw_date || lottery.draw_date < todayStr) {
+                    isDelayed = true;
+                }
+            }
+
+            if (isDelayed) {
+                 statusBadgeHtml = `<span class="badge-status badge-delayed" style="background: transparent; color: #ef4444; border: none; padding: 0; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">Retrasado</span>`;
+                 
+                 // Sobrescribimos ballsHtml para no mostrar bolas viejas que confundan al usuario
+                 ballsHtml = lottery.numbers.map((num, i) => {
+                     let extraClass = '';
+                     if (className === 'leidsa_loto') {
+                         if (i === 6) extraClass = ' extra'; 
+                         if (i === 7) extraClass = ' super-extra'; 
+                     } else if (className === 'primera_loto_5') {
+                         if (i === 5) extraClass = ' extra super';
+                     } else if (className === 'nacional_juega_pega_mas') {
+                         if (i === 0 || i === 1) extraClass = ' super-extra';
+                         else if (i === 2 || i === 3) extraClass = ' extra';
+                     } else if (!isJackpot && lottery.numbers.length > 3 && i === lottery.numbers.length - 1 && className !== 'real_pega_4' && className !== 'real_loto_pool') {
+                         extraClass = ' extra';
+                     }
+                     return `<div class="ball${extraClass}">--</div>`;
+                 }).join('');
+                 
+            } else if (dtLower.includes('pendiente')) {
                 statusBadgeHtml = `<span class="badge-status badge-pending"><i data-lucide="hourglass" style="width: 13px; height: 13px;"></i> Juega a las ${scheduledTime}</span>`;
             } else if (hasPassedSchedule) {
                 statusBadgeHtml = `<span class="badge-status text-pulsing-today">Hoy</span>`;
@@ -668,7 +706,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Render Dailies
-        if (data.length > 0) {
+        // Filter out jackpots from the daily data
+        const dailyData = data.filter(lottery => getMeta(lottery.lottery_code).category !== 'jackpot');
+
+        if (dailyData.length > 0) {
             dailySection.style.display = 'block';
 
             // Order providers intuitively instead of arbitrarily
@@ -687,7 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const providerGroups = {};
             
-            data.forEach((lottery) => {
+            dailyData.forEach((lottery) => {
                 const meta = getMeta(lottery.lottery_code);
                 const provider = meta.provider || 'Lotería'; // Default fallback
                 if (!providerGroups[provider]) {

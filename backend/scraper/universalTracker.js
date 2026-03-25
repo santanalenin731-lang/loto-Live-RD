@@ -37,18 +37,36 @@ async function scrapeAggregator(targetTitle, lotteryCode, sitePath = '/') {
         // We set timeout to 45s since we blocked assets
         await page.goto(`https://loteriasdominicanas.com${sitePath}`, { waitUntil: 'domcontentloaded', timeout: 45000 });
 
+        const now = new Date();
+        const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santo_Domingo', month: '2-digit', day: '2-digit' }).formatToParts(now);
+        const day = parts.find(p => p.type === 'day').value;
+        const month = parts.find(p => p.type === 'month').value;
+        const expectedDate = `${day}-${month}`;
+
         // Extract numbers based on target title
-        const numbers = await page.evaluate((title) => {
+        const numbers = await page.evaluate((title, expectedDate) => {
             const blocks = document.querySelectorAll('.game-block');
             for (let b of blocks) {
                 const gameTitle = b.querySelector('.game-title')?.innerText.trim();
 
                 if (gameTitle && gameTitle.toLowerCase().includes(title.toLowerCase())) {
+                    // VALIDATOR: Ensure the date of this block matches today
+                    let dateNode = b.querySelector('.session-date');
+                    if (!dateNode) dateNode = document.querySelector('.session-date');
+                    
+                    if (dateNode) {
+                        const dateText = dateNode.innerText.trim();
+                        // If it doesn't contain current DD-MM, it's outdated data!
+                        if (dateText && !dateText.includes(expectedDate)) {
+                            return null; // Reject extraction, causing runWithRetries to fetch again later
+                        }
+                    }
+
                     return Array.from(b.querySelectorAll('.score, .ball')).map(n => n.innerText.trim());
                 }
             }
             return null;
-        }, targetTitle);
+        }, targetTitle, expectedDate);
 
         // Validate we got actual numbers back
         if (numbers && numbers.length >= 1) {
@@ -67,8 +85,8 @@ async function scrapeAggregator(targetTitle, lotteryCode, sitePath = '/') {
             const finalNumbers = numbers.slice(0, maxLength);
             console.log(`[AGGREGATOR] Success! Extracted numbers for ${targetTitle}:`, finalNumbers);
 
-            const drawDate = new Date().toISOString().split('T')[0];
-            const drawTime = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+            const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+            const drawTime = now.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
 
             // Wrap db.saveResult in a promise to return the expected structure to cronManager
             return new Promise((resolve, reject) => {

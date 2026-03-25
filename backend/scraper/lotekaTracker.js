@@ -30,7 +30,13 @@ async function scrapeLoteka() {
         await page.goto('https://loteka.com.do/', { waitUntil: 'domcontentloaded', timeout: 45000 });
         await new Promise(r => setTimeout(r, 4000));
 
-        results = await page.evaluate(() => {
+        const dateObjStrict = new Date();
+        const expectedDateLoteka = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(dateObjStrict);
+
+        results = await page.evaluate((expected) => {
+            const txt = document.body.innerText;
+            if (!txt.includes(expected)) return [];
+
             const blocks = document.querySelectorAll('.bloque-loteria');
             const info = [];
             for (let block of blocks) {
@@ -95,8 +101,8 @@ async function scrapeLoteka() {
         console.log(`[LOTEKA] Successfully scraped ${results.length} games.`);
 
         const dateObj = new Date();
-        const drawDate = dateObj.toISOString().split('T')[0];
-        const drawTime = dateObj.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+        const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(dateObj);
+        const drawTime = dateObj.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
 
         for (const result of results) {
             // Modify DB save to use Promises to ensure completion before returning

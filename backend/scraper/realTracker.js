@@ -35,8 +35,14 @@ async function scrapeRealConectate(targetTitle, lotteryCode) {
         // Timeout is long because we block assets, but conectate might be slow
         await page.goto(`https://www.conectate.com.do/loterias/loto-real`, { waitUntil: 'domcontentloaded', timeout: 45000 });
 
+        const now = new Date();
+        const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santo_Domingo', month: '2-digit', day: '2-digit' }).formatToParts(now);
+        const day = parts.find(p => p.type === 'day').value;
+        const month = parts.find(p => p.type === 'month').value;
+        const expectedDate = `${day}-${month}`;
+
         // Extract numbers based on target title
-        const numbers = await page.evaluate((title) => {
+        const numbers = await page.evaluate((title, expectedDate) => {
             const blocks = document.querySelectorAll('.game-block');
             for (let b of blocks) {
                 // The title in conectate might just be text inside a.game-title
@@ -48,6 +54,19 @@ async function scrapeRealConectate(targetTitle, lotteryCode) {
                 // If it happens to be an image logo, Conectate usually provides alt text or it is sibling text. 
                 // But from our prev checks .game-title exists and has text.
                 if (gameTitle.toLowerCase().includes(title.toLowerCase()) || title.toLowerCase().includes(gameTitle.toLowerCase())) {
+                    
+                    // VALIDATOR: Ensure the date of this block matches today
+                    let dateNode = b.querySelector('.session-date');
+                    if (!dateNode) dateNode = document.querySelector('.session-date');
+                    
+                    if (dateNode) {
+                        const dateText = dateNode.innerText.trim();
+                        // If it doesn't contain current DD-MM, it's outdated data!
+                        if (dateText && !dateText.includes(expectedDate)) {
+                            return null; // Reject extraction, causing runWithRetries to fetch again later
+                        }
+                    }
+
                     // It's a match! Collect numbers inside this block
                     const numNodes = Array.from(b.querySelectorAll('.score, .ball.real'));
                     if (numNodes.length === 0) {
@@ -65,7 +84,7 @@ async function scrapeRealConectate(targetTitle, lotteryCode) {
                 }
             }
             return null;
-        }, targetTitle);
+        }, targetTitle, expectedDate);
 
         if (numbers && numbers.length > 0) {
             // Validate and clean up extracted numbers
@@ -79,8 +98,8 @@ async function scrapeRealConectate(targetTitle, lotteryCode) {
 
             console.log(`[REAL TRACKER] Success! Extracted numbers for ${targetTitle}:`, finalNumbers);
 
-            const drawDate = new Date().toISOString().split('T')[0];
-            const drawTime = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+            const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+            const drawTime = now.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
 
             return new Promise((resolve, reject) => {
                 db.saveResult(lotteryCode, drawDate, drawTime, finalNumbers, (err) => {

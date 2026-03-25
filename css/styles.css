@@ -1179,7 +1179,7 @@ footer {
 }
 @keyframes text-pulse {
     0% { opacity: 0.8; text-shadow: 0 0 5px rgba(74, 222, 128, 0.3); transform: scale(1); }
-    50% { opacity: 1; text-shadow: 0 0 15px rgba(74, 222, 128, 0.8); transform: scale(1.15); }
+    50% { opacity: 1; text-shadow: 0 0 15px rgba(74, 222, 128, 0.8); transform: scale(1.25); }
     100% { opacity: 0.8; text-shadow: 0 0 5px rgba(74, 222, 128, 0.3); transform: scale(1); }
 }
 
