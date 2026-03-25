@@ -79,11 +79,20 @@ async function processQueue() {
             const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Scraper Execution Timeout (50s)')), 50000));
             const result = await Promise.race([scraperFunc(), timeoutPromise]);
 
-            if (result && result.numbers && result.numbers.length > 0) {
-                console.log(`[QUEUE] Success! Got results for ${scraperFunc.name}. Broadcasting to WebSockets...`);
+            // Handle both single result objects and arrays (e.g., Loteka returns an array)
+            const resultsArray = Array.isArray(result) ? result : (result ? [result] : []);
+
+            if (resultsArray.length > 0 && resultsArray[0].numbers && resultsArray[0].numbers.length > 0) {
+                console.log(`[QUEUE] Success! Got ${resultsArray.length} result(s) for ${scraperFunc.name}. Broadcasting to WebSockets...`);
                 const now = new Date();
                 const drawTime = now.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
-                if (broadcastCb) broadcastCb(result.lotteryCode, result.numbers, drawTime);
+                if (broadcastCb) {
+                    resultsArray.forEach(r => {
+                        if (r.lotteryCode && r.numbers) {
+                            broadcastCb(r.lotteryCode, r.numbers, drawTime);
+                        }
+                    });
+                }
             } else {
                  throw new Error("No results obtained or site is not updated yet.");
             }
@@ -109,8 +118,7 @@ async function processQueue() {
     console.log(`[QUEUE] Queue is now empty. Waiting for next cron task.`);
 }
 
-function runWithRetries(scraperFunc, broadcastCb, maxRetries = 150) {
-    maxRetries = 150; // Global enforce: 150 attempts (2.5 horas) para resistir retrasos severos de proveedores
+function runWithRetries(scraperFunc, broadcastCb, maxRetries = 20) {
     scraperQueue.push({ scraperFunc, broadcastCb, maxRetries, attempts: 0 });
     processQueue();
 }

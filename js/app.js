@@ -401,9 +401,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Banner Image Logic
         const bannerMap = {
-            'leidsa_loto': '/assets/images/logos/banner/Loto_mas.PNG',
-            'real_loto': '/assets/images/logos/banner/Loto_real.PNG',
-            'loteka_mega_lotto': '/assets/images/logos/banner/Mega_lotto.PNG'
+            'leidsa_loto': '/assets/images/logos/banner/loto_mas.png',
+            'real_loto': '/assets/images/logos/banner/loto_real.png',
+            'loteka_mega_lotto': '/assets/images/logos/banner/mega_lotto.png'
         };
 
         const heroVisualContainer = document.querySelector('.hero-visual');
@@ -598,17 +598,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (scheduledTime) {
                 const match = scheduledTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
                 if (match) {
-                    let hours = parseInt(match[1]);
-                    const minutes = parseInt(match[2]);
+                    let schedHours = parseInt(match[1]);
+                    const schedMinutes = parseInt(match[2]);
                     const period = match[3].toUpperCase();
-                    if (period === 'PM' && hours !== 12) hours += 12;
-                    if (period === 'AM' && hours === 12) hours = 0;
+                    if (period === 'PM' && schedHours !== 12) schedHours += 12;
+                    if (period === 'AM' && schedHours === 12) schedHours = 0;
                     
-                    const now = new Date();
-                    const scheduleDate = new Date();
-                    scheduleDate.setHours(hours, minutes, 0, 0);
+                    // Get current time in RD timezone (not browser timezone)
+                    const nowRD = new Date();
+                    const rdParts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santo_Domingo', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(nowRD);
+                    const rdHour = parseInt(rdParts.find(p => p.type === 'hour').value);
+                    const rdMinute = parseInt(rdParts.find(p => p.type === 'minute').value);
+                    const rdTotalMinutes = rdHour * 60 + rdMinute;
+                    const schedTotalMinutes = schedHours * 60 + schedMinutes;
                     
-                    hasPassedSchedule = now >= scheduleDate;
+                    hasPassedSchedule = rdTotalMinutes >= schedTotalMinutes;
                 }
             }
 

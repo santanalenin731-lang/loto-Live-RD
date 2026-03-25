@@ -95,6 +95,8 @@ async function scrapeRealConectate(targetTitle, lotteryCode) {
             else if (targetTitle === 'Tu Fecha Real') expectedLength = 1;
             else if (targetTitle === 'Quiniela Real') expectedLength = 3;
             else if (targetTitle === 'Loto Real' || targetTitle === 'Loto') expectedLength = 6;
+            else if (targetTitle === 'Super Palé') expectedLength = 2;
+            else if (targetTitle === 'Nueva Yol Real') expectedLength = 4;
 
             if (finalNumbers.length >= expectedLength) {
                 finalNumbers = finalNumbers.slice(0, expectedLength);

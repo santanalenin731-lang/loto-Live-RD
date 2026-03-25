@@ -81,7 +81,7 @@ app.get('/loterias/:provider/:drawID', (req, res) => {
     const schemaScript = `<script type="application/ld+json">${JSON.stringify(schemaData)}</script>`;
 
     // Inject state to direct JS
-    const initialScript = `<script>window.INITIAL_ROUTE = { provider: "${humanProvider}", draw: "${humanDraw}" };</script>\n${schemaScript}`;
+    const initialScript = `<script>window.INITIAL_ROUTE = ${JSON.stringify({provider: humanProvider, draw: humanDraw})};</script>\n${schemaScript}`;
 
     const seoUrl = `https://loto-live-rd.onrender.com/loterias/${encodeURIComponent(req.params.provider)}/${encodeURIComponent(req.params.drawID)}`;
 
@@ -279,10 +279,12 @@ io.on('connection', (socket) => {
 
 // Function to trigger real-time updates to all connected clients
 function broadcastNewResult(lotteryCode, numbers, drawTime) {
+    const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
     io.emit('new_result', {
         lottery_code: lotteryCode,
         numbers: numbers,
         draw_time: drawTime,
+        draw_date: drawDate,
         timestamp: new Date().toISOString()
     });
 }

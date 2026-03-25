@@ -104,7 +104,23 @@ async function scrapeLoteka() {
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(dateObj);
         const drawTime = dateObj.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
 
+        // Expected ball counts per Loteka game
+        const expectedLengths = {
+            'loteka': 3,
+            'loteka_mega_chances': 5,
+            'loteka_mega_chances_repartidera': 1,
+            'loteka_mega_lotto': 8,
+            'loteka_toca_3': 3
+        };
+
         for (const result of results) {
+            const expected = expectedLengths[result.lotteryCode] || 3;
+            if (result.numbers.length < expected) {
+                console.log(`[LOTEKA] Partial result for ${result.name}: expected ${expected}, got ${result.numbers.length}. Skipping.`);
+                continue;
+            }
+            result.numbers = result.numbers.slice(0, expected);
+
             // Modify DB save to use Promises to ensure completion before returning
             await new Promise((resolve) => {
                 db.saveResult(result.lotteryCode, drawDate, drawTime, result.numbers, (err) => {
@@ -123,10 +139,8 @@ async function scrapeLoteka() {
         console.log('[LOTEKA] Could not find results on page.');
     }
 
-    // Return the specific Loteka Quiniela result to be backwards compatible 
-    // and broadcasted correctly if needed by the cron manager format
-    const quinielaResult = results.find(r => r.lotteryCode === 'loteka');
-    return quinielaResult || null;
+    // Return the full array of results so cronManager can broadcast all of them
+    return results && results.length > 0 ? results : null;
 }
 
 if (require.main === module) {
