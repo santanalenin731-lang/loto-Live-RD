@@ -74,6 +74,7 @@ async function scrapeAggregator(targetTitle, lotteryCode, sitePath = '/') {
         else if (targetTitle.includes('Loto - Super Loto')) maxLength = 8;
         else if (targetTitle.includes('MegaLotto')) maxLength = 8;
         else if (targetTitle.includes('Loto 5') || targetTitle.includes('Mega Millions') || targetTitle.includes('Powerball') || targetTitle.includes('PowerBall')) maxLength = 6;
+        else if (targetTitle.includes('Loto Pool Medio Día') || targetTitle.includes('Loto Pool Noche')) maxLength = 4;
         else if (targetTitle.includes('Pool') || targetTitle.includes('Juega + Pega +') || targetTitle.includes('Mega Chances')) maxLength = 5;
         else if (targetTitle.includes('Palé')) maxLength = 2;
         else if (targetTitle.includes('Quemaito Mayor')) maxLength = 1;

@@ -123,87 +123,104 @@ function runWithRetries(scraperFunc, broadcastCb, maxRetries = 20) {
     processQueue();
 }
 
+function scheduleDraw(time, task) {
+    cron.schedule(time, task, { timezone: 'America/Santo_Domingo' });
+}
+
 function initializeCrons(broadcastCb) {
     /* --- Loterías Clásicas --- */
-    cron.schedule('05 20 * * *', () => {
-        runWithRetries(scrapeLoteka, broadcastCb, 20);
+    scheduleDraw('05 20 * * *', () => {
+        runWithRetries(scrapeLoteka, broadcastCb, 120);
     }); // Loteka 8:05 PM
-    cron.schedule('05 15 * * *', () => runWithRetries(scrapeGanaMas, broadcastCb, 20)); // Gana Más 3:05 PM
-    cron.schedule('05 15 * * *', () => runWithRetries(scrapeJuegaPegaMas, broadcastCb, 20)); // Juega Pega Mas 3:05 PM
-    cron.schedule('05 21 * * *', () => runWithRetries(scrapeNacionalNoche, broadcastCb, 20)); // Nac Noche 9:05 PM
-    cron.schedule('05 21 * * *', () => {
-        runWithRetries(scrapeLeidsa, broadcastCb, 20);
-        runWithRetries(scrapeLeidsaPega3, broadcastCb, 20);
-        runWithRetries(scrapeLeidsaLotoPool, broadcastCb, 20);
-        runWithRetries(scrapeLeidsaSuperKino, broadcastCb, 20);
-        runWithRetries(scrapeLeidsaLoto, broadcastCb, 20);
-        runWithRetries(scrapeLeidsaSuperPale, broadcastCb, 20);
-    }); // Leidsa 9:05 PM
-    cron.schedule('05 13 * * *', () => {
-        runWithRetries(scrapeReal, broadcastCb, 20);
-        runWithRetries(scrapeRealTuFecha, broadcastCb, 20);
-        runWithRetries(scrapeRealPega4, broadcastCb, 20);
-        runWithRetries(scrapeRealNuevaYol, broadcastCb, 20);
-        runWithRetries(scrapeRealLotoPool, broadcastCb, 20);
-        runWithRetries(scrapeRealLoto, broadcastCb, 20);
-        runWithRetries(scrapeRealSuperPale, broadcastCb, 20);
+    scheduleDraw('05 15 * * *', () => runWithRetries(scrapeGanaMas, broadcastCb, 120)); // Gana Más 3:05 PM
+    scheduleDraw('05 15 * * *', () => runWithRetries(scrapeJuegaPegaMas, broadcastCb, 120)); // Juega Pega Mas 3:05 PM
+
+    scheduleDraw('05 21 * * 1-6', () => runWithRetries(scrapeNacionalNoche, broadcastCb, 120)); // Nac Noche 9:05 PM (Lunes-Sábado)
+    scheduleDraw('05 18 * * 0', () => runWithRetries(scrapeNacionalNoche, broadcastCb, 120)); // Nac Noche 6:05 PM (Domingo)
+
+    scheduleDraw('05 21 * * 1-6', () => {
+        runWithRetries(scrapeLeidsa, broadcastCb, 120);
+        runWithRetries(scrapeLeidsaPega3, broadcastCb, 120);
+        runWithRetries(scrapeLeidsaLotoPool, broadcastCb, 120);
+        runWithRetries(scrapeLeidsaSuperKino, broadcastCb, 120);
+        runWithRetries(scrapeLeidsaLoto, broadcastCb, 120);
+        runWithRetries(scrapeLeidsaSuperPale, broadcastCb, 120);
+    }); // Leidsa 9:05 PM (Lunes-Sábado)
+
+    scheduleDraw('05 18 * * 0', () => {
+        runWithRetries(scrapeLeidsa, broadcastCb, 120);
+        runWithRetries(scrapeLeidsaPega3, broadcastCb, 120);
+        runWithRetries(scrapeLeidsaLotoPool, broadcastCb, 120);
+        runWithRetries(scrapeLeidsaSuperKino, broadcastCb, 120);
+        runWithRetries(scrapeLeidsaSuperPale, broadcastCb, 120);
+    }); // Leidsa 6:05 PM (Domingo)
+
+    scheduleDraw('05 13 * * *', () => {
+        runWithRetries(scrapeReal, broadcastCb, 120);
+        runWithRetries(scrapeRealTuFecha, broadcastCb, 120);
+        runWithRetries(scrapeRealPega4, broadcastCb, 120);
+        runWithRetries(scrapeRealNuevaYol, broadcastCb, 120);
+        runWithRetries(scrapeRealLotoPool, broadcastCb, 120);
+        runWithRetries(scrapeRealLoto, broadcastCb, 120);
+        runWithRetries(scrapeRealSuperPale, broadcastCb, 120);
     }); // Real 1:05 PM
 
     /* --- Loterías Privadas Adicionales --- */
-    cron.schedule('05 12 * * *', () => {
-        runWithRetries(scrapePrimeraDia, broadcastCb, 20);
-        runWithRetries(scrapePrimeraQuinielonDia, broadcastCb, 20);
+    scheduleDraw('05 12 * * *', () => {
+        runWithRetries(scrapePrimeraDia, broadcastCb, 120);
+        runWithRetries(scrapePrimeraQuinielonDia, broadcastCb, 120);
     }); // Primera 12:05 PM
-    cron.schedule('05 20 * * *', () => {
-        runWithRetries(scrapePrimeraNoche, broadcastCb, 20);
-        runWithRetries(scrapePrimeraLoto5, broadcastCb, 20);
-        runWithRetries(scrapePrimeraQuinielonNoche, broadcastCb, 20);
+    scheduleDraw('05 20 * * *', () => {
+        runWithRetries(scrapePrimeraNoche, broadcastCb, 120);
+        runWithRetries(scrapePrimeraLoto5, broadcastCb, 120);
+        runWithRetries(scrapePrimeraQuinielonNoche, broadcastCb, 120);
     }); // Primera 8:05 PM
-    cron.schedule('35 12 * * *', () => runWithRetries(scrapeSuerteDia, broadcastCb, 20)); // Suerte 12:35 PM
-    cron.schedule('05 18 * * *', () => runWithRetries(scrapeSuerteTarde, broadcastCb, 20)); // Suerte 6:05 PM
-    cron.schedule('05 14 * * *', () => {
-        runWithRetries(scrapeLotedom, broadcastCb, 20);
-        runWithRetries(scrapeLotedomQuemaito, broadcastCb, 20);
-        runWithRetries(scrapeLotedomSuperPale, broadcastCb, 20);
-        runWithRetries(scrapeLotedomAgarra4, broadcastCb, 20);
+    scheduleDraw('35 12 * * *', () => runWithRetries(scrapeSuerteDia, broadcastCb, 120)); // Suerte 12:35 PM
+    scheduleDraw('05 18 * * *', () => runWithRetries(scrapeSuerteTarde, broadcastCb, 120)); // Suerte 6:05 PM
+    scheduleDraw('05 14 * * *', () => {
+        runWithRetries(scrapeLotedom, broadcastCb, 120);
+        runWithRetries(scrapeLotedomQuemaito, broadcastCb, 120);
+        runWithRetries(scrapeLotedomSuperPale, broadcastCb, 120);
+        runWithRetries(scrapeLotedomAgarra4, broadcastCb, 120);
     }); // LoteDom 2:05 PM
 
     /* --- Loterías Americanas --- */
-    cron.schedule('35 15 * * *', () => runWithRetries(scrapeNYTarde, broadcastCb, 30)); // NY 3:35 PM
-    cron.schedule('35 23 * * *', () => runWithRetries(scrapeNYNoche, broadcastCb, 30)); // NY 11:35 PM
-    cron.schedule('35 13 * * *', () => runWithRetries(scrapeFLDia, broadcastCb, 30)); // Flor 1:35 PM
-    cron.schedule('35 22 * * *', () => runWithRetries(scrapeFLNoche, broadcastCb, 30)); // Flor 10:35 PM
+    scheduleDraw('35 15 * * *', () => runWithRetries(scrapeNYTarde, broadcastCb, 120)); // NY 3:35 PM
+    scheduleDraw('35 23 * * *', () => runWithRetries(scrapeNYNoche, broadcastCb, 120)); // NY 11:35 PM
+    scheduleDraw('35 13 * * *', () => runWithRetries(scrapeFLDia, broadcastCb, 120)); // Flor 1:35 PM
+    scheduleDraw('45 21 * * *', () => runWithRetries(scrapeFLNoche, broadcastCb, 120)); // Flor 9:45 PM
 
-    cron.schedule('15 23 * * *', () => {
-        runWithRetries(scrapeMegaMillions, broadcastCb, 30);
-        runWithRetries(scrapePowerball, broadcastCb, 30);
-        runWithRetries(scrapePowerballDP, broadcastCb, 30);
+    scheduleDraw('15 23 * * *', () => {
+        runWithRetries(scrapeMegaMillions, broadcastCb, 120);
+        runWithRetries(scrapePowerball, broadcastCb, 120);
+        runWithRetries(scrapePowerballDP, broadcastCb, 120);
     }); // USA Jackpots 11:15 PM
-    cron.schedule('05 10 * * *', () => runWithRetries(scrapeAnguila10, broadcastCb, 15)); // Anguila 10:05 AM
-    cron.schedule('05 13 * * *', () => runWithRetries(scrapeAnguila1, broadcastCb, 15)); // Anguila 1:05 PM
-    cron.schedule('05 18 * * *', () => runWithRetries(scrapeAnguila6, broadcastCb, 15)); // Anguila 6:05 PM
-    cron.schedule('05 21 * * *', () => runWithRetries(scrapeAnguila9, broadcastCb, 15)); // Anguila 9:05 PM
     
-    cron.schedule('35 12 * * *', () => {
-        runWithRetries(scrapeKingPick3Dia, broadcastCb, 20);
-        runWithRetries(scrapeKingPick4Dia, broadcastCb, 20);
-        runWithRetries(scrapeKing12, broadcastCb, 20);
-        runWithRetries(scrapeKingPhilipsburgDia, broadcastCb, 20);
-        runWithRetries(scrapeKingLotoPoolDia, broadcastCb, 20);
+    scheduleDraw('05 10 * * *', () => runWithRetries(scrapeAnguila10, broadcastCb, 120)); // Anguila 10:05 AM
+    scheduleDraw('05 13 * * *', () => runWithRetries(scrapeAnguila1, broadcastCb, 120)); // Anguila 1:05 PM
+    scheduleDraw('05 18 * * *', () => runWithRetries(scrapeAnguila6, broadcastCb, 120)); // Anguila 6:05 PM
+    scheduleDraw('05 21 * * *', () => runWithRetries(scrapeAnguila9, broadcastCb, 120)); // Anguila 9:05 PM
+    
+    scheduleDraw('35 12 * * *', () => {
+        runWithRetries(scrapeKingPick3Dia, broadcastCb, 120);
+        runWithRetries(scrapeKingPick4Dia, broadcastCb, 120);
+        runWithRetries(scrapeKing12, broadcastCb, 120);
+        runWithRetries(scrapeKingPhilipsburgDia, broadcastCb, 120);
+        runWithRetries(scrapeKingLotoPoolDia, broadcastCb, 120);
     }); // King Day Draws 12:35 PM
 
-    cron.schedule('35 19 * * *', () => {
-        runWithRetries(scrapeKingPick3Noche, broadcastCb, 20);
-        runWithRetries(scrapeKingPick4Noche, broadcastCb, 20);
-        runWithRetries(scrapeKing7, broadcastCb, 20);
-        runWithRetries(scrapeKingPhilipsburgNoche, broadcastCb, 20);
-        runWithRetries(scrapeKingLotoPoolNoche, broadcastCb, 20);
+    scheduleDraw('35 19 * * *', () => {
+        runWithRetries(scrapeKingPick3Noche, broadcastCb, 120);
+        runWithRetries(scrapeKingPick4Noche, broadcastCb, 120);
+        runWithRetries(scrapeKing7, broadcastCb, 120);
+        runWithRetries(scrapeKingPhilipsburgNoche, broadcastCb, 120);
+        runWithRetries(scrapeKingLotoPoolNoche, broadcastCb, 120);
     }); // King Night Draws 7:35 PM
 
     // Demonstration/Testing cron: runs every 30 minutes in dev just to show it works
     const isDev = process.env.NODE_ENV !== 'production';
     if (isDev) {
-        cron.schedule('*/30 * * * *', () => {
+        scheduleDraw('*/30 * * * *', () => {
             console.log('⏱️ [DEV] Triggering test scrapes for ALL lotteries...');
             runWithRetries(scrapeLoteka, broadcastCb, 1);
             runWithRetries(scrapeGanaMas, broadcastCb, 1);

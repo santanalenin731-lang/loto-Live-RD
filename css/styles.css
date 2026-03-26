@@ -408,6 +408,7 @@ a {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
+    align-items: start;
 }
 
 .lottery-card {
@@ -448,17 +449,29 @@ a {
     transform: scale(1.05);
 }
 
-/* Specific styling for Lotería Nacional: Fully opaque, brightness reduced by 25% */
+/* Specific styling for Lotería Nacional y Leidsa: Fully opaque, brightness reduced by 25% */
 .lottery-card[data-lottery="nacional"]::after,
 .lottery-card[data-lottery="nacional_juega_pega_mas"]::after,
-.lottery-card[data-lottery="nacional_noche"]::after {
+.lottery-card[data-lottery="nacional_noche"]::after,
+.lottery-card[data-lottery="leidsa"]::after,
+.lottery-card[data-lottery="leidsa_pega_3_mas"]::after,
+.lottery-card[data-lottery="leidsa_loto_pool"]::after,
+.lottery-card[data-lottery="leidsa_super_kino_tv"]::after,
+.lottery-card[data-lottery="leidsa_loto"]::after,
+.lottery-card[data-lottery="leidsa_super_pale"]::after {
     opacity: 1 !important;
     filter: brightness(0.75);
     mix-blend-mode: normal;
 }
 .lottery-card[data-lottery="nacional"]:hover::after,
 .lottery-card[data-lottery="nacional_juega_pega_mas"]:hover::after,
-.lottery-card[data-lottery="nacional_noche"]:hover::after {
+.lottery-card[data-lottery="nacional_noche"]:hover::after,
+.lottery-card[data-lottery="leidsa"]:hover::after,
+.lottery-card[data-lottery="leidsa_pega_3_mas"]:hover::after,
+.lottery-card[data-lottery="leidsa_loto_pool"]:hover::after,
+.lottery-card[data-lottery="leidsa_super_kino_tv"]:hover::after,
+.lottery-card[data-lottery="leidsa_loto"]:hover::after,
+.lottery-card[data-lottery="leidsa_super_pale"]:hover::after {
     opacity: 1 !important;
     transform: scale(1.02);
 }
@@ -466,7 +479,13 @@ a {
 /* Make white text readable against bright opaque logos */
 .lottery-card[data-lottery="nacional"]::before,
 .lottery-card[data-lottery="nacional_juega_pega_mas"]::before,
-.lottery-card[data-lottery="nacional_noche"]::before {
+.lottery-card[data-lottery="nacional_noche"]::before,
+.lottery-card[data-lottery="leidsa"]::before,
+.lottery-card[data-lottery="leidsa_pega_3_mas"]::before,
+.lottery-card[data-lottery="leidsa_loto_pool"]::before,
+.lottery-card[data-lottery="leidsa_super_kino_tv"]::before,
+.lottery-card[data-lottery="leidsa_loto"]::before,
+.lottery-card[data-lottery="leidsa_super_pale"]::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -480,9 +499,21 @@ a {
 .lottery-card[data-lottery="nacional"] .card-header *,
 .lottery-card[data-lottery="nacional_juega_pega_mas"] .card-header *,
 .lottery-card[data-lottery="nacional_noche"] .card-header *,
+.lottery-card[data-lottery="leidsa"] .card-header *,
+.lottery-card[data-lottery="leidsa_pega_3_mas"] .card-header *,
+.lottery-card[data-lottery="leidsa_loto_pool"] .card-header *,
+.lottery-card[data-lottery="leidsa_super_kino_tv"] .card-header *,
+.lottery-card[data-lottery="leidsa_loto"] .card-header *,
+.lottery-card[data-lottery="leidsa_super_pale"] .card-header *,
 .lottery-card[data-lottery="nacional"] .card-footer *,
 .lottery-card[data-lottery="nacional_juega_pega_mas"] .card-footer *,
-.lottery-card[data-lottery="nacional_noche"] .card-footer * {
+.lottery-card[data-lottery="nacional_noche"] .card-footer *,
+.lottery-card[data-lottery="leidsa"] .card-footer *,
+.lottery-card[data-lottery="leidsa_pega_3_mas"] .card-footer *,
+.lottery-card[data-lottery="leidsa_loto_pool"] .card-footer *,
+.lottery-card[data-lottery="leidsa_super_kino_tv"] .card-footer *,
+.lottery-card[data-lottery="leidsa_loto"] .card-footer *,
+.lottery-card[data-lottery="leidsa_super_pale"] .card-footer * {
     color: #ffffff !important;
     text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 4px 12px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,1) !important;
 }
@@ -490,7 +521,13 @@ a {
 /* Ensure the 'Hoy' status badge text is uniquely vibrant over the dark gradient if needed */
 .lottery-card[data-lottery="nacional"] .text-pulsing-today,
 .lottery-card[data-lottery="nacional_juega_pega_mas"] .text-pulsing-today,
-.lottery-card[data-lottery="nacional_noche"] .text-pulsing-today {
+.lottery-card[data-lottery="nacional_noche"] .text-pulsing-today,
+.lottery-card[data-lottery="leidsa"] .text-pulsing-today,
+.lottery-card[data-lottery="leidsa_pega_3_mas"] .text-pulsing-today,
+.lottery-card[data-lottery="leidsa_loto_pool"] .text-pulsing-today,
+.lottery-card[data-lottery="leidsa_super_kino_tv"] .text-pulsing-today,
+.lottery-card[data-lottery="leidsa_loto"] .text-pulsing-today,
+.lottery-card[data-lottery="leidsa_super_pale"] .text-pulsing-today {
     color: #00ff3c !important; /* Extremely bright neon green */
     text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 0 12px rgba(0, 255, 60, 0.8) !important;
 }

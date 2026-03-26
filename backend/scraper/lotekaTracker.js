@@ -85,7 +85,7 @@ async function scrapeLoteka() {
                 }
             }
             return info;
-        });
+        }, expectedDateLoteka);
 
     } catch (err) {
         console.error('[LOTEKA] Scraping error:', err.message);
