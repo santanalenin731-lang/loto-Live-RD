@@ -422,9 +422,23 @@ document.addEventListener('DOMContentLoaded', () => {
             heroWrapper.id = 'hero-image-wrapper';
             heroWrapper.className = 'hero-image-wrapper-style';
             
+            // Estilos preventivos (inline) para evitar "imágenes gigantes" si el CSS no carga
+            heroWrapper.style.maxWidth = '500px';
+            heroWrapper.style.margin = '1rem auto 1.5rem auto';
+            heroWrapper.style.borderRadius = '20px';
+            heroWrapper.style.overflow = 'hidden';
+            heroWrapper.style.position = 'relative';
+
             const newImg = document.createElement('img');
             newImg.id = 'hero-banner-image';
-            newImg.setAttribute('onerror', "this.style.display='none'"); // Ocultar si falla carga
+            newImg.style.width = '100%';
+            newImg.style.display = 'block';
+            newImg.style.height = 'auto';
+            newImg.style.maxHeight = '300px'; // Límite estricto de altura
+            newImg.style.objectFit = 'contain'; // No deformar, centrar
+            newImg.style.background = 'rgba(17, 24, 39, 0.4)'; // Fondo oscuro para logos con transparencia
+            
+            newImg.setAttribute('onerror', "this.style.display='none'");
             
             heroVisualContainer.parentNode.insertBefore(heroWrapper, heroVisualContainer);
             heroWrapper.appendChild(newImg);
