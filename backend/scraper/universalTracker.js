@@ -79,6 +79,7 @@ async function scrapeAggregator(targetTitle, lotteryCode, sitePath = '/') {
         else if (targetTitle.includes('Palé')) maxLength = 2;
         else if (targetTitle.includes('Quemaito Mayor')) maxLength = 1;
         else if (targetTitle.includes('Agarra 4') || targetTitle.includes('Pick 4')) maxLength = 4;
+        else if (targetTitle.includes('Billetes')) maxLength = 3;
         else if (targetTitle.includes('Quinielón')) maxLength = 1;
 
         // Validate we got actual numbers back and they meet the required length for this specific lottery

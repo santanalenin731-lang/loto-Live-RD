@@ -8,6 +8,7 @@ const scrapeRealConectate = require('./scraper/realTracker');
 const scrapeGanaMas = () => scrapeAggregator('Gana Más', 'nacional');
 const scrapeJuegaPegaMas = () => scrapeAggregator('Juega + Pega +', 'nacional_juega_pega_mas');
 const scrapeNacionalNoche = () => scrapeAggregator('Lotería Nacional', 'nacional_noche');
+const scrapeNacionalBilletesDomingo = () => scrapeAggregator('Billetes Domingo', 'nacional_billetes_domingo', '/loteria-nacional/billetes-domingo');
 const scrapeLeidsa = () => scrapeAggregator('Quiniela Leidsa', 'leidsa', '/leidsa');
 const scrapeLeidsaPega3 = () => scrapeAggregator('Pega 3 Más', 'leidsa_pega_3_mas', '/leidsa');
 const scrapeLeidsaLotoPool = () => scrapeAggregator('Loto Pool', 'leidsa_loto_pool', '/leidsa');
@@ -132,20 +133,29 @@ function initializeCrons(broadcastCb) {
     scheduleDraw('05 20 * * *', () => {
         runWithRetries(scrapeLoteka, broadcastCb, 120);
     }); // Loteka 8:05 PM
-    scheduleDraw('05 15 * * *', () => runWithRetries(scrapeGanaMas, broadcastCb, 120)); // Gana Más 3:05 PM
-    scheduleDraw('05 15 * * *', () => runWithRetries(scrapeJuegaPegaMas, broadcastCb, 120)); // Juega Pega Mas 3:05 PM
+    scheduleDraw('31 14 * * *', () => {
+        runWithRetries(scrapeGanaMas, broadcastCb, 120);
+        runWithRetries(scrapeJuegaPegaMas, broadcastCb, 120);
+        runWithRetries(scrapeNYTarde, broadcastCb, 120);
+    }); // Nacional Tarde & NY 2:31 PM
 
-    scheduleDraw('05 21 * * 1-6', () => runWithRetries(scrapeNacionalNoche, broadcastCb, 120)); // Nac Noche 9:05 PM (Lunes-Sábado)
-    scheduleDraw('05 18 * * 0', () => runWithRetries(scrapeNacionalNoche, broadcastCb, 120)); // Nac Noche 6:05 PM (Domingo)
+    scheduleDraw('56 20 * * *', () => {
+        runWithRetries(scrapeNacionalNoche, broadcastCb, 120);
+    }); // Nacional Noche 8:56 PM (Lunes-Sábado)
 
-    scheduleDraw('05 21 * * 1-6', () => {
+    scheduleDraw('05 18 * * 0', () => {
+        runWithRetries(scrapeNacionalNoche, broadcastCb, 120);
+        runWithRetries(scrapeNacionalBilletesDomingo, broadcastCb, 120);
+    }); // Nacional Noche & Billetes Domingo 6:05 PM
+
+    scheduleDraw('00 21 * * 1-6', () => {
         runWithRetries(scrapeLeidsa, broadcastCb, 120);
         runWithRetries(scrapeLeidsaPega3, broadcastCb, 120);
         runWithRetries(scrapeLeidsaLotoPool, broadcastCb, 120);
         runWithRetries(scrapeLeidsaSuperKino, broadcastCb, 120);
         runWithRetries(scrapeLeidsaLoto, broadcastCb, 120);
         runWithRetries(scrapeLeidsaSuperPale, broadcastCb, 120);
-    }); // Leidsa 9:05 PM (Lunes-Sábado)
+    }); // Leidsa 9:00 PM (Lunes-Sábado)
 
     scheduleDraw('05 18 * * 0', () => {
         runWithRetries(scrapeLeidsa, broadcastCb, 120);
@@ -185,8 +195,8 @@ function initializeCrons(broadcastCb) {
     }); // LoteDom 2:05 PM
 
     /* --- Loterías Americanas --- */
-    scheduleDraw('35 15 * * *', () => runWithRetries(scrapeNYTarde, broadcastCb, 120)); // NY 3:35 PM
-    scheduleDraw('35 23 * * *', () => runWithRetries(scrapeNYNoche, broadcastCb, 120)); // NY 11:35 PM
+    scheduleDraw('31 14 * * *', () => runWithRetries(scrapeNYTarde, broadcastCb, 120)); // NY 2:31 PM
+    scheduleDraw('31 22 * * *', () => runWithRetries(scrapeNYNoche, broadcastCb, 120)); // NY 10:31 PM
     scheduleDraw('35 13 * * *', () => runWithRetries(scrapeFLDia, broadcastCb, 120)); // Flor 1:35 PM
     scheduleDraw('45 21 * * *', () => runWithRetries(scrapeFLNoche, broadcastCb, 120)); // Flor 9:45 PM
 

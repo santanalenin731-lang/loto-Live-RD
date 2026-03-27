@@ -54,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'loteka_mega_chances_repartidera': { name: 'Mega Chances Repartidera', provider: 'Loteka', type: 'Sorteo', color: '#f97316', category: 'daily', time: 'night', schedule: '7:55 PM', logo: '/assets/images/logos/loteka/mega_chances_repartidera.jpg' },
         'nacional': { name: 'Gana Más', provider: 'Nacional', type: 'Quiniela', color: '#1e3a8a', category: 'daily', time: 'afternoon', schedule: '2:30 PM', logo: '/assets/images/logos/nacional/gana_mas.png?v=new2' },
         'nacional_juega_pega_mas': { name: 'Juega + Pega +', provider: 'Nacional', type: 'Sorteo', color: '#16a34a', category: 'daily', time: 'afternoon', schedule: '2:30 PM', logo: '/assets/images/logos/nacional/juega_pega_mas.png?v=new2' },
-        'nacional_noche': { name: 'Lotería Nacional', provider: 'Nacional', type: 'Quiniela', color: '#1e3a8a', category: 'daily', time: 'night', schedule: '8:55 PM', sundaySchedule: '5:55 PM', logo: '/assets/images/logos/nacional/nacional_noche.png?v=new2' },
+        'nacional_noche': { name: 'Nacional Noche', provider: 'Nacional', type: 'Quiniela', color: '#1e3a8a', category: 'daily', time: 'night', schedule: '8:55 PM', sundaySchedule: '5:55 PM', logo: '/assets/images/logos/nacional/nacional_noche.png?v=new2' },
+        'nacional_billetes_domingo': { name: 'Billetes Domingo', provider: 'Nacional', type: 'Sorteo', color: '#115e59', category: 'daily', time: 'night', balls: 3, drawDays: [0], schedule: '6:00 PM', logo: '/assets/images/logos/nacional/billetes_domingo.png' },
         // --- LEIDSA ---
         'leidsa': { name: 'Quiniela Leidsa', provider: 'LEIDSA', type: 'Quiniela', color: '#eab308', category: 'daily', time: 'night', schedule: '8:55 PM', sundaySchedule: '5:55 PM', logo: '/assets/images/logos/leidsa/quiniela.png?v=new3' },
         'leidsa_pega_3_mas': { name: 'Pega 3 Más', provider: 'LEIDSA', type: 'Sorteo', color: '#eab308', category: 'daily', time: 'night', schedule: '8:55 PM', sundaySchedule: '5:55 PM', logo: '/assets/images/logos/leidsa/pega_3_mas.png?v=new3' },
@@ -104,16 +105,16 @@ document.addEventListener('DOMContentLoaded', () => {
         'anguila_1': { name: 'Anguila (1:00 PM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'afternoon', schedule: '1:00 PM', logo: '/assets/images/logos/anguila/anguila.jpg' },
         'anguila_6': { name: 'Anguila (6:00 PM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'night', schedule: '6:00 PM', logo: '/assets/images/logos/anguila/anguila.jpg' },
         'anguila_9': { name: 'Anguila (9:00 PM)', provider: 'Anguila', type: 'Caribe', color: '#14b8a6', category: 'daily', time: 'night', schedule: '9:00 PM', logo: '/assets/images/logos/anguila/anguila.jpg' },
-        'king_pick_3_dia': { name: 'Pick 3 Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
-        'king_pick_4_dia': { name: 'Pick 4 Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
-        'king_12': { name: 'King Lottery (12:30 PM)', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
-        'king_philipsburg_dia': { name: 'Philipsburg Medio Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
-        'king_loto_pool_dia': { name: 'Loto Pool Medio Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
-        'king_pick_3_noche': { name: 'Pick 3 Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
-        'king_pick_4_noche': { name: 'Pick 4 Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
-        'king_7': { name: 'King Lottery (7:30 PM)', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
-        'king_philipsburg_noche': { name: 'Philipsburg Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
-        'king_loto_pool_noche': { name: 'Loto Pool Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/King lottery .JPG' },
+        'king_pick_3_dia': { name: 'Pick 3 Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
+        'king_pick_4_dia': { name: 'Pick 4 Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
+        'king_12': { name: 'King Lottery (12:30 PM)', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
+        'king_philipsburg_dia': { name: 'Philipsburg Medio Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
+        'king_loto_pool_dia': { name: 'Loto Pool Medio Día', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'morning', schedule: '12:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
+        'king_pick_3_noche': { name: 'Pick 3 Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
+        'king_pick_4_noche': { name: 'Pick 4 Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
+        'king_7': { name: 'King Lottery (7:30 PM)', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
+        'king_philipsburg_noche': { name: 'Philipsburg Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
+        'king_loto_pool_noche': { name: 'Loto Pool Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king/king_lottery.PNG?v=new' },
 
         // --- Dummy Jackpots ---
         'default': { name: 'Sorteo', provider: 'Lotería', type: 'Sorteo', color: '#374151', category: 'daily', time: 'night', schedule: '', logo: '/assets/images/logos/default.png' }
@@ -136,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'fl_dia', 'ny_tarde', 'anguila_1',
 
         // Noche - Dominicana
-        'nacional_noche',
+        'nacional_noche', 'nacional_billetes_domingo',
         'leidsa', 'leidsa_pega_3_mas', 'leidsa_loto_pool', 'leidsa_super_kino_tv', 'leidsa_super_pale',
         'loteka', 'loteka_mega_chances', 'loteka_mega_chances_repartidera', 'loteka_toca_3',
         'primera_quinielon_noche', 'primera_noche', 'primera_loto_5',
@@ -559,10 +560,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             let displayNum = num.toString();
-            // Capitalize first letter logic for string-balls if needed, but CSS text-transform handles it
             if (!isNaN(displayNum) && displayNum.trim() !== '') {
                 displayNum = displayNum.padStart(2, '0');
             }
+
+            if (displayNum.length > 3) extraClass += ' long';
 
             return `<div class="ball${extraClass}">${displayNum}</div>`;
         }).join('');
@@ -644,22 +646,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isDelayed) {
                  statusBadgeHtml = `<span class="badge-status badge-delayed" style="background: transparent; color: #ef4444; border: none; padding: 0; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">Retrasado</span>`;
                  
-                 // Sobrescribimos ballsHtml para no mostrar bolas viejas que confundan al usuario
-                 ballsHtml = lottery.numbers.map((num, i) => {
-                     let extraClass = '';
-                     if (className === 'leidsa_loto') {
-                         if (i === 6) extraClass = ' extra'; 
-                         if (i === 7) extraClass = ' super-extra'; 
-                     } else if (className === 'primera_loto_5') {
-                         if (i === 5) extraClass = ' extra super';
-                     } else if (className === 'nacional_juega_pega_mas') {
-                         if (i === 0 || i === 1) extraClass = ' super-extra';
-                         else if (i === 2 || i === 3) extraClass = ' extra';
-                     } else if (!isJackpot && lottery.numbers.length > 3 && i === lottery.numbers.length - 1 && className !== 'real_pega_4' && className !== 'real_loto_pool') {
-                         extraClass = ' extra';
-                     }
-                     return `<div class="ball${extraClass}">--</div>`;
-                 }).join('');
+                 // No longer overriding ballsHtml to '--' so user can still see last results.
                  
             } else if (dtLower.includes('pendiente')) {
                 statusBadgeHtml = `<span class="badge-status badge-pending"><i data-lucide="hourglass" style="width: 13px; height: 13px;"></i> Juega a las ${scheduledTime}</span>`;
@@ -732,7 +719,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render Dailies
         // Filter out jackpots from the daily data
-        const dailyData = data.filter(lottery => getMeta(lottery.lottery_code).category !== 'jackpot');
+        const dailyData = data.filter(lottery => {
+            const meta = getMeta(lottery.lottery_code);
+            return meta.category !== 'jackpot' && (activeFilter === 'all' || meta.provider === activeFilter);
+        });
 
         if (dailyData.length > 0) {
             dailySection.style.display = 'block';

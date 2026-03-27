@@ -458,7 +458,8 @@ a {
 .lottery-card[data-lottery="leidsa_loto_pool"]::after,
 .lottery-card[data-lottery="leidsa_super_kino_tv"]::after,
 .lottery-card[data-lottery="leidsa_loto"]::after,
-.lottery-card[data-lottery="leidsa_super_pale"]::after {
+.lottery-card[data-lottery="leidsa_super_pale"]::after,
+.lottery-card[data-lottery^="king_"]::after {
     opacity: 1 !important;
     filter: brightness(0.75);
     mix-blend-mode: normal;
@@ -471,7 +472,8 @@ a {
 .lottery-card[data-lottery="leidsa_loto_pool"]:hover::after,
 .lottery-card[data-lottery="leidsa_super_kino_tv"]:hover::after,
 .lottery-card[data-lottery="leidsa_loto"]:hover::after,
-.lottery-card[data-lottery="leidsa_super_pale"]:hover::after {
+.lottery-card[data-lottery="leidsa_super_pale"]:hover::after,
+.lottery-card[data-lottery^="king_"]:hover::after {
     opacity: 1 !important;
     transform: scale(1.02);
 }
@@ -485,7 +487,8 @@ a {
 .lottery-card[data-lottery="leidsa_loto_pool"]::before,
 .lottery-card[data-lottery="leidsa_super_kino_tv"]::before,
 .lottery-card[data-lottery="leidsa_loto"]::before,
-.lottery-card[data-lottery="leidsa_super_pale"]::before {
+.lottery-card[data-lottery="leidsa_super_pale"]::before,
+.lottery-card[data-lottery^="king_"]::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -505,6 +508,7 @@ a {
 .lottery-card[data-lottery="leidsa_super_kino_tv"] .card-header *,
 .lottery-card[data-lottery="leidsa_loto"] .card-header *,
 .lottery-card[data-lottery="leidsa_super_pale"] .card-header *,
+.lottery-card[data-lottery^="king_"] .card-header *,
 .lottery-card[data-lottery="nacional"] .card-footer *,
 .lottery-card[data-lottery="nacional_juega_pega_mas"] .card-footer *,
 .lottery-card[data-lottery="nacional_noche"] .card-footer *,
@@ -513,7 +517,8 @@ a {
 .lottery-card[data-lottery="leidsa_loto_pool"] .card-footer *,
 .lottery-card[data-lottery="leidsa_super_kino_tv"] .card-footer *,
 .lottery-card[data-lottery="leidsa_loto"] .card-footer *,
-.lottery-card[data-lottery="leidsa_super_pale"] .card-footer * {
+.lottery-card[data-lottery="leidsa_super_pale"] .card-footer *,
+.lottery-card[data-lottery^="king_"] .card-footer * {
     color: #ffffff !important;
     text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 4px 12px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,1) !important;
 }
@@ -527,7 +532,8 @@ a {
 .lottery-card[data-lottery="leidsa_loto_pool"] .text-pulsing-today,
 .lottery-card[data-lottery="leidsa_super_kino_tv"] .text-pulsing-today,
 .lottery-card[data-lottery="leidsa_loto"] .text-pulsing-today,
-.lottery-card[data-lottery="leidsa_super_pale"] .text-pulsing-today {
+.lottery-card[data-lottery="leidsa_super_pale"] .text-pulsing-today,
+.lottery-card[data-lottery^="king_"] .text-pulsing-today {
     color: #00ff3c !important; /* Extremely bright neon green */
     text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 0 12px rgba(0, 255, 60, 0.8) !important;
 }
@@ -721,9 +727,7 @@ a {
 .ball.string-ball {
     width: auto;
     padding: 0 1.25rem;
-    /* Wider padding for rectangle look */
     border-radius: 6px;
-    /* Slightly rounded rectangle */
     font-size: 1rem;
     font-weight: 700;
     text-transform: capitalize;
@@ -737,6 +741,14 @@ a {
         inset 0 2px 3px rgba(255, 255, 255, 0.2),
         inset 0 -2px 3px rgba(0, 0, 0, 0.1),
         0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.ball.long {
+    width: auto;
+    min-width: 80px;
+    padding: 0 0.8rem;
+    border-radius: 30px;
+    font-size: 1.1rem;
 }
 
 /* Specific String Ball Colors for Nueva Yol Real */
