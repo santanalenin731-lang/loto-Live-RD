@@ -60,7 +60,7 @@ const LOTTERY_META = {
         'king_pick_4_noche': { name: 'Pick 4 Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king_lottery.png' },
         'king_7': { name: 'King Lottery (7:30 PM)', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king_lottery.png' },
         'king_philipsburg_noche': { name: 'Philipsburg Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king_lottery.png' },
-        'king_loto_pool_noche': { name: 'Loto Pool Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king_lottery.png' }
+        'king_loto_pool_noche': { name: 'Loto Pool Noche', provider: 'King Lottery', type: 'Caribe', color: '#f59e0b', category: 'daily', time: 'night', schedule: '7:30 PM', logo: '/assets/images/logos/king_lottery.png' },
 
         // --- Dummy Jackpots ---
         'default': { name: 'Sorteo', provider: 'Lotería', type: 'Sorteo', color: '#374151', category: 'daily', time: 'night', schedule: '', logo: '/assets/images/logos/default.png' }
