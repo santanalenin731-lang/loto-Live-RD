@@ -312,10 +312,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function startHeroCarousel() {
         if (MOCK_JACKPOTS.length === 0) return;
 
-        // Initial render
-        updateHeroSection(MOCK_JACKPOTS[currentJackpotIndex]);
+        // Limpiar intervalo anterior si existe para evitar duplicados en Render/Producción
+        if (heroCarouselInterval) {
+            clearInterval(heroCarouselInterval);
+            heroCarouselInterval = null;
+        }
 
-        if (heroCarouselInterval) clearInterval(heroCarouselInterval);
+        // Render inicial
+        updateHeroSection(MOCK_JACKPOTS[currentJackpotIndex]);
 
         heroCarouselInterval = setInterval(() => {
             currentJackpotIndex = (currentJackpotIndex + 1) % MOCK_JACKPOTS.length;
@@ -325,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const heroWrapper = document.getElementById('hero-image-wrapper');
             const heroVisualContainer = heroWrapper ? heroWrapper : document.querySelector('.hero-visual');
 
-            // 1. Add Exit Animation
+            // 1. Iniciar Animación de Salida (Exit)
             if (lotteryNameNode) {
                 lotteryNameNode.classList.remove('carousel-enter');
                 lotteryNameNode.classList.add('carousel-exit');
@@ -339,17 +343,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 heroVisualContainer.classList.add('carousel-exit');
             }
 
-            // 2. Wait for exit, then update and animate entry
+            // 2. Esperar a que termine la salida, actualizar datos y animar entrada
             setTimeout(() => {
                 updateHeroSection(MOCK_JACKPOTS[currentJackpotIndex]);
 
+                // Re-capturar nodos después de la actualización atómica
+                const newLotteryNameNode = document.getElementById('hero-lottery-name');
                 const newPrizeNode = document.getElementById('hero-prize');
                 const newHeroWrapper = document.getElementById('hero-image-wrapper');
                 const newHeroVisualContainer = newHeroWrapper ? newHeroWrapper : document.querySelector('.hero-visual');
 
-                if (lotteryNameNode) {
-                    lotteryNameNode.classList.remove('carousel-exit');
-                    lotteryNameNode.classList.add('carousel-enter');
+                if (newLotteryNameNode) {
+                    newLotteryNameNode.classList.remove('carousel-exit');
+                    newLotteryNameNode.classList.add('carousel-enter');
                 }
                 if (newPrizeNode) {
                     newPrizeNode.classList.remove('carousel-exit');
@@ -359,48 +365,48 @@ document.addEventListener('DOMContentLoaded', () => {
                     newHeroVisualContainer.classList.remove('carousel-exit');
                     newHeroVisualContainer.classList.add('carousel-enter');
                 }
-            }, 300); // 300ms matches exit animation duration
-        }, 5000); // 5 seconds per slide
+            }, 300); // 300ms coincide con la duración de la transición CSS
+        }, 5000); // 5 segundos por cada slide
     }
 
     // Function to update the big Hero Banner
     function updateHeroSection(data) {
-        if (!data || !data.numbers || data.numbers.length === 0) return;
+        if (!data || !data.lottery_code) return;
 
         const meta = getMeta(data.lottery_code);
+        if (!meta) return;
 
-        // Update the Lottery Name Label
+        // 1. Limpieza de elementos duplicados/huérfanos antes de actualizar
+        const existingPrize = document.getElementById('hero-prize');
+        if (existingPrize) existingPrize.remove();
+
+        // 2. Actualizar Nombre (h3) y su Color dinámico
         const lotteryNameNode = document.getElementById('hero-lottery-name');
-        if (lotteryNameNode && meta) {
+        if (lotteryNameNode) {
             lotteryNameNode.textContent = meta.name;
+            lotteryNameNode.style.color = meta.color || 'var(--accent-red)'; 
             lotteryNameNode.style.opacity = '1';
+        }
 
-            // Clean up old prize node if it exists to avoid duplications
-            const existingPrize = document.getElementById('hero-prize');
-            if (existingPrize) {
-                existingPrize.remove();
-            }
+        // 3. Inyectar Premio (si aplica) con limpieza y posición estricta
+        if (data.prize) {
+            const prizeNode = document.createElement('div');
+            prizeNode.id = 'hero-prize';
+            prizeNode.className = 'fade-in';
+            prizeNode.style.fontSize = '2.5rem';
+            prizeNode.style.color = '#00ff3c'; // Neon Green para Máximo Impacto
+            prizeNode.style.fontWeight = '900';
+            prizeNode.style.marginTop = '0.5rem';
+            prizeNode.style.textShadow = '0 0 20px rgba(0, 255, 60, 0.4)';
+            prizeNode.textContent = data.prize;
 
-            // Add prize if it's a jackpot
-            if (data.prize) {
-                const prizeNode = document.createElement('div');
-                prizeNode.id = 'hero-prize';
-                prizeNode.style.fontSize = '2.5rem';
-                prizeNode.style.color = 'var(--success-green)';
-                prizeNode.style.fontWeight = '900';
-                prizeNode.style.marginTop = '1rem';
-                prizeNode.style.textShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
-                prizeNode.textContent = data.prize;
-
-                // Insert after the title in the hero section
-                const heroTitleContainer = document.querySelector('.hero h2');
-                if (heroTitleContainer) {
-                    heroTitleContainer.parentNode.insertBefore(prizeNode, heroTitleContainer.nextSibling);
-                }
+            // Insertar SIEMPRE antes del nombre de la lotería para evitar desplazamientos extraños
+            if (lotteryNameNode) {
+                lotteryNameNode.parentNode.insertBefore(prizeNode, lotteryNameNode);
             }
         }
 
-        // Banner Image Logic
+        // 4. Lógica de Banner (Imagen de Fondo) con Prevención de Mismatches
         const bannerMap = {
             'leidsa_loto': '/assets/images/logos/banner/loto_mas.png',
             'real_loto': '/assets/images/logos/banner/loto_real.png',
@@ -410,122 +416,78 @@ document.addEventListener('DOMContentLoaded', () => {
         const heroVisualContainer = document.querySelector('.hero-visual');
         let heroWrapper = document.getElementById('hero-image-wrapper');
         
+        // Crear el wrapper solo si no existe
         if (!heroWrapper && heroVisualContainer) {
-            // Destroy standalone img from earlier versions
-            const oldImg = document.getElementById('hero-banner-image');
-            if (oldImg) oldImg.remove();
-
             heroWrapper = document.createElement('div');
             heroWrapper.id = 'hero-image-wrapper';
-            heroWrapper.style.position = 'relative';
-            heroWrapper.style.width = '100%';
-            heroWrapper.style.maxWidth = '550px';
-            heroWrapper.style.margin = '1.5rem auto 1.5rem auto';
-            heroWrapper.style.borderRadius = '16px';
-            heroWrapper.style.overflow = 'hidden';
-            heroWrapper.style.boxShadow = '0 15px 35px rgba(0,0,0,0.6)';
-            heroWrapper.style.transition = 'opacity 0.3s ease';
-
+            heroWrapper.className = 'hero-image-wrapper-style';
+            
             const newImg = document.createElement('img');
             newImg.id = 'hero-banner-image';
-            newImg.style.width = '100%';
-            newImg.style.display = 'block';
+            newImg.setAttribute('onerror', "this.style.display='none'"); // Ocultar si falla carga
             
             heroVisualContainer.parentNode.insertBefore(heroWrapper, heroVisualContainer);
             heroWrapper.appendChild(newImg);
             heroWrapper.appendChild(heroVisualContainer);
         }
 
-        let bannerImageNode = document.getElementById('hero-banner-image');
+        const bannerImageNode = document.getElementById('hero-banner-image');
         if (heroWrapper && bannerImageNode && heroVisualContainer) {
-            // Make the wrapper clickable and interactive
-            heroWrapper.style.cursor = 'pointer';
+            // Acción al click en el banner entero
             heroWrapper.onclick = (e) => {
-                e.preventDefault();
-                if (meta && window.navigateSpa) {
-                    window.navigateSpa(e, meta.provider, meta.name);
-                }
+                if (window.navigateSpa) window.navigateSpa(e, meta.provider, meta.name);
             };
 
-            if (bannerMap[data.lottery_code]) {
-                bannerImageNode.src = bannerMap[data.lottery_code];
+            const bannerSrc = bannerMap[data.lottery_code];
+            if (bannerSrc) {
+                // Forzar recarga con v=4.0 para evitar caché persistente en Render
+                bannerImageNode.src = bannerSrc + '?v=4.0';
                 bannerImageNode.style.display = 'block';
-                heroWrapper.style.boxShadow = '0 15px 35px rgba(0,0,0,0.6)';
+                heroWrapper.style.display = 'block';
                 
-                // Position visual container absolutely over the bottom of the image
+                // Estilos del contenedor visual (bolas) sobre la imagen
                 heroVisualContainer.style.position = 'absolute';
                 heroVisualContainer.style.bottom = '0';
                 heroVisualContainer.style.left = '0';
                 heroVisualContainer.style.width = '100%';
-                heroVisualContainer.style.margin = '0';
-                heroVisualContainer.style.padding = '1.5rem 0 1rem 0';
+                heroVisualContainer.style.padding = '2rem 0 1.5rem 0';
                 heroVisualContainer.style.background = 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%)';
             } else {
                 bannerImageNode.style.display = 'none';
-                heroWrapper.style.boxShadow = 'none';
-                
-                // Revert visual container to natural flow if no banner
                 heroVisualContainer.style.position = 'relative';
-                heroVisualContainer.style.margin = '2rem 0';
                 heroVisualContainer.style.background = 'transparent';
-                heroVisualContainer.style.padding = '0';
+                heroVisualContainer.style.padding = '1rem 0';
             }
         }
 
-        if (heroVisualContainer) {
-            heroVisualContainer.innerHTML = ''; // Clear existing balls
-
-            // Re-create balls for the jackpot
+        // 5. Inyectar Bolos (Números) - Limpieza exhaustiva
+        if (heroVisualContainer && data.numbers) {
+            heroVisualContainer.innerHTML = '';
+            
             data.numbers.forEach((num, index) => {
                 const ball = document.createElement('div');
-                ball.className = 'hero-ball';
-                ball.textContent = num; // Actual winning number injected
-                ball.style.animationDelay = `${index * 0.2}s`;
-                // If it's the extra/powerball
+                ball.className = 'ball hero-ball';
+                ball.textContent = num.toString().padStart(2, '0');
+                ball.style.animationDelay = `${index * 0.15}s`;
+
+                // Estilizado dinámico según el tipo de Loto
                 if (data.lottery_code === 'leidsa_loto') {
-                    if (index === 6) {
-                        ball.style.borderColor = 'rgba(206, 17, 38, 0.8)'; // Red
-                        ball.style.background = 'radial-gradient(circle at 30% 30%, #5a1118, #111827)';
-                    } else if (index === 7) {
-                        ball.style.borderColor = 'rgba(59, 130, 246, 0.8)'; // Blue
-                        ball.style.background = 'radial-gradient(circle at 30% 30%, #172554, #111827)';
-                    }
-                } else if (data.lottery_code === 'nacional_juega_pega_mas') {
-                    if (index === 0 || index === 1) {
-                        ball.style.borderColor = 'rgba(59, 130, 246, 0.8)'; // Blue
-                        ball.style.background = 'radial-gradient(circle at 30% 30%, #172554, #111827)';
-                    } else if (index === 2 || index === 3) {
-                        ball.style.borderColor = 'rgba(206, 17, 38, 0.8)'; // Red
-                        ball.style.background = 'radial-gradient(circle at 30% 30%, #5a1118, #111827)';
-                    } else {
-                        // index 4 green default
-                    }
-                } else if (data.numbers.length > 5 && index === data.numbers.length - 1) {
-                    ball.style.borderColor = 'rgba(206, 17, 38, 0.8)';
-                    ball.style.background = 'radial-gradient(circle at 30% 30%, #5a1118, #111827)';
-                } else {
-                    if (index === 1) ball.style.borderColor = 'rgba(206, 17, 38, 0.5)';
+                    if (index === 6) ball.classList.add('extra');
+                    if (index === 7) ball.classList.add('super-extra');
+                } else if (data.lottery_code === 'loteka_mega_lotto' && index >= 6) {
+                    ball.classList.add('extra');
                 }
 
-                // Add Parallax listener back
+                heroVisualContainer.appendChild(ball);
+
+                // Agregar interactividad 3D Parallax de inmediato
                 ball.addEventListener('mousemove', (e) => {
                     const rect = ball.getBoundingClientRect();
                     const x = e.clientX - rect.left - rect.width / 2;
                     const y = e.clientY - rect.top - rect.height / 2;
-                    const rotateX = -(y / (rect.height / 2)) * 30;
-                    const rotateY = (x / (rect.width / 2)) * 30;
-                    ball.style.transform = `perspective(200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.15)`;
-                    ball.style.boxShadow = `
-                        inset -5px -5px 12px rgba(0,0,0,0.7), 
-                        inset 2px 2px 6px rgba(255,255,255,0.4),
-                        ${-x / 2}px ${-y / 2}px 15px rgba(0,0,0,0.5)`;
+                    ball.style.transform = `perspective(200px) rotateX(${-(y/(rect.height/2))*25}deg) rotateY(${(x/(rect.width/2))*25}deg) scale(1.1)`;
                 });
-                ball.addEventListener('mouseleave', () => {
-                    ball.style.transform = `perspective(200px) rotateX(0) rotateY(0) scale(1)`;
-                    ball.style.boxShadow = '';
-                });
-
-                heroVisualContainer.appendChild(ball);
+                ball.addEventListener('mouseleave', () => ball.style.transform = 'none');
             });
         }
     }
