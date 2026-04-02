@@ -4,14 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resultados Lotería Nacional Gana Más Hoy 17/03/2026 | Números Ganadores</title>
-    <meta name="description" content="Consulta los resultados oficiales de la Lotería Nacional Gana Más y Juega + Pega + de hoy. Números ganadores actualizados en tiempo real. Verifica tus billetes aquí.">
-    <meta name="keywords" content="lotería nacional, gana más, nacional dominicana, resultados nacional, juega más pega más, numeros ganadores nacional, loteria nacional resultados hoy">
+    <title>Lotería Nacional Dominicana: Resultados Gana Más de Hoy | Loto Live RD</title>
+    <meta name="description" content="Resultados oficiales de la Lotería Nacional Dominicana y Gana Más actualizados EN VIVO. Consulta números ganadores de hoy y sorteos anteriores en Loto Live RD.">
+    <meta name="keywords" content="lotería nacional hoy, gana más, lotería nacional dominicana resultados, números ganadores nacional, resultados gana más hoy, lotería nacional en vivo">
     <meta name="robots" content="index, follow">
-    <meta property="og:title" content="Resultados Lotería Nacional - Gana Más Hoy">
-    <meta property="og:description" content="Consulta los números ganadores de la Lotería Nacional Gana Más. Resultados actualizados en tiempo real.">
+    <meta property="og:title" content="Lotería Nacional Dominicana: Resultados Gana Más de Hoy">
+    <meta property="og:description" content="Verifica los números ganadores oficiales de la Lotería Nacional. Resultados en tiempo real de Gana Más y Juega + Pega +.">
+    <meta property="og:image" content="/img/og-nacional.jpg">
     <meta property="og:type" content="website">
-    <link rel="canonical" href="/loterias/nacional.html">
+    <link rel="canonical" href="https://loto-live-rd.onrender.com/loterias/nacional.html">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,19 +21,123 @@
     <link rel="stylesheet" href="/css/styles.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- Schema.org JSON-LD -->
+    <!-- SEO Master Schema: Advanced JSON-LD -->
     <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Resultados Lotería Nacional República Dominicana",
-        "url": "/loterias/nacional.html",
-        "description": "Resultados oficiales de la Lotería Nacional Gana Más y Juega + Pega +",
-        "publisher": {
+    [
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Inicio",
+                "item": "https://loto-live-rd.onrender.com/"
+            },{
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Lotería Nacional",
+                "item": "https://loto-live-rd.onrender.com/loterias/nacional.html"
+            }]
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [{
+                "@type": "Question",
+                "name": "¿A qué hora se sortea la Lotería Nacional Gana Más?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "El sorteo Gana Más de la Lotería Nacional se realiza todos los días a las 3:00 PM (hora de República Dominicana). Los domingos el horario puede variar según sorteos especiales de billetes."
+                }
+            }, {
+                "@type": "Question",
+                "name": "¿Cuáles son los premios de la Quiniela Nacional?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "La Quiniela Nacional paga RD$ 60 por cada peso apostado en el primer premio, RD$ 8 en el segundo y RD$ 4 en el tercero."
+                }
+            }]
+        },
+        {
+            "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "Resultados Loto Live RD"
+            "name": "Loto Live RD",
+            "url": "https://loto-live-rd.onrender.com/",
+            "logo": "https://loto-live-rd.onrender.com/img/logo.png"
         }
-    }
+    ]
+    </script>
+    <style>
+        /* Modern Glass Share Buttons */
+        .btn-share {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #fff;
+            font-size: 1.1rem;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-share:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .btn-share.whatsapp:hover { background: #25d366; border-color: #25d366; }
+        .btn-share.x-twitter:hover { background: #000; border-color: #333; }
+        .btn-share.facebook:hover { background: #1877f2; border-color: #1877f2; }
+        .btn-share.copy:hover { background: #6366f1; border-color: #6366f1; }
+        
+        .btn-share .tooltip {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #6366f1;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .btn-share.active .tooltip { opacity: 1; }
+    </style>
+    <script>
+        function shareResult(platform, name, code) {
+            const balls = Array.from(document.querySelector(`[data-code="${code}"]`).querySelectorAll('.ball'))
+                            .map(b => b.innerText.trim())
+                            .filter(t => t !== '--');
+            
+            if (balls.length === 0) {
+                alert("Aún no hay resultados para compartir.");
+                return;
+            }
+
+            const shareUrl = "https://loto-live-rd.onrender.com/loterias/nacional";
+            const message = `¡Salieron los números! 🎉 ${name}: [${balls.join(', ')}]. Mira todos los resultados en Loto Live RD: ${shareUrl}`;
+
+            if (platform === 'WhatsApp') {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
+            } else if (platform === 'X') {
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`, '_blank');
+            } else if (platform === 'Facebook') {
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+            }
+        }
+
+        function copyToClipboard(btn) {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                btn.classList.add('active');
+                setTimeout(() => btn.classList.remove('active'), 2000);
+            });
+        }
     </script>
 </head>
 
@@ -42,173 +147,151 @@
             <div class="logo">
                 <a href="/" style="display: flex; align-items: center; gap: 0.5rem; color: inherit;">
                     <i data-lucide="crosshairs" class="icon-accent"></i>
-                    Loterías<span>RD</span>
+                    Loto<span>Live RD</span>
                 </a>
             </div>
             <div class="nav-links">
                 <a href="/">Resultados</a>
                 <a href="/estadisticas/numeros-calientes.html">Estadísticas</a>
-                <a href="/resultados/">Histórico</a>
+                <a href="/acerca-de">Acerca de</a>
             </div>
         </div>
     </nav>
 
     <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
-        <!-- Breadcrumb -->
+        <!-- Breadcrumb Visual -->
         <nav style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
             <a href="/" style="color: var(--accent-purple);">Inicio</a> 
             <span style="margin: 0 0.5rem;">›</span> 
-            <span style="color: var(--text-primary);">Lotería Nacional</span>
+            <span style="color: var(--text-primary);">Lotería Nacional Dominicana</span>
         </nav>
 
-        <!-- Header -->
-        <header class="glass-panel" style="padding: 2rem; margin-bottom: 2rem; border-left: 4px solid #1e3a8a;">
-            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Lotería Nacional</h1>
-            <p style="color: var(--text-muted); font-size: 1.1rem;">Resultados oficiales del Gana Más y Juega + Pega +</p>
-            <p style="color: var(--text-secondary); margin-top: 1rem;">
-                <i data-lucide="clock" style="width: 16px; height: 16px; vertical-align: middle;"></i>
-                Sorteos: 3:00 PM (Gana Más) y 3:00 PM (Juega + Pega +)
-            </p>
+        <!-- Dynamic Provider Header (Blueprint Design) -->
+        <header class="glass-panel" style="padding: 2.5rem; margin-bottom: 2rem; border-left: 5px solid #1e3a8a; position: relative; overflow: hidden;">
+            <div style="position: relative; z-index: 2;">
+                <h1 style="font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-bottom: 1rem;">Lotería Nacional</h1>
+                <p style="color: var(--text-muted); font-size: 1.2rem; max-width: 600px;">Resultados oficiales actualizados de Gana Más, Juega Pega Más y Billetes Nacionales.</p>
+                <div style="display: flex; gap: 1.5rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary);">
+                        <i data-lucide="clock" style="width: 18px; color: #1e3a8a;"></i>
+                        <span>Sorteo: 3:00 PM</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary);">
+                        <i data-lucide="map-pin" style="width: 18px; color: #1e3a8a;"></i>
+                        <span>República Dominicana</span>
+                    </div>
+                </div>
+            </div>
+            <i data-lucide="award" style="position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; opacity: 0.05; transform: rotate(-15deg); color: #1e3a8a;"></i>
         </header>
 
-        <!-- Today's Results -->
-        <section class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
-            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                <i data-lucide="trophy" style="color: var(--secondary-yellow);"></i>
-                Resultados de Hoy - 17/03/2026
-            </h2>
-            
-            <!-- Gana Más -->
-            <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(30, 58, 138, 0.2); border-radius: 12px; border: 1px solid rgba(30, 58, 138, 0.4);">
-                <h3 style="color: #1e3a8a; font-size: 1.3rem; margin-bottom: 1rem;">Gana Más</h3>
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <span class="lottery-ball" style="background: linear-gradient(145deg, #1e3a8a, #1e40af); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">92</span>
-                    <span class="lottery-ball" style="background: linear-gradient(145deg, #1e3a8a, #1e40af); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">50</span>
-                    <span class="lottery-ball" style="background: linear-gradient(145deg, #1e3a8a, #1e40af); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">66</span>
-                </div>
-                <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">Fecha: 16/03/2026</p>
-            </div>
-
-            <!-- Juega + Pega + -->
-            <div style="padding: 1.5rem; background: rgba(22, 163, 74, 0.2); border-radius: 12px; border: 1px solid rgba(22, 163, 74, 0.4);">
-                <h3 style="color: #16a34a; font-size: 1.3rem; margin-bottom: 1rem;">Juega + Pega +</h3>
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <span class="lottery-ball" style="background: linear-gradient(145deg, #16a34a, #15803d); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">21</span>
-                    <span class="lottery-ball" style="background: linear-gradient(145deg, #16a34a, #15803d); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">18</span>
-                    <span class="lottery-ball" style="background: linear-gradient(145deg, #16a34a, #15803d); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">01</span>
-                    <span class="lottery-ball" style="background: linear-gradient(145deg, #16a34a, #15803d); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">04</span>
-                    <span class="lottery-ball" style="background: linear-gradient(145deg, #16a34a, #15803d); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">03</span>
-                </div>
-                <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">Fecha: 17/03/2026</p>
-            </div>
-        </section>
-
-        <!-- Más Loterías -->
-        <section style="margin-bottom: 2rem;">
-            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Otras Loterías</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
-                <a href="/loterias/leidsa.html" class="glass-panel" style="padding: 1rem; display: block; text-align: center;">
-                    <span style="color: #eab308; font-weight: 600;">LEIDSA</span>
-                </a>
-                <a href="/loterias/loteka.html" class="glass-panel" style="padding: 1rem; display: block; text-align: center;">
-                    <span style="color: #f97316; font-weight: 600;">Loteka</span>
-                </a>
-                <a href="/loterias/real.html" class="glass-panel" style="padding: 1rem; display: block; text-align: center;">
-                    <span style="color: #b91c1c; font-weight: 600;">Lotería Real</span>
-                </a>
-                <a href="/loterias/primera.html" class="glass-panel" style="padding: 1rem; display: block; text-align: center;">
-                    <span style="color: #00aaeb; font-weight: 600;">La Primera</span>
-                </a>
-                <a href="/loterias/suerte.html" class="glass-panel" style="padding: 1rem; display: block; text-align: center;">
-                    <span style="color: #10b981; font-weight: 600;">La Suerte</span>
-                </a>
-                <a href="/loterias/lotedom.html" class="glass-panel" style="padding: 1rem; display: block; text-align: center;">
-                    <span style="color: #f43f5e; font-weight: 600;">LoteDom</span>
-                </a>
-            </div>
-        </section>
-
-        <!-- SEO Content -->
-        <article class="glass-panel" style="padding: 2.5rem; margin-top: 3rem;">
-            <h2 style="color: var(--text-primary); font-size: 1.7rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
-                <i data-lucide="book-open" style="color: var(--accent-blue); width: 32px; height: 32px;"></i>
-                Resultados Lotería Nacional Dominicana Hoy y Reglas de Juego
-            </h2>
-            
-            <div style="color: var(--text-secondary); line-height: 1.8; font-size: 1.05rem;">
-                <p class="mb-4">
-                    Al consultar los <strong>Resultados de Loterías República Dominicana</strong>, la institución pionera y oficial es sin duda la <strong>Lotería Nacional</strong>. Con más de 100 años de historia, es la cuna de los sorteos en el país, ofreciendo premios diarios a miles de ciudadanos que confían en su transparencia.
-                </p>
-                <p class="mb-4">
-                    Si te urge verificar los <strong>resultados Lotería Nacional Domicana hoy</strong>, estás en la plataforma más rápida. Nuestro sistema te informa <em>en tiempo real</em> y <em>en vivo</em> los números ganadores, para que no tengas que esperar por periódicos o transmisiones atrasadas.
-                </p>
-
-                <div style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 12px; margin: 2.5rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid var(--accent-blue);">
-                    <h2 style="color: var(--text-primary); font-size: 1.4rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i data-lucide="clock" style="color: var(--accent-blue); width: 24px; height: 24px;"></i>
-                        Horario Oficial del Sorteo de Hoy en Vivo
+        <!-- Live Results Container (Broadcaster Targets) -->
+        <div id="results-target">
+            <section class="glass-panel" style="padding: 2rem; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+                    <h2 style="font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                        <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981;"></span>
+                        Sorteos de Hoy
                     </h2>
-                    <p class="mb-3">Para ver los <strong>números ganadores República Dominicana</strong>, debes conocer los horarios exactos de la Lotería Nacional:</p>
-                    <ul style="list-style-type: none; padding-left: 0; margin-top: 1rem;">
-                        <li style="margin-bottom: 0.75rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                            <i data-lucide="check-circle-2" style="color: var(--success-green); width: 18px; height: 18px; margin-top: 2px;"></i>
-                            <span><strong>Gana Más:</strong> Todos los días a las <strong>3:00 PM</strong> (Los Domingos se sortea a las 6:00 PM).</span>
-                        </li>
-                        <li style="margin-bottom: 0.75rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                            <i data-lucide="check-circle-2" style="color: var(--success-green); width: 18px; height: 18px; margin-top: 2px;"></i>
-                            <span><strong>Juega + Pega +:</strong> Se extrae diariamente junto al Gana Más a las <strong>3:00 PM</strong>.</span>
-                        </li>
-                        <li style="margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                            <i data-lucide="check-circle-2" style="color: var(--success-green); width: 18px; height: 18px; margin-top: 2px;"></i>
-                            <span><strong>Lotería Nacional Noche:</strong> El mayor sorteo de billetes, domingos a las <strong>6:00 PM</strong>.</span>
-                        </li>
+                    <span style="color: var(--text-muted); font-weight: 500;" id="current-date-span">Actualizado hoy</span>
+                </div>
+                
+                <div class="grid-layout" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <!-- Gana Más Card -->
+                    <div class="result-card glass-panel" style="background: rgba(30, 58, 138, 0.1); border: 1px solid rgba(30, 58, 138, 0.2); position: relative; overflow: hidden;">
+                        <div style="padding: 1.5rem;">
+                            <h3 style="font-size: 1.4rem; color: #1e3a8a; margin-bottom: 1.5rem; font-weight: 800;">Gana Más</h3>
+                            <div class="ball-container" style="display: flex; gap: 12px; justify-content: center; margin-bottom: 1.5rem;" data-code="nacional">
+                                <div class="ball">--</div>
+                                <div class="ball">--</div>
+                                <div class="ball">--</div>
+                            </div>
+                            <!-- Social Share Integration -->
+                            <div class="share-box" style="display: flex; justify-content: center; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                                <button onclick="shareResult('WhatsApp', 'Gana Más', 'nacional')" class="btn-share whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+                                <button onclick="shareResult('X', 'Gana Más', 'nacional')" class="btn-share x-twitter" title="Twitter"><i class="fab fa-x-twitter"></i></button>
+                                <button onclick="shareResult('Facebook', 'Gana Más', 'nacional')" class="btn-share facebook" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+                                <button onclick="copyToClipboard(this)" class="btn-share copy" title="Copiar"><i class="fas fa-link"></i> <span class="tooltip">Copiado</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card glass-panel" style="background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.2); position: relative; overflow: hidden;">
+                        <div style="padding: 1.5rem;">
+                            <h3 style="font-size: 1.4rem; color: #16a34a; margin-bottom: 1.5rem; font-weight: 800;">Juega + Pega +</h3>
+                            <div class="ball-container" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;" data-code="nacional_juega_pega_mas">
+                                <div class="ball" style="background: linear-gradient(145deg, #16a34a, #15803d);">--</div>
+                                <div class="ball" style="background: linear-gradient(145deg, #16a34a, #15803d);">--</div>
+                                <div class="ball" style="background: linear-gradient(145deg, #16a34a, #15803d);">--</div>
+                                <div class="ball" style="background: linear-gradient(145deg, #16a34a, #15803d);">--</div>
+                                <div class="ball" style="background: linear-gradient(145deg, #16a34a, #15803d);">--</div>
+                            </div>
+                            <!-- Social Share Integration -->
+                            <div class="share-box" style="display: flex; justify-content: center; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                                <button onclick="shareResult('WhatsApp', 'Juega Pega +', 'nacional_juega_pega_mas')" class="btn-share whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+                                <button onclick="shareResult('X', 'Juega Pega +', 'nacional_juega_pega_mas')" class="btn-share x-twitter" title="Twitter"><i class="fab fa-x-twitter"></i></button>
+                                <button onclick="shareResult('Facebook', 'Juega Pega +', 'nacional_juega_pega_mas')" class="btn-share facebook" title="Facebook"><i class="fab fa-facebook-f"></i></button>
+                                <button onclick="copyToClipboard(this)" class="btn-share copy" title="Copiar"><i class="fas fa-link"></i> <span class="tooltip">Copiado</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- SEO Content Cluster (Pillar Page Strategy) -->
+        <article class="glass-panel" style="padding: 3rem; margin-top: 3rem; border: 1px solid var(--glass-border);">
+            <h2 style="color: var(--text-primary); font-size: 2rem; margin-bottom: 2rem; font-weight: 800; border-bottom: 2px solid var(--accent-purple); padding-bottom: 0.5rem; display: inline-block;">
+                ¿Cómo funciona la Lotería Nacional?
+            </h2>
+            
+            <div style="color: var(--text-secondary); line-height: 2; font-size: 1.1rem; text-align: justify;">
+                <p style="margin-bottom: 1.5rem;">
+                    La <strong>Lotería Nacional Dominicana</strong> es la institución oficial del Estado encargada de regular y brindar transparencia a los sorteos de azar en la República Dominicana. El sorteo más popular es el <strong>Gana Más</strong>, el cual se celebra diariamente y ofrece la oportunidad de ganar mediante la extracción de tres bolos principales.
+                </p>
+                <p style="margin-bottom: 1.5rem;">
+                    En <strong>Loto Live RD</strong>, nuestro objetivo es proporcionarle los resultados de la <strong>Lotería Nacional de hoy en vivo</strong>, eliminando cualquier retraso. Entendemos que para el jugador dominicano, la inmediatez es vital para verificar sus premios en Quiniela, Palé o Tripleta.
+                </p>
+
+                <div style="background: rgba(45, 212, 191, 0.05); border: 1px solid rgba(45, 212, 191, 0.2); padding: 2rem; border-radius: 12px; margin: 2.5rem 0;">
+                    <h3 style="color: var(--text-primary); font-size: 1.4rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i data-lucide="info" style="color: #2dd4bf;"></i>
+                        Datos clave del sorteo Gana Más
+                    </h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Horario:</strong> 3:00 PM (Lunes a Sábado) / 6:00 PM (Domingos según sorteo).</li>
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Ubicación:</strong> Salón de Sorteos de la Lotería Nacional, Santo Domingo.</li>
+                        <li style="margin-bottom: 0.5rem;">✅ <strong>Transmisión:</strong> Certificada por notarios públicos y transmitida a nivel nacional.</li>
                     </ul>
                 </div>
 
-                <h2 style="color: var(--text-primary); font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i data-lucide="target" style="color: var(--success-green); width: 24px; height: 24px;"></i>
-                    ¿Cómo Jugar Quiniela, Palé y Tripleta?
-                </h2>
-                <p class="mb-4">
-                    La mecánica principal para ganar en la Lotería Nacional es a través de sus Tómbolas (Primera, Segunda y Tercera), las cuales dictan los premios directos en Quinielas:
-                </p>
-                <div class="grid-layout mt-4 mb-4" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-                    <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-primary); font-size: 1.1rem; display: block; margin-bottom: 0.5rem;">Primer Premio 🥇</strong>
-                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0;">Multiplica <strong>RD$ 60 pesos</strong> por cada peso apostado. Es el número clave del día.</p>
+                <h3 style="font-size: 1.6rem; color: var(--text-primary); margin-top: 2rem; margin-bottom: 1rem;">Pagos y Premiación</h3>
+                <p>Si has acertado los números de hoy, la estructura de premios es la siguiente:</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                    <div style="text-align: center; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <span style="font-size: 0.9rem; color: var(--text-muted); display: block;">1er Premio</span>
+                        <span style="font-size: 1.5rem; font-weight: 800; color: #fbbf24;">RD$ 60.00</span>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-primary); font-size: 1.1rem; display: block; margin-bottom: 0.5rem;">Segundo Premio 🥈</strong>
-                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0;">Multiplica <strong>RD$ 8 pesos</strong> por cada peso que hayas invertido.</p>
+                    <div style="text-align: center; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <span style="font-size: 0.9rem; color: var(--text-muted); display: block;">2do Premio</span>
+                        <span style="font-size: 1.5rem; font-weight: 800; color: #94a3b8;">RD$ 8.00</span>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-primary); font-size: 1.1rem; display: block; margin-bottom: 0.5rem;">Tercer Premio 🥉</strong>
-                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0;">Devuelve <strong>RD$ 4 pesos</strong> por cada peso jugado.</p>
+                    <div style="text-align: center; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <span style="font-size: 0.9rem; color: var(--text-muted); display: block;">3er Premio</span>
+                        <span style="font-size: 1.5rem; font-weight: 800; color: #b45309;">RD$ 4.00</span>
                     </div>
                 </div>
-
-                <p class="mb-4">
-                    Además de la Quiniela, los dominicanos combinan el <strong>Palé</strong> (dos números) y la <strong>Tripleta</strong> (tres números). El sorteo <em>Juega + Pega +</em> requiere acertar 5 números extras, otorgando premios altísimos acumulables.
-                </p>
-
-                <h2 style="color: var(--text-primary); font-size: 1.4rem; margin-top: 3rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i data-lucide="share-2" style="color: var(--text-primary); width: 24px; height: 24px;"></i>
-                    Sigue Consultando las Loterías
-                </h2>
-                <p class="mb-4">
-                    Aparte de comprobar el Gana Más en la tarde, te recordamos que nuestra web te ofrece cobertura extensa. Revisa también los <a href="/loterias/leidsa.html" style="color: var(--accent-blue); text-decoration: underline;">Resultados Leidsa</a> por la noche o accede a verificar la <a href="/loterias/loteka.html" style="color: var(--primary-orange); text-decoration: underline;">Lotería Loteka Resultados</a>. Nuestro Hub central te enlaza con certeza garantizada. Juega con absoluta responsabilidad, las loterías son juegos de azar y no una garantía de ingresos financieros.
-                </p>
             </div>
         </article>
     </main>
 
-    <footer>
-        <div class="container footer-content">
-            <div class="footer-brand">
-                <h2>Lotería<span>RD</span></h2>
-                <p>Plataforma independiente de resultados de loterías dominicanas.</p>
+    <footer class="glass-panel" style="margin-top: 4rem; padding: 3rem 0; border-radius: 0;">
+        <div class="container text-center">
+            <h2 style="font-weight: 900; margin-bottom: 1rem;">Loto<span>Live RD</span></h2>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">Plataforma independiente líder en resultados de loterías dominicanas. Toda la información es verificada pero sugerimos confirmar en los portales oficiales del Estado.</p>
+            <div style="margin-top: 2rem; font-size: 0.9rem; color: var(--text-secondary);">
+                &copy; 2026 Loto Live RD - Expertos en Loterías de República Dominicana.
             </div>
-            <p class="disclaimer">Los resultados mostrados son de carácter informativo. Consulte las fuentes oficiales para confirmación. Juego exclusivo para mayores de 18 años.</p>
         </div>
     </footer>
 
@@ -217,5 +300,5 @@
         lucide.createIcons();
     </script>
 </body>
-
 </html>
+

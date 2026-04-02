@@ -23,6 +23,12 @@ app.use(cors());
 app.use(express.json());
 app.use(compression());
 
+// --- 1. HEALTH CHECK & KEEP ALIVE (Highest Priority) ---
+app.get('/ping', (req, res) => {
+    console.log(`[KEEP-ALIVE] Ping received at ${new Date().toISOString()}`);
+    res.status(200).send('p'); 
+});
+
 // Set up EJS for dynamic SEO Headers
 app.set('views', path.join(__dirname, '../'));
 app.set('view engine', 'ejs');
@@ -149,10 +155,7 @@ app.use(express.static(path.join(__dirname, '../'), {
     }
 }));
 
-// API Endpoint for Uptime monitoring (cron-job.org)
-app.get('/ping', (req, res) => {
-    res.status(200).send('pong');
-});
+// API Endpoints moved up for optimization
 
 // API Endpoint to get current results
 app.get('/api/results/latest', (req, res) => {

@@ -1,27 +1,31 @@
 const cron = require('node-cron');
 const scrapeLoteka = require('./scraper/lotekaTracker');
 const scrapeAggregator = require('./scraper/universalTracker');
-const scrapeRealConectate = require('./scraper/realTracker');
+const scrapeNacionalOfficial = require('./scraper/nacionalOfficial');
+const scrapeLeidsaOfficial = require('./scraper/leidsaOfficial');
+const scrapeRealOfficial = require('./scraper/realOfficial');
 
-// Wrapper functions for the aggregator
+// --- PRIMARY OFFICIAL SOURCES ---
 
-const scrapeGanaMas = () => scrapeAggregator('Gana Más', 'nacional');
-const scrapeJuegaPegaMas = () => scrapeAggregator('Juega + Pega +', 'nacional_juega_pega_mas');
-const scrapeNacionalNoche = () => scrapeAggregator('Lotería Nacional', 'nacional_noche');
-const scrapeNacionalBilletesDomingo = () => scrapeAggregator('Billetes Domingo', 'nacional_billetes_domingo', '/loteria-nacional/billetes-domingo');
-const scrapeLeidsa = () => scrapeAggregator('Quiniela Leidsa', 'leidsa', '/leidsa');
-const scrapeLeidsaPega3 = () => scrapeAggregator('Pega 3 Más', 'leidsa_pega_3_mas', '/leidsa');
-const scrapeLeidsaLotoPool = () => scrapeAggregator('Loto Pool', 'leidsa_loto_pool', '/leidsa');
-const scrapeLeidsaSuperKino = () => scrapeAggregator('Super Kino TV', 'leidsa_super_kino_tv', '/leidsa');
-const scrapeLeidsaLoto = () => scrapeAggregator('Loto - Super Loto Más', 'leidsa_loto', '/leidsa');
-const scrapeLeidsaSuperPale = () => scrapeAggregator('Super Palé', 'leidsa_super_pale', '/leidsa');
-const scrapeReal = () => scrapeRealConectate('Quiniela Real', 'real');
-const scrapeRealTuFecha = () => scrapeRealConectate('Tu Fecha Real', 'real_tu_fecha');
-const scrapeRealPega4 = () => scrapeRealConectate('Pega 4 Real', 'real_pega_4');
-const scrapeRealNuevaYol = () => scrapeRealConectate('Nueva Yol Real', 'real_nueva_yol');
-const scrapeRealLotoPool = () => scrapeRealConectate('Loto Pool', 'real_loto_pool');
-const scrapeRealLoto = () => scrapeRealConectate('Loto Real', 'real_loto');
-const scrapeRealSuperPale = () => scrapeRealConectate('Super Palé', 'real_super_pale');
+const scrapeGanaMas = () => scrapeNacionalOfficial('Gana Más', 'nacional');
+const scrapeJuegaPegaMas = () => scrapeNacionalOfficial('Juega + Pega +', 'nacional_juega_pega_mas');
+const scrapeNacionalNoche = () => scrapeNacionalOfficial('Lotería Nacional', 'nacional_noche');
+const scrapeNacionalBilletesDomingo = () => scrapeNacionalOfficial('Billetes Domingo', 'nacional_billetes_domingo');
+
+const scrapeLeidsa = () => scrapeLeidsaOfficial('Quiniela Leidsa', 'leidsa');
+const scrapeLeidsaPega3 = () => scrapeLeidsaOfficial('Pega 3 Más', 'leidsa_pega_3_mas');
+const scrapeLeidsaLotoPool = () => scrapeLeidsaOfficial('Loto Pool', 'leidsa_loto_pool');
+const scrapeLeidsaSuperKino = () => scrapeLeidsaOfficial('Super Kino TV', 'leidsa_super_kino_tv');
+const scrapeLeidsaLoto = () => scrapeLeidsaOfficial('Loto - Super Loto Más', 'leidsa_loto');
+const scrapeLeidsaSuperPale = () => scrapeLeidsaOfficial('Super Palé', 'leidsa_super_pale');
+
+const scrapeReal = () => scrapeRealOfficial('Quiniela Real', 'real');
+const scrapeRealTuFecha = () => scrapeRealOfficial('Tu Fecha Real', 'real_tu_fecha');
+const scrapeRealPega4 = () => scrapeRealOfficial('Pega 4 Real', 'real_pega_4');
+const scrapeRealNuevaYol = () => scrapeRealOfficial('Nueva Yol Real', 'real_nueva_yol');
+const scrapeRealLotoPool = () => scrapeRealOfficial('Loto Pool', 'real_loto_pool');
+const scrapeRealLoto = () => scrapeRealOfficial('Loto Real', 'real_loto');
+const scrapeRealSuperPale = () => scrapeRealOfficial('Super Palé', 'real_super_pale');
 
 // Nuevas Loterías (Full Coverage)
 const scrapePrimeraDia = () => scrapeAggregator('La Primera Día', 'primera_dia');
@@ -100,19 +104,20 @@ async function processQueue() {
         } catch (error) {
             console.error(`[QUEUE] Error during ${scraperFunc.name}:`, error.message);
             if (attempts + 1 < maxRetries) {
-                console.log(`[QUEUE] Re-queueing ${scraperFunc.name} for attempt ${attempts + 2} in 60s...`);
+                // REDUCED RETRY INTERVAL TO 20 SECONDS FOR MAXIMUM SPEED
+                console.log(`[QUEUE] Re-queueing ${scraperFunc.name} for attempt ${attempts + 2} in 20s...`);
                 setTimeout(() => {
                     scraperQueue.push({ scraperFunc, broadcastCb, maxRetries, attempts: attempts + 1 });
                     processQueue(); // Ensure queue runs after timeout
-                }, 60000);
+                }, 20000); 
             } else {
                 console.log(`[QUEUE] Max retries reached for ${scraperFunc.name}. Giving up.`);
             }
         }
 
-        // 5 seconds pause between executions to help Garbage Collector free RAM
-        console.log(`[QUEUE] Pausing 5 seconds to free Chromium RAM...`);
-        await new Promise(res => setTimeout(res, 5000));
+        // Reduced pause between executions to keep the queue moving fast
+        console.log(`[QUEUE] Pausing 2 seconds to free Chromium RAM...`);
+        await new Promise(res => setTimeout(res, 2000));
     }
 
     isProcessingQueue = false;
@@ -129,43 +134,52 @@ function scheduleDraw(time, task) {
 }
 
 function initializeCrons(broadcastCb) {
-    /* --- Loterías Clásicas --- */
-    scheduleDraw('05 20 * * *', () => {
+    /* --- Loterías Clásicas (SINCRONIZACIÓN OFICIAL) --- */
+    
+    // Loteka 7:55 PM -> Start 7:54 PM
+    scheduleDraw('54 19 * * *', () => {
         runWithRetries(scrapeLoteka, broadcastCb, 120);
-    }); // Loteka 8:05 PM
-    scheduleDraw('31 14 * * *', () => {
+    }); 
+
+    // Nacional Tarde (Gana Mas) 3:00 PM -> Start 2:59 PM
+    scheduleDraw('59 14 * * *', () => {
         runWithRetries(scrapeGanaMas, broadcastCb, 120);
         runWithRetries(scrapeJuegaPegaMas, broadcastCb, 120);
         runWithRetries(scrapeNYTarde, broadcastCb, 120);
-    }); // Nacional Tarde & NY 2:31 PM
+    }); 
 
-    scheduleDraw('56 20 * * *', () => {
+    // Nacional Noche 8:55 PM -> Start 8:54 PM
+    scheduleDraw('54 20 * * 1-6', () => {
         runWithRetries(scrapeNacionalNoche, broadcastCb, 120);
-    }); // Nacional Noche 8:56 PM (Lunes-Sábado)
+    }); 
 
-    scheduleDraw('05 18 * * 0', () => {
+    // Nacional Noche & Billetes Domingo 6:00 PM -> Start 5:58 PM
+    scheduleDraw('58 17 * * 0', () => {
         runWithRetries(scrapeNacionalNoche, broadcastCb, 120);
         runWithRetries(scrapeNacionalBilletesDomingo, broadcastCb, 120);
-    }); // Nacional Noche & Billetes Domingo 6:05 PM
+    }); 
 
-    scheduleDraw('00 21 * * 1-6', () => {
+    // Leidsa 8:55 PM -> Start 8:54 PM
+    scheduleDraw('54 20 * * 1-6', () => {
         runWithRetries(scrapeLeidsa, broadcastCb, 120);
         runWithRetries(scrapeLeidsaPega3, broadcastCb, 120);
         runWithRetries(scrapeLeidsaLotoPool, broadcastCb, 120);
         runWithRetries(scrapeLeidsaSuperKino, broadcastCb, 120);
         runWithRetries(scrapeLeidsaLoto, broadcastCb, 120);
         runWithRetries(scrapeLeidsaSuperPale, broadcastCb, 120);
-    }); // Leidsa 9:00 PM (Lunes-Sábado)
+    }); 
 
-    scheduleDraw('05 18 * * 0', () => {
+    // Leidsa Domingo 5:55 PM -> Start 5:54 PM
+    scheduleDraw('54 17 * * 0', () => {
         runWithRetries(scrapeLeidsa, broadcastCb, 120);
         runWithRetries(scrapeLeidsaPega3, broadcastCb, 120);
         runWithRetries(scrapeLeidsaLotoPool, broadcastCb, 120);
         runWithRetries(scrapeLeidsaSuperKino, broadcastCb, 120);
         runWithRetries(scrapeLeidsaSuperPale, broadcastCb, 120);
-    }); // Leidsa 6:05 PM (Domingo)
+    }); 
 
-    scheduleDraw('05 13 * * *', () => {
+    // Real 12:55 PM -> Start 12:54 PM
+    scheduleDraw('54 12 * * *', () => {
         runWithRetries(scrapeReal, broadcastCb, 120);
         runWithRetries(scrapeRealTuFecha, broadcastCb, 120);
         runWithRetries(scrapeRealPega4, broadcastCb, 120);
@@ -173,32 +187,41 @@ function initializeCrons(broadcastCb) {
         runWithRetries(scrapeRealLotoPool, broadcastCb, 120);
         runWithRetries(scrapeRealLoto, broadcastCb, 120);
         runWithRetries(scrapeRealSuperPale, broadcastCb, 120);
-    }); // Real 1:05 PM
+    }); 
 
     /* --- Loterías Privadas Adicionales --- */
-    scheduleDraw('05 12 * * *', () => {
+    
+    // La Primera 12:00 PM -> Start 11:59 AM
+    scheduleDraw('59 11 * * *', () => {
         runWithRetries(scrapePrimeraDia, broadcastCb, 120);
         runWithRetries(scrapePrimeraQuinielonDia, broadcastCb, 120);
-    }); // Primera 12:05 PM
-    scheduleDraw('05 20 * * *', () => {
+    }); 
+
+    // La Primera 8:00 PM -> Start 7:59 PM
+    scheduleDraw('59 19 * * *', () => {
         runWithRetries(scrapePrimeraNoche, broadcastCb, 120);
         runWithRetries(scrapePrimeraLoto5, broadcastCb, 120);
         runWithRetries(scrapePrimeraQuinielonNoche, broadcastCb, 120);
-    }); // Primera 8:05 PM
-    scheduleDraw('35 12 * * *', () => runWithRetries(scrapeSuerteDia, broadcastCb, 120)); // Suerte 12:35 PM
-    scheduleDraw('05 18 * * *', () => runWithRetries(scrapeSuerteTarde, broadcastCb, 120)); // Suerte 6:05 PM
-    scheduleDraw('05 14 * * *', () => {
+    }); 
+
+    // Suerte 12:30 PM & 6:00 PM
+    scheduleDraw('29 12 * * *', () => runWithRetries(scrapeSuerteDia, broadcastCb, 120)); 
+    scheduleDraw('59 17 * * *', () => runWithRetries(scrapeSuerteTarde, broadcastCb, 120)); 
+
+    // LoteDom 1:55 PM -> Start 1:54 PM
+    scheduleDraw('54 13 * * *', () => {
         runWithRetries(scrapeLotedom, broadcastCb, 120);
         runWithRetries(scrapeLotedomQuemaito, broadcastCb, 120);
         runWithRetries(scrapeLotedomSuperPale, broadcastCb, 120);
         runWithRetries(scrapeLotedomAgarra4, broadcastCb, 120);
-    }); // LoteDom 2:05 PM
+    }); 
 
     /* --- Loterías Americanas --- */
     scheduleDraw('31 14 * * *', () => runWithRetries(scrapeNYTarde, broadcastCb, 120)); // NY 2:31 PM
     scheduleDraw('31 22 * * *', () => runWithRetries(scrapeNYNoche, broadcastCb, 120)); // NY 10:31 PM
     scheduleDraw('35 13 * * *', () => runWithRetries(scrapeFLDia, broadcastCb, 120)); // Flor 1:35 PM
     scheduleDraw('45 21 * * *', () => runWithRetries(scrapeFLNoche, broadcastCb, 120)); // Flor 9:45 PM
+
 
     scheduleDraw('15 23 * * *', () => {
         runWithRetries(scrapeMegaMillions, broadcastCb, 120);
@@ -252,46 +275,103 @@ function initializeCrons(broadcastCb) {
 }
 
 async function backfillAll(broadcastCb) {
-    console.log('🚀 [BACKFILL] Starting initial backfill to populate empty DB...');
-    const scrapers = [
-        scrapeGanaMas, scrapeNacionalNoche, scrapeJuegaPegaMas,
-        scrapeLoteka,
-        scrapeLeidsa, scrapeLeidsaPega3, scrapeLeidsaLotoPool, scrapeLeidsaSuperKino, scrapeLeidsaLoto, scrapeLeidsaSuperPale,
-        scrapeReal, scrapeRealTuFecha, scrapeRealPega4, scrapeRealNuevaYol, scrapeRealLotoPool, scrapeRealLoto, scrapeRealSuperPale,
-        scrapePrimeraDia, scrapePrimeraNoche, scrapePrimeraLoto5, scrapePrimeraQuinielonDia, scrapePrimeraQuinielonNoche,
-        scrapeSuerteDia, scrapeSuerteTarde, 
-        scrapeLotedom, scrapeLotedomQuemaito, scrapeLotedomSuperPale, scrapeLotedomAgarra4,
-        scrapeNYTarde, scrapeNYNoche, scrapeFLDia, scrapeFLNoche,
-        scrapeMegaMillions, scrapePowerball, scrapePowerballDP,
-        scrapeAnguila10, scrapeAnguila1, scrapeAnguila6, scrapeAnguila9,
-        scrapeKingPick3Dia, scrapeKingPick4Dia, scrapeKing12, scrapeKingPhilipsburgDia, scrapeKingLotoPoolDia,
-        scrapeKingPick3Noche, scrapeKingPick4Noche, scrapeKing7, scrapeKingPhilipsburgNoche, scrapeKingLotoPoolNoche
+    const now = new Date();
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+
+    console.log(`🚀 [BACKFILL] Starting smart backfill for date: ${today}`);
+
+    // Get current results from DB for today
+    const existingDraws = await new Promise((resolve) => {
+        const db_lib = require('./db');
+        db_lib.getResultsByDate(today, (err, rows) => resolve(err ? [] : rows));
+    });
+
+    const existingCodes = existingDraws.map(d => d.lottery_code);
+    console.log(`[BACKFILL] Found ${existingCodes.length} draws already present today.`);
+
+    const allScrapers = [
+        { func: scrapeGanaMas, code: 'nacional' },
+        { func: scrapeNacionalNoche, code: 'nacional_noche' },
+        { func: scrapeJuegaPegaMas, code: 'nacional_juega_pega_mas' },
+        { func: scrapeLoteka, code: 'loteka' }, // Loteka returns array, but the main code is 'loteka'
+        { func: scrapeLeidsa, code: 'leidsa' },
+        { func: scrapeLeidsaPega3, code: 'leidsa_pega_3_mas' },
+        { func: scrapeLeidsaLotoPool, code: 'leidsa_loto_pool' },
+        { func: scrapeLeidsaSuperKino, code: 'leidsa_super_kino_tv' },
+        { func: scrapeLeidsaLoto, code: 'leidsa_loto' },
+        { func: scrapeLeidsaSuperPale, code: 'leidsa_super_pale' },
+        { func: scrapeReal, code: 'real' },
+        { func: scrapeRealTuFecha, code: 'real_tu_fecha' },
+        { func: scrapeRealPega4, code: 'real_pega_4' },
+        { func: scrapeRealNuevaYol, code: 'real_nueva_yol' },
+        { func: scrapeRealLotoPool, code: 'real_loto_pool' },
+        { func: scrapeRealLoto, code: 'real_loto' },
+        { func: scrapeRealSuperPale, code: 'real_super_pale' },
+        { func: scrapePrimeraDia, code: 'primera_dia' },
+        { func: scrapePrimeraNoche, code: 'primera_noche' },
+        { func: scrapePrimeraLoto5, code: 'primera_loto_5' },
+        { func: scrapePrimeraQuinielonDia, code: 'primera_quinielon_dia' },
+        { func: scrapePrimeraQuinielonNoche, code: 'primera_quinielon_noche' },
+        { func: scrapeSuerteDia, code: 'suerte_dia' },
+        { func: scrapeSuerteTarde, code: 'suerte_tarde' },
+        { func: scrapeLotedom, code: 'lotedom' },
+        { func: scrapeLotedomQuemaito, code: 'lotedom_quemaito_mayor' },
+        { func: scrapeLotedomSuperPale, code: 'lotedom_super_pale' },
+        { func: scrapeLotedomAgarra4, code: 'lotedom_agarra_4' },
+        { func: scrapeNYTarde, code: 'ny_tarde' },
+        { func: scrapeNYNoche, code: 'ny_noche' },
+        { func: scrapeFLDia, code: 'fl_dia' },
+        { func: scrapeFLNoche, code: 'fl_noche' },
+        { func: scrapeMegaMillions, code: 'mega_millions' },
+        { func: scrapePowerball, code: 'powerball' },
+        { func: scrapePowerballDP, code: 'powerball_double_play' },
+        { func: scrapeAnguila10, code: 'anguila_10' },
+        { func: scrapeAnguila1, code: 'anguila_1' },
+        { func: scrapeAnguila6, code: 'anguila_6' },
+        { func: scrapeAnguila9, code: 'anguila_9' },
+        { func: scrapeKingPick3Dia, code: 'king_pick_3_dia' },
+        { func: scrapeKingPick4Dia, code: 'king_pick_4_dia' },
+        { func: scrapeKing12, code: 'king_12' },
+        { func: scrapeKingPhilipsburgDia, code: 'king_philipsburg_dia' },
+        { func: scrapeKingLotoPoolDia, code: 'king_loto_pool_dia' },
+        { func: scrapeKingPick3Noche, code: 'king_pick_3_noche' },
+        { func: scrapeKingPick4Noche, code: 'king_pick_4_noche' },
+        { func: scrapeKing7, code: 'king_7' },
+        { func: scrapeKingPhilipsburgNoche, code: 'king_philipsburg_noche' },
+        { func: scrapeKingLotoPoolNoche, code: 'king_loto_pool_noche' }
     ];
 
-    // Procesar en lotes de 1 para NO saturar la memoria RAM del servidor (Render Free Tier tiene solo 512MB RAM)
-    const batchSize = 1;
-    for (let i = 0; i < scrapers.length; i += batchSize) {
-        const batch = scrapers.slice(i, i + batchSize);
-        console.log(`[BACKFILL] Processing batch ${i / batchSize + 1} of ${Math.ceil(scrapers.length / batchSize)}...`);
+    const toScrape = allScrapers.filter(s => !existingCodes.includes(s.code));
+    console.log(`[BACKFILL] Pending scrapers to run: ${toScrape.length}`);
 
-        await Promise.all(batch.map(async (scraper) => {
-            try {
-                console.log(`[BACKFILL] Fetching: ${scraper.name}`);
-                const result = await scraper();
-                if (result && result.numbers && result.numbers.length > 0 && broadcastCb) {
-                    const now = new Date();
-                    const drawTime = now.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
-                    broadcastCb(result.lotteryCode, result.numbers, drawTime);
-                }
-            } catch (err) {
-                console.error(`[BACKFILL] Error fetching ${scraper.name}: ${err.message}`);
+    if (toScrape.length === 0) {
+        console.log('✅ [BACKFILL] All results for today are already present. Skipping backfill.');
+        return;
+    }
+
+    // Process only what's missing in batches of 1 to avoid OOM
+    for (let i = 0; i < toScrape.length; i++) {
+        const item = toScrape[i];
+        try {
+            console.log(`[BACKFILL] Fetching missing: ${item.code}`);
+            const result = await item.func();
+            const resultsArray = Array.isArray(result) ? result : (result ? [result] : []);
+
+            if (resultsArray.length > 0 && broadcastCb) {
+                const drawTime = now.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
+                resultsArray.forEach(r => {
+                    if (r.lotteryCode && r.numbers) {
+                        broadcastCb(r.lotteryCode, r.numbers, drawTime);
+                    }
+                });
             }
-        }));
+        } catch (err) {
+            console.error(`[BACKFILL] Error fetching ${item.code}: ${err.message}`);
+        }
 
-        // Pausa Larga entre lotes para recolección de basura (Garbage Collection) y liberar Chromium
-        if (i + batchSize < scrapers.length) {
-            console.log('[BACKFILL] Pausing 7 seconds before next batch to free memory...');
-            await new Promise(res => setTimeout(res, 7000));
+        // Keep a small pause to avoid saturating CPU
+        if (i < toScrape.length - 1) {
+            await new Promise(res => setTimeout(res, 3000)); // Only 3 seconds if we have a lot to catch up
         }
     }
     console.log('✅ [BACKFILL] Finished initial data population.');
