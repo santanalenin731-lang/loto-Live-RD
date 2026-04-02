@@ -609,21 +609,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 
 
+            // RETRASADO solo si: la hora pasó + es día de sorteo + NO hay números reales (son placeholders '--')
+            const hasRealNumbers = lottery.numbers && lottery.numbers.length > 0 && lottery.numbers[0] !== '--';
+            
             let isDelayed = false;
-
-            // Si la hora de juego ya pasó, HOY ES DÍA DE SORTEO, pero la fecha del sorteo en DB es anterior a HOY,
-            // entonces el sorteo está RETRASADO.
-            if (hasPassedSchedule && isDrawDay) {
-                if (!lottery.draw_date || lottery.draw_date < todayStr) {
-                    isDelayed = true;
-                }
+            if (hasPassedSchedule && isDrawDay && !hasRealNumbers) {
+                // La hora ya pasó, es día de juego y no hay resultados reales → VERDADERO Retraso
+                isDelayed = true;
             }
 
             if (isDelayed) {
-                 statusBadgeHtml = `<span class="badge-status badge-delayed" style="background: transparent; color: #ef4444; border: none; padding: 0; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">Retrasado</span>`;
-                 
-                 // No longer overriding ballsHtml to '--' so user can still see last results.
-                 
+                statusBadgeHtml = `<span class="badge-status badge-delayed" style="background: transparent; color: #ef4444; border: none; padding: 0; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px;">Retrasado</span>`;
+
             } else if (dtLower.includes('pendiente')) {
                 statusBadgeHtml = `<span class="badge-status badge-pending"><i data-lucide="hourglass" style="width: 13px; height: 13px;"></i> Juega a las ${scheduledTime}</span>`;
             } else if (hasPassedSchedule && isDrawDay && lottery.draw_date === todayStr) {

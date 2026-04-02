@@ -7,25 +7,102 @@ const scrapeRealOfficial = require('./scraper/realOfficial');
 
 // --- PRIMARY OFFICIAL SOURCES ---
 
-const scrapeGanaMas = () => scrapeNacionalOfficial('Gana Más', 'nacional');
-const scrapeJuegaPegaMas = () => scrapeNacionalOfficial('Juega + Pega +', 'nacional_juega_pega_mas');
-const scrapeNacionalNoche = () => scrapeNacionalOfficial('Lotería Nacional', 'nacional_noche');
-const scrapeNacionalBilletesDomingo = () => scrapeNacionalOfficial('Billetes Domingo', 'nacional_billetes_domingo');
+// --- HYBRID SCRAPER FUNCTIONS (Official → Fallback to Aggregator) ---
+// If the official source fails, we automatically fall back to the universal aggregator.
 
-const scrapeLeidsa = () => scrapeLeidsaOfficial('Quiniela Leidsa', 'leidsa');
-const scrapeLeidsaPega3 = () => scrapeLeidsaOfficial('Pega 3 Más', 'leidsa_pega_3_mas');
-const scrapeLeidsaLotoPool = () => scrapeLeidsaOfficial('Loto Pool', 'leidsa_loto_pool');
-const scrapeLeidsaSuperKino = () => scrapeLeidsaOfficial('Super Kino TV', 'leidsa_super_kino_tv');
-const scrapeLeidsaLoto = () => scrapeLeidsaOfficial('Loto - Super Loto Más', 'leidsa_loto');
-const scrapeLeidsaSuperPale = () => scrapeLeidsaOfficial('Super Palé', 'leidsa_super_pale');
+const scrapeGanaMas = async () => {
+    const official = await scrapeNacionalOfficial('Gana Más', 'nacional');
+    if (official) return official;
+    console.log('[FALLBACK] Nacional Official failed for Gana Más, using aggregator...');
+    return scrapeAggregator('Gana Más', 'nacional');
+};
+const scrapeJuegaPegaMas = async () => {
+    const official = await scrapeNacionalOfficial('Juega + Pega +', 'nacional_juega_pega_mas');
+    if (official) return official;
+    console.log('[FALLBACK] Nacional Official failed for Juega Pega Mas, using aggregator...');
+    return scrapeAggregator('Juega + Pega +', 'nacional_juega_pega_mas');
+};
+const scrapeNacionalNoche = async () => {
+    const official = await scrapeNacionalOfficial('Lotería Nacional', 'nacional_noche');
+    if (official) return official;
+    console.log('[FALLBACK] Nacional Official failed for Nacional Noche, using aggregator...');
+    return scrapeAggregator('Lotería Nacional', 'nacional_noche');
+};
+const scrapeNacionalBilletesDomingo = async () => {
+    const official = await scrapeNacionalOfficial('Billetes Domingo', 'nacional_billetes_domingo');
+    if (official) return official;
+    console.log('[FALLBACK] Nacional Official failed for Billetes Domingo, using aggregator...');
+    return scrapeAggregator('Billetes Domingo', 'nacional_billetes_domingo');
+};
 
-const scrapeReal = () => scrapeRealOfficial('Quiniela Real', 'real');
-const scrapeRealTuFecha = () => scrapeRealOfficial('Tu Fecha Real', 'real_tu_fecha');
-const scrapeRealPega4 = () => scrapeRealOfficial('Pega 4 Real', 'real_pega_4');
-const scrapeRealNuevaYol = () => scrapeRealOfficial('Nueva Yol Real', 'real_nueva_yol');
-const scrapeRealLotoPool = () => scrapeRealOfficial('Loto Pool', 'real_loto_pool');
-const scrapeRealLoto = () => scrapeRealOfficial('Loto Real', 'real_loto');
-const scrapeRealSuperPale = () => scrapeRealOfficial('Super Palé', 'real_super_pale');
+const scrapeLeidsa = async () => {
+    const official = await scrapeLeidsaOfficial('Quiniela Leidsa', 'leidsa');
+    if (official) return official;
+    console.log('[FALLBACK] Leidsa Official failed, using aggregator...');
+    return scrapeAggregator('Quiniela Leidsa', 'leidsa');
+};
+const scrapeLeidsaPega3 = async () => {
+    const official = await scrapeLeidsaOfficial('Pega 3 Más', 'leidsa_pega_3_mas');
+    if (official) return official;
+    return scrapeAggregator('Pega 3 Más', 'leidsa_pega_3_mas');
+};
+const scrapeLeidsaLotoPool = async () => {
+    const official = await scrapeLeidsaOfficial('Loto Pool', 'leidsa_loto_pool');
+    if (official) return official;
+    return scrapeAggregator('Loto Pool', 'leidsa_loto_pool');
+};
+const scrapeLeidsaSuperKino = async () => {
+    const official = await scrapeLeidsaOfficial('Super Kino TV', 'leidsa_super_kino_tv');
+    if (official) return official;
+    return scrapeAggregator('Super Kino TV', 'leidsa_super_kino_tv');
+};
+const scrapeLeidsaLoto = async () => {
+    const official = await scrapeLeidsaOfficial('Loto - Super Loto Más', 'leidsa_loto');
+    if (official) return official;
+    return scrapeAggregator('Loto - Super Loto Más', 'leidsa_loto');
+};
+const scrapeLeidsaSuperPale = async () => {
+    const official = await scrapeLeidsaOfficial('Super Palé', 'leidsa_super_pale');
+    if (official) return official;
+    return scrapeAggregator('Super Palé', 'leidsa_super_pale');
+};
+
+const scrapeReal = async () => {
+    const official = await scrapeRealOfficial('Quiniela Real', 'real');
+    if (official) return official;
+    console.log('[FALLBACK] Real Official failed, using aggregator...');
+    return scrapeAggregator('Quiniela Real', 'real');
+};
+const scrapeRealTuFecha = async () => {
+    const official = await scrapeRealOfficial('Tu Fecha Real', 'real_tu_fecha');
+    if (official) return official;
+    return scrapeAggregator('Tu Fecha Real', 'real_tu_fecha');
+};
+const scrapeRealPega4 = async () => {
+    const official = await scrapeRealOfficial('Pega 4 Real', 'real_pega_4');
+    if (official) return official;
+    return scrapeAggregator('Pega 4 Real', 'real_pega_4');
+};
+const scrapeRealNuevaYol = async () => {
+    const official = await scrapeRealOfficial('Nueva Yol Real', 'real_nueva_yol');
+    if (official) return official;
+    return scrapeAggregator('Nueva Yol Real', 'real_nueva_yol');
+};
+const scrapeRealLotoPool = async () => {
+    const official = await scrapeRealOfficial('Loto Pool', 'real_loto_pool');
+    if (official) return official;
+    return scrapeAggregator('Loto Pool', 'real_loto_pool');
+};
+const scrapeRealLoto = async () => {
+    const official = await scrapeRealOfficial('Loto Real', 'real_loto');
+    if (official) return official;
+    return scrapeAggregator('Loto Real', 'real_loto');
+};
+const scrapeRealSuperPale = async () => {
+    const official = await scrapeRealOfficial('Super Palé', 'real_super_pale');
+    if (official) return official;
+    return scrapeAggregator('Super Palé', 'real_super_pale');
+};
 
 // Nuevas Loterías (Full Coverage)
 const scrapePrimeraDia = () => scrapeAggregator('La Primera Día', 'primera_dia');
@@ -278,103 +355,125 @@ async function backfillAll(broadcastCb) {
     const now = new Date();
     const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 
-    console.log(`🚀 [BACKFILL] Starting smart backfill for date: ${today}`);
+    // Get current RD time in minutes for schedule comparison
+    const rdParts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santo_Domingo', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(now);
+    const rdHour = parseInt(rdParts.find(p => p.type === 'hour').value);
+    const rdMinute = parseInt(rdParts.find(p => p.type === 'minute').value);
+    const rdTotalMinutes = rdHour * 60 + rdMinute;
+
+    function parseScheduleMinutes(timeStr) {
+        const match = timeStr && timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (!match) return -1;
+        let h = parseInt(match[1]);
+        const m = parseInt(match[2]);
+        const period = match[3].toUpperCase();
+        if (period === 'PM' && h !== 12) h += 12;
+        if (period === 'AM' && h === 12) h = 0;
+        return h * 60 + m;
+    }
+
+    console.log(`\u001b[36m[BACKFILL] Startup refresh: ${today} | RD Time: ${rdHour}:${String(rdMinute).padStart(2,'0')}\u001b[0m`);
 
     // Get current results from DB for today
     const existingDraws = await new Promise((resolve) => {
         const db_lib = require('./db');
         db_lib.getResultsByDate(today, (err, rows) => resolve(err ? [] : rows));
     });
-
     const existingCodes = existingDraws.map(d => d.lottery_code);
-    console.log(`[BACKFILL] Found ${existingCodes.length} draws already present today.`);
+    console.log(`[BACKFILL] Found ${existingCodes.length} draws already in DB for today.`);
 
+    // Full scraper registry with scheduled draw times
     const allScrapers = [
-        { func: scrapeGanaMas, code: 'nacional' },
-        { func: scrapeNacionalNoche, code: 'nacional_noche' },
-        { func: scrapeJuegaPegaMas, code: 'nacional_juega_pega_mas' },
-        { func: scrapeLoteka, code: 'loteka' }, // Loteka returns array, but the main code is 'loteka'
-        { func: scrapeLeidsa, code: 'leidsa' },
-        { func: scrapeLeidsaPega3, code: 'leidsa_pega_3_mas' },
-        { func: scrapeLeidsaLotoPool, code: 'leidsa_loto_pool' },
-        { func: scrapeLeidsaSuperKino, code: 'leidsa_super_kino_tv' },
-        { func: scrapeLeidsaLoto, code: 'leidsa_loto' },
-        { func: scrapeLeidsaSuperPale, code: 'leidsa_super_pale' },
-        { func: scrapeReal, code: 'real' },
-        { func: scrapeRealTuFecha, code: 'real_tu_fecha' },
-        { func: scrapeRealPega4, code: 'real_pega_4' },
-        { func: scrapeRealNuevaYol, code: 'real_nueva_yol' },
-        { func: scrapeRealLotoPool, code: 'real_loto_pool' },
-        { func: scrapeRealLoto, code: 'real_loto' },
-        { func: scrapeRealSuperPale, code: 'real_super_pale' },
-        { func: scrapePrimeraDia, code: 'primera_dia' },
-        { func: scrapePrimeraNoche, code: 'primera_noche' },
-        { func: scrapePrimeraLoto5, code: 'primera_loto_5' },
-        { func: scrapePrimeraQuinielonDia, code: 'primera_quinielon_dia' },
-        { func: scrapePrimeraQuinielonNoche, code: 'primera_quinielon_noche' },
-        { func: scrapeSuerteDia, code: 'suerte_dia' },
-        { func: scrapeSuerteTarde, code: 'suerte_tarde' },
-        { func: scrapeLotedom, code: 'lotedom' },
-        { func: scrapeLotedomQuemaito, code: 'lotedom_quemaito_mayor' },
-        { func: scrapeLotedomSuperPale, code: 'lotedom_super_pale' },
-        { func: scrapeLotedomAgarra4, code: 'lotedom_agarra_4' },
-        { func: scrapeNYTarde, code: 'ny_tarde' },
-        { func: scrapeNYNoche, code: 'ny_noche' },
-        { func: scrapeFLDia, code: 'fl_dia' },
-        { func: scrapeFLNoche, code: 'fl_noche' },
-        { func: scrapeMegaMillions, code: 'mega_millions' },
-        { func: scrapePowerball, code: 'powerball' },
-        { func: scrapePowerballDP, code: 'powerball_double_play' },
-        { func: scrapeAnguila10, code: 'anguila_10' },
-        { func: scrapeAnguila1, code: 'anguila_1' },
-        { func: scrapeAnguila6, code: 'anguila_6' },
-        { func: scrapeAnguila9, code: 'anguila_9' },
-        { func: scrapeKingPick3Dia, code: 'king_pick_3_dia' },
-        { func: scrapeKingPick4Dia, code: 'king_pick_4_dia' },
-        { func: scrapeKing12, code: 'king_12' },
-        { func: scrapeKingPhilipsburgDia, code: 'king_philipsburg_dia' },
-        { func: scrapeKingLotoPoolDia, code: 'king_loto_pool_dia' },
-        { func: scrapeKingPick3Noche, code: 'king_pick_3_noche' },
-        { func: scrapeKingPick4Noche, code: 'king_pick_4_noche' },
-        { func: scrapeKing7, code: 'king_7' },
-        { func: scrapeKingPhilipsburgNoche, code: 'king_philipsburg_noche' },
-        { func: scrapeKingLotoPoolNoche, code: 'king_loto_pool_noche' }
+        { func: scrapeAnguila10,             code: 'anguila_10',               schedule: '10:00 AM' },
+        { func: scrapePrimeraDia,            code: 'primera_dia',              schedule: '11:00 AM' },
+        { func: scrapeSuerteDia,             code: 'suerte_dia',               schedule: '12:30 PM' },
+        { func: scrapeKingPick3Dia,          code: 'king_pick_3_dia',          schedule: '12:30 PM' },
+        { func: scrapeKingPick4Dia,          code: 'king_pick_4_dia',          schedule: '12:30 PM' },
+        { func: scrapeKing12,                code: 'king_12',                  schedule: '12:30 PM' },
+        { func: scrapeKingPhilipsburgDia,    code: 'king_philipsburg_dia',     schedule: '12:30 PM' },
+        { func: scrapeKingLotoPoolDia,       code: 'king_loto_pool_dia',       schedule: '12:30 PM' },
+        { func: scrapeAnguila1,              code: 'anguila_1',                schedule: '1:00 PM'  },
+        { func: scrapeFLDia,                 code: 'fl_dia',                   schedule: '1:30 PM'  },
+        { func: scrapeReal,                  code: 'real',                     schedule: '12:55 PM' },
+        { func: scrapeRealTuFecha,           code: 'real_tu_fecha',            schedule: '12:55 PM' },
+        { func: scrapeRealPega4,             code: 'real_pega_4',              schedule: '12:55 PM' },
+        { func: scrapeRealNuevaYol,          code: 'real_nueva_yol',           schedule: '12:55 PM' },
+        { func: scrapeRealLotoPool,          code: 'real_loto_pool',           schedule: '12:55 PM' },
+        { func: scrapeRealSuperPale,         code: 'real_super_pale',          schedule: '12:55 PM' },
+        { func: scrapeGanaMas,               code: 'nacional',                 schedule: '2:30 PM'  },
+        { func: scrapeJuegaPegaMas,          code: 'nacional_juega_pega_mas',  schedule: '2:30 PM'  },
+        { func: scrapePrimeraQuinielonDia,   code: 'primera_quinielon_dia',    schedule: '3:00 PM'  },
+        { func: scrapeNYTarde,               code: 'ny_tarde',                 schedule: '3:30 PM'  },
+        { func: scrapeLotedom,               code: 'lotedom',                  schedule: '5:30 PM'  },
+        { func: scrapeLotedomQuemaito,       code: 'lotedom_quemaito_mayor',   schedule: '5:30 PM'  },
+        { func: scrapeLotedomSuperPale,      code: 'lotedom_super_pale',       schedule: '5:30 PM'  },
+        { func: scrapeLotedomAgarra4,        code: 'lotedom_agarra_4',         schedule: '5:30 PM'  },
+        { func: scrapeAnguila6,              code: 'anguila_6',                schedule: '6:00 PM'  },
+        { func: scrapeSuerteTarde,           code: 'suerte_tarde',             schedule: '6:00 PM'  },
+        { func: scrapeNacionalBilletesDomingo, code: 'nacional_billetes_domingo', schedule: '6:00 PM' },
+        { func: scrapeKingPick3Noche,        code: 'king_pick_3_noche',        schedule: '7:30 PM'  },
+        { func: scrapeKingPick4Noche,        code: 'king_pick_4_noche',        schedule: '7:30 PM'  },
+        { func: scrapeKing7,                 code: 'king_7',                   schedule: '7:30 PM'  },
+        { func: scrapeKingPhilipsburgNoche,  code: 'king_philipsburg_noche',   schedule: '7:30 PM'  },
+        { func: scrapeKingLotoPoolNoche,     code: 'king_loto_pool_noche',     schedule: '7:30 PM'  },
+        { func: scrapeLoteka,                code: 'loteka',                   schedule: '7:55 PM'  },
+        { func: scrapePrimeraNoche,          code: 'primera_noche',            schedule: '8:00 PM'  },
+        { func: scrapePrimeraQuinielonNoche, code: 'primera_quinielon_noche',  schedule: '8:00 PM'  },
+        { func: scrapePrimeraLoto5,          code: 'primera_loto_5',           schedule: '8:00 PM'  },
+        { func: scrapeLeidsa,                code: 'leidsa',                   schedule: '8:55 PM'  },
+        { func: scrapeLeidsaPega3,           code: 'leidsa_pega_3_mas',        schedule: '8:55 PM'  },
+        { func: scrapeLeidsaLotoPool,        code: 'leidsa_loto_pool',         schedule: '8:55 PM'  },
+        { func: scrapeLeidsaSuperKino,       code: 'leidsa_super_kino_tv',     schedule: '8:55 PM'  },
+        { func: scrapeLeidsaLoto,            code: 'leidsa_loto',              schedule: '8:55 PM'  },
+        { func: scrapeLeidsaSuperPale,       code: 'leidsa_super_pale',        schedule: '8:55 PM'  },
+        { func: scrapeNacionalNoche,         code: 'nacional_noche',           schedule: '8:55 PM'  },
+        { func: scrapeRealLoto,              code: 'real_loto',                schedule: '8:55 PM'  },
+        { func: scrapeAnguila9,              code: 'anguila_9',                schedule: '9:00 PM'  },
+        { func: scrapeFLNoche,               code: 'fl_noche',                 schedule: '9:45 PM'  },
+        { func: scrapePowerball,             code: 'powerball',                schedule: '10:59 PM' },
+        { func: scrapePowerballDP,           code: 'powerball_double_play',    schedule: '10:59 PM' },
+        { func: scrapeNYNoche,               code: 'ny_noche',                 schedule: '10:30 PM' },
+        { func: scrapeMegaMillions,          code: 'mega_millions',            schedule: '11:00 PM' },
     ];
 
-    const toScrape = allScrapers.filter(s => !existingCodes.includes(s.code));
-    console.log(`[BACKFILL] Pending scrapers to run: ${toScrape.length}`);
+    // KEY BEHAVIOR: Re-scrape every lottery whose draw time has already passed today.
+    // Every server restart (e.g. triggered by saving code with node --watch) will
+    // automatically refresh all results that should be available at this hour.
+    const toScrape = allScrapers.filter(s => {
+        const schedMins = parseScheduleMinutes(s.schedule);
+        return schedMins >= 0 && rdTotalMinutes >= schedMins;
+    });
+
+    console.log(`[BACKFILL] Draw times passed: ${toScrape.length} lotteries to refresh.`);
 
     if (toScrape.length === 0) {
-        console.log('✅ [BACKFILL] All results for today are already present. Skipping backfill.');
+        console.log('✅ [BACKFILL] No draws have occurred yet today. Crons will handle them.');
         return;
     }
 
-    // Process only what's missing in batches of 1 to avoid OOM
     for (let i = 0; i < toScrape.length; i++) {
         const item = toScrape[i];
         try {
-            console.log(`[BACKFILL] Fetching missing: ${item.code}`);
+            console.log(`[BACKFILL] [${i+1}/${toScrape.length}] Refreshing: ${item.code}`);
             const result = await item.func();
             const resultsArray = Array.isArray(result) ? result : (result ? [result] : []);
 
             if (resultsArray.length > 0 && broadcastCb) {
                 const drawTime = now.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
                 resultsArray.forEach(r => {
-                    if (r.lotteryCode && r.numbers) {
-                        broadcastCb(r.lotteryCode, r.numbers, drawTime);
-                    }
+                    if (r.lotteryCode && r.numbers) broadcastCb(r.lotteryCode, r.numbers, drawTime);
                 });
             }
         } catch (err) {
-            console.error(`[BACKFILL] Error fetching ${item.code}: ${err.message}`);
+            console.error(`[BACKFILL] Error on ${item.code}: ${err.message}`);
         }
 
-        // Keep a small pause to avoid saturating CPU
+        // 2-second pause to avoid OOM on Render free tier
         if (i < toScrape.length - 1) {
-            await new Promise(res => setTimeout(res, 3000)); // Only 3 seconds if we have a lot to catch up
+            await new Promise(res => setTimeout(res, 2000));
         }
     }
-    console.log('✅ [BACKFILL] Finished initial data population.');
+    console.log('\u2705 [BACKFILL] Startup refresh complete. All passed draws updated.');
 }
 
 module.exports = { initializeCrons, backfillAll };
