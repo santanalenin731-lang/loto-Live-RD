@@ -167,6 +167,21 @@ app.get('/api/results/latest', (req, res) => {
     });
 });
 
+
+// API: Force immediate scrape of all lotteries that have passed their schedule.
+// Fixes stale data on Render without needing a server restart.
+// Usage: GET https://loto-live-rd.onrender.com/api/force-scrape
+app.get('/api/force-scrape', async (req, res) => {
+    console.log('[FORCE-SCRAPE] Manual trigger received. Starting full refresh...');
+    res.json({ status: 'started', message: 'Backfill iniciado. Recarga la pagina en 2 minutos.' });
+    try {
+        await backfillAll(broadcastNewResult);
+        console.log('[FORCE-SCRAPE] Manual backfill complete.');
+    } catch(e) {
+        console.error('[FORCE-SCRAPE] Error:', e.message);
+    }
+});
+
 // API: Hot Numbers (most frequent)
 app.get('/api/stats/hot', (req, res) => {
     const days = parseInt(req.query.days) || 7;
