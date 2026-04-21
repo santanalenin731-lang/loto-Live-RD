@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const db = require('../db');
+const LOTTERY_META = require('../meta');
 
 async function scrapeLoteka() {
     console.log('[LOTEKA] Starting scraper...');
@@ -113,13 +114,29 @@ async function scrapeLoteka() {
             'loteka_toca_3': 3
         };
 
+        const currentDayStr = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santo_Domingo', weekday: 'short' }).format(new Date());
+        const daysMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
+        const currentDayIndex = daysMap[currentDayStr];
+
+        // Usaremos un temporizador para no guardar resultados de días donde un juego no sale (Ej. MegaLotto mar/miercoles)
+        let validResults = [];
+
         for (const result of results) {
+            const meta = LOTTERY_META[result.lotteryCode];
+            
+            // Si la lotería tiene un esquema de días y hoy no está incluido, ignoramos el intentado de guardar un número viejo.
+            if (meta && meta.drawDays && !meta.drawDays.includes(currentDayIndex)) {
+                console.log(`[LOTEKA] Skipping save for ${result.name} - Not a scheduled draw day.`);
+                continue;
+            }
+
             const expected = expectedLengths[result.lotteryCode] || 3;
             if (result.numbers.length < expected) {
                 console.log(`[LOTEKA] Partial result for ${result.name}: expected ${expected}, got ${result.numbers.length}. Skipping.`);
                 continue;
             }
             result.numbers = result.numbers.slice(0, expected);
+            validResults.push(result);
 
             // Modify DB save to use Promises to ensure completion before returning
             await new Promise((resolve) => {
@@ -135,6 +152,8 @@ async function scrapeLoteka() {
                 });
             });
         }
+        // Asignar los valid results para ser emitidos por websocket solo los que realmente jugaron hoy.
+        results = validResults;
     } else {
         console.log('[LOTEKA] Could not find results on page.');
     }

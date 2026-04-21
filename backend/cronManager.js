@@ -4,6 +4,18 @@ const scrapeAggregator = require('./scraper/universalTracker');
 const scrapeNacionalOfficial = require('./scraper/nacionalOfficial');
 const scrapeLeidsaOfficial = require('./scraper/leidsaOfficial');
 const scrapeRealOfficial = require('./scraper/realOfficial');
+const LOTTERY_META = require('./meta');
+
+// Auxiliar function to guarantee scrapers respect real calendar schedules
+function isValidDrawDay(lotteryCode) {
+    if (!lotteryCode || !LOTTERY_META[lotteryCode]) return true; // Asumir diario por defecto
+    const meta = LOTTERY_META[lotteryCode];
+    if (!meta.drawDays) return true; // Si no tiene drawDays, es todos los dias
+    
+    const drDate = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santo_Domingo', weekday: 'short' }).format(new Date());
+    const daysMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
+    return meta.drawDays.includes(daysMap[drDate]);
+}
 
 // --- PRIMARY OFFICIAL SOURCES ---
 
@@ -206,6 +218,14 @@ function runWithRetries(scraperFunc, broadcastCb, maxRetries = 20) {
     processQueue();
 }
 
+function runWithRetriesGuarded(lotteryCode, scraperFunc, broadcastCb, maxRetries = 20) {
+    if (!isValidDrawDay(lotteryCode)) {
+        console.log(`[CRON] Skipping scraper '${lotteryCode}' today. Not a scheduled draw day.`);
+        return;
+    }
+    runWithRetries(scraperFunc, broadcastCb, maxRetries);
+}
+
 function scheduleDraw(time, task) {
     cron.schedule(time, task, { timezone: 'America/Santo_Domingo' });
 }
@@ -233,7 +253,7 @@ function initializeCrons(broadcastCb) {
     // Nacional Noche & Billetes Domingo 6:00 PM -> Start 5:58 PM
     scheduleDraw('58 17 * * 0', () => {
         runWithRetries(scrapeNacionalNoche, broadcastCb, 120);
-        runWithRetries(scrapeNacionalBilletesDomingo, broadcastCb, 120);
+        runWithRetriesGuarded('nacional_billetes_domingo', scrapeNacionalBilletesDomingo, broadcastCb, 120);
     }); 
 
     // Leidsa 8:55 PM -> Start 8:54 PM
@@ -242,7 +262,7 @@ function initializeCrons(broadcastCb) {
         runWithRetries(scrapeLeidsaPega3, broadcastCb, 120);
         runWithRetries(scrapeLeidsaLotoPool, broadcastCb, 120);
         runWithRetries(scrapeLeidsaSuperKino, broadcastCb, 120);
-        runWithRetries(scrapeLeidsaLoto, broadcastCb, 120);
+        runWithRetriesGuarded('leidsa_loto', scrapeLeidsaLoto, broadcastCb, 120);
         runWithRetries(scrapeLeidsaSuperPale, broadcastCb, 120);
     }); 
 
@@ -262,7 +282,7 @@ function initializeCrons(broadcastCb) {
         runWithRetries(scrapeRealPega4, broadcastCb, 120);
         runWithRetries(scrapeRealNuevaYol, broadcastCb, 120);
         runWithRetries(scrapeRealLotoPool, broadcastCb, 120);
-        runWithRetries(scrapeRealLoto, broadcastCb, 120);
+        runWithRetriesGuarded('real_loto', scrapeRealLoto, broadcastCb, 120);
         runWithRetries(scrapeRealSuperPale, broadcastCb, 120);
     }); 
 
@@ -301,9 +321,9 @@ function initializeCrons(broadcastCb) {
 
 
     scheduleDraw('15 23 * * *', () => {
-        runWithRetries(scrapeMegaMillions, broadcastCb, 120);
-        runWithRetries(scrapePowerball, broadcastCb, 120);
-        runWithRetries(scrapePowerballDP, broadcastCb, 120);
+        runWithRetriesGuarded('mega_millions', scrapeMegaMillions, broadcastCb, 120);
+        runWithRetriesGuarded('powerball', scrapePowerball, broadcastCb, 120);
+        runWithRetriesGuarded('powerball_double_play', scrapePowerballDP, broadcastCb, 120);
     }); // USA Jackpots 11:15 PM
     
     scheduleDraw('05 10 * * *', () => runWithRetries(scrapeAnguila10, broadcastCb, 120)); // Anguila 10:05 AM
@@ -340,7 +360,7 @@ function initializeCrons(broadcastCb) {
             runWithRetries(scrapeRealPega4, broadcastCb, 1);
             runWithRetries(scrapeRealNuevaYol, broadcastCb, 1);
             runWithRetries(scrapeRealLotoPool, broadcastCb, 1);
-            runWithRetries(scrapeRealLoto, broadcastCb, 1);
+            runWithRetriesGuarded('real_loto', scrapeRealLoto, broadcastCb, 1);
             runWithRetries(scrapeRealSuperPale, broadcastCb, 1);
             runWithRetries(scrapePrimeraDia, broadcastCb, 1);
             runWithRetries(scrapeAnguila10, broadcastCb, 1);
@@ -441,7 +461,7 @@ async function backfillAll(broadcastCb) {
     // automatically refresh all results that should be available at this hour.
     const toScrape = allScrapers.filter(s => {
         const schedMins = parseScheduleMinutes(s.schedule);
-        return schedMins >= 0 && rdTotalMinutes >= schedMins;
+        return schedMins >= 0 && rdTotalMinutes >= schedMins && isValidDrawDay(s.code);
     });
 
     console.log(`[BACKFILL] Draw times passed: ${toScrape.length} lotteries to refresh.`);

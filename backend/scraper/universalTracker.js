@@ -77,7 +77,10 @@ async function scrapeAggregator(targetTitle, lotteryCode, sitePath = '/') {
         if (targetTitle.includes('Kino')) maxLength = 20;
         else if (targetTitle.includes('Loto - Super Loto')) maxLength = 8;
         else if (targetTitle.includes('Pega 3')) maxLength = 3;
-        else if (targetTitle.includes('Loto Pool')) maxLength = 4;
+        else if (targetTitle.includes('Loto Pool')) {
+            if (lotteryCode === 'leidsa_loto_pool') maxLength = 5;
+            else maxLength = 4;
+        }
         else if (targetTitle.includes('Juega + Pega +')) maxLength = 5;
         else if (targetTitle.includes('Palé')) maxLength = 2;
         else if (targetTitle.includes('Quemaito')) maxLength = 1;
