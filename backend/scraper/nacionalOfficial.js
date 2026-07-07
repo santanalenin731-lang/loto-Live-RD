@@ -10,6 +10,11 @@ async function scrapeNacionalOfficial(targetTitle, lotteryCode) {
     const url = 'https://loterianacional.gob.do/';
     console.log(`[OFFICIAL NACIONAL] Attacking ${targetTitle} at ${url}...`);
     
+    let target = targetTitle;
+    if (targetTitle === 'Gana Más') target = 'Bancas (Tarde)';
+    else if (targetTitle === 'Lotería Nacional' || targetTitle === 'nacional_noche') target = 'Bancas (Noche)';
+    else if (targetTitle === 'Billetes Domingo') target = 'Billetes y Quinielas';
+
     let browser = null;
     try {
         browser = await puppeteer.launch({
@@ -32,34 +37,35 @@ async function scrapeNacionalOfficial(targetTitle, lotteryCode) {
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 
-        // Logic to find the specific block for Gana Mas or National Night
+        // Logic to find the specific block for Bancas (Tarde/Noche) or Billetes
         const result = await page.evaluate((target) => {
-            // Find all section titles or labels
-            const containers = Array.from(document.querySelectorAll('div, section'));
-            
-            // Lotería Nacional typically labels blocks as "Gana Más" or "Bancas Noche"
-            // We search for the text and then look for the closest balls
-            for (let container of containers) {
-                if (container.innerText && container.innerText.includes(target)) {
-                    // Look for child elements with result balls. 
-                    // Selectors found in investigation: .sorteo-bola span
-                    const balls = Array.from(container.querySelectorAll('.sorteo-bola span, .bola, span[style*="border-radius: 50%"]'));
+            const tables = Array.from(document.querySelectorAll('table'));
+            for (let container of tables) {
+                const header = container.querySelector('h3.titulo-sorteo, h3.titulo-sorteo2');
+                if (header && header.innerText.trim().includes(target)) {
+                    const ballSelector = target.includes('Billetes') ? '.sorteo-bola-b-q' : '.sorteo-bola';
+                    const balls = Array.from(container.querySelectorAll(ballSelector));
                     if (balls.length >= 3) {
                         return balls.map(b => b.innerText.trim()).filter(t => t.length > 0 && !isNaN(t));
                     }
                 }
             }
             return null;
-        }, targetTitle);
+        }, target);
 
         if (result && result.length >= 3) {
             console.log(`[OFFICIAL NACIONAL] SUCCESS! ${targetTitle}:`, result);
             const drawTime = now.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
 
             return new Promise((resolve, reject) => {
-                db.saveResult(lotteryCode, drawDate, drawTime, result, (err) => {
-                    if (err && !err.message.includes('SQLITE_CONSTRAINT')) reject(err);
-                    else resolve({ lotteryCode, numbers: result });
+                db.saveResult(lotteryCode, drawDate, drawTime, result, (err, lastID) => {
+                    // BUG-004 FIX: Verificar explícitamente el éxito con el callback
+                    if (err) {
+                        console.error(`[OFFICIAL NACIONAL] DB save failed for ${lotteryCode}:`, err.message);
+                        reject(err);
+                    } else {
+                        resolve({ lotteryCode, numbers: result, id: lastID });
+                    }
                 });
             });
         } else {

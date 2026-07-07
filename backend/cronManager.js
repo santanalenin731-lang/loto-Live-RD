@@ -1,9 +1,14 @@
 const cron = require('node-cron');
 const scrapeLoteka = require('./scraper/lotekaTracker');
-const scrapeAggregator = require('./scraper/universalTracker');
 const scrapeNacionalOfficial = require('./scraper/nacionalOfficial');
 const scrapeLeidsaOfficial = require('./scraper/leidsaOfficial');
 const scrapeRealOfficial = require('./scraper/realOfficial');
+const { scrapePrimeraOfficial } = require('./scraper/primeraOfficial');
+const { scrapeSuerteOfficial } = require('./scraper/suerteOfficial');
+const { scrapeLotedomOfficial } = require('./scraper/lotedomOfficial');
+const { scrapeAnguilaOfficial } = require('./scraper/anguilaOfficial');
+const { scrapeKingOfficial } = require('./scraper/kingOfficial');
+const { scrapeAmericanasOfficial } = require('./scraper/americanasOfficial');
 const LOTTERY_META = require('./meta');
 
 // Auxiliar function to guarantee scrapers respect real calendar schedules
@@ -22,136 +27,66 @@ function isValidDrawDay(lotteryCode) {
 // --- HYBRID SCRAPER FUNCTIONS (Official → Fallback to Aggregator) ---
 // If the official source fails, we automatically fall back to the universal aggregator.
 
-const scrapeGanaMas = async () => {
-    const official = await scrapeNacionalOfficial('Gana Más', 'nacional');
-    if (official) return official;
-    console.log('[FALLBACK] Nacional Official failed for Gana Más, using aggregator...');
-    return scrapeAggregator('Gana Más', 'nacional');
-};
-const scrapeJuegaPegaMas = async () => {
-    const official = await scrapeNacionalOfficial('Juega + Pega +', 'nacional_juega_pega_mas');
-    if (official) return official;
-    console.log('[FALLBACK] Nacional Official failed for Juega Pega Mas, using aggregator...');
-    return scrapeAggregator('Juega + Pega +', 'nacional_juega_pega_mas');
-};
-const scrapeNacionalNoche = async () => {
-    const official = await scrapeNacionalOfficial('Lotería Nacional', 'nacional_noche');
-    if (official) return official;
-    console.log('[FALLBACK] Nacional Official failed for Nacional Noche, using aggregator...');
-    return scrapeAggregator('Lotería Nacional', 'nacional_noche');
-};
-const scrapeNacionalBilletesDomingo = async () => {
-    const official = await scrapeNacionalOfficial('Billetes Domingo', 'nacional_billetes_domingo');
-    if (official) return official;
-    console.log('[FALLBACK] Nacional Official failed for Billetes Domingo, using aggregator...');
-    return scrapeAggregator('Billetes Domingo', 'nacional_billetes_domingo');
-};
+const scrapeGanaMas = () => scrapeNacionalOfficial('Gana Más', 'nacional');
+const scrapeJuegaPegaMas = () => scrapeNacionalOfficial('Juega + Pega +', 'nacional_juega_pega_mas');
+const scrapeNacionalNoche = () => scrapeNacionalOfficial('Lotería Nacional', 'nacional_noche');
+const scrapeNacionalBilletesDomingo = () => scrapeNacionalOfficial('Billetes Domingo', 'nacional_billetes_domingo');
 
-const scrapeLeidsa = async () => {
-    const official = await scrapeLeidsaOfficial('Quiniela Leidsa', 'leidsa');
-    if (official) return official;
-    console.log('[FALLBACK] Leidsa Official failed, using aggregator...');
-    return scrapeAggregator('Quiniela Leidsa', 'leidsa');
-};
-const scrapeLeidsaPega3 = async () => {
-    const official = await scrapeLeidsaOfficial('Pega 3 Más', 'leidsa_pega_3_mas');
-    if (official) return official;
-    return scrapeAggregator('Pega 3 Más', 'leidsa_pega_3_mas');
-};
-const scrapeLeidsaLotoPool = async () => {
-    const official = await scrapeLeidsaOfficial('Loto Pool', 'leidsa_loto_pool');
-    if (official) return official;
-    return scrapeAggregator('Loto Pool', 'leidsa_loto_pool');
-};
-const scrapeLeidsaSuperKino = async () => {
-    const official = await scrapeLeidsaOfficial('Super Kino TV', 'leidsa_super_kino_tv');
-    if (official) return official;
-    return scrapeAggregator('Super Kino TV', 'leidsa_super_kino_tv');
-};
-const scrapeLeidsaLoto = async () => {
-    const official = await scrapeLeidsaOfficial('Loto - Super Loto Más', 'leidsa_loto');
-    if (official) return official;
-    return scrapeAggregator('Loto - Super Loto Más', 'leidsa_loto');
-};
-const scrapeLeidsaSuperPale = async () => {
-    const official = await scrapeLeidsaOfficial('Super Palé', 'leidsa_super_pale');
-    if (official) return official;
-    return scrapeAggregator('Super Palé', 'leidsa_super_pale');
-};
+const scrapeLeidsa = () => scrapeLeidsaOfficial('Quiniela Leidsa', 'leidsa');
+const scrapeLeidsaPega3 = () => scrapeLeidsaOfficial('Pega 3 Más', 'leidsa_pega_3_mas');
+const scrapeLeidsaLotoPool = () => scrapeLeidsaOfficial('Loto Pool', 'leidsa_loto_pool');
+const scrapeLeidsaSuperKino = () => scrapeLeidsaOfficial('Super Kino TV', 'leidsa_super_kino_tv');
+const scrapeLeidsaLoto = () => scrapeLeidsaOfficial('Loto - Super Loto Más', 'leidsa_loto');
+const scrapeLeidsaSuperPale = () => scrapeLeidsaOfficial('Super Palé', 'leidsa_super_pale');
 
-const scrapeReal = async () => {
-    const official = await scrapeRealOfficial('Quiniela Real', 'real');
-    if (official) return official;
-    console.log('[FALLBACK] Real Official failed, using aggregator...');
-    return scrapeAggregator('Quiniela Real', 'real');
-};
-const scrapeRealTuFecha = async () => {
-    const official = await scrapeRealOfficial('Tu Fecha Real', 'real_tu_fecha');
-    if (official) return official;
-    return scrapeAggregator('Tu Fecha Real', 'real_tu_fecha');
-};
-const scrapeRealPega4 = async () => {
-    const official = await scrapeRealOfficial('Pega 4 Real', 'real_pega_4');
-    if (official) return official;
-    return scrapeAggregator('Pega 4 Real', 'real_pega_4');
-};
-const scrapeRealNuevaYol = async () => {
-    const official = await scrapeRealOfficial('Nueva Yol Real', 'real_nueva_yol');
-    if (official) return official;
-    return scrapeAggregator('Nueva Yol Real', 'real_nueva_yol');
-};
-const scrapeRealLotoPool = async () => {
-    const official = await scrapeRealOfficial('Loto Pool', 'real_loto_pool');
-    if (official) return official;
-    return scrapeAggregator('Loto Pool', 'real_loto_pool');
-};
-const scrapeRealLoto = async () => {
-    const official = await scrapeRealOfficial('Loto Real', 'real_loto');
-    if (official) return official;
-    return scrapeAggregator('Loto Real', 'real_loto');
-};
-const scrapeRealSuperPale = async () => {
-    const official = await scrapeRealOfficial('Super Palé', 'real_super_pale');
-    if (official) return official;
-    return scrapeAggregator('Super Palé', 'real_super_pale');
-};
+const scrapeReal = () => scrapeRealOfficial('Quiniela Real', 'real');
+const scrapeRealTuFecha = () => scrapeRealOfficial('Tu Fecha Real', 'real_tu_fecha');
+const scrapeRealPega4 = () => scrapeRealOfficial('Pega 4 Real', 'real_pega_4');
+const scrapeRealNuevaYol = () => scrapeRealOfficial('Nueva Yol Real', 'real_nueva_yol');
+const scrapeRealLotoPool = () => scrapeRealOfficial('Loto Pool', 'real_loto_pool');
+const scrapeRealLoto = () => scrapeRealOfficial('Loto Real', 'real_loto');
+const scrapeRealSuperPale = () => scrapeRealOfficial('Super Palé', 'real_super_pale');
 
 // Nuevas Loterías (Full Coverage)
-const scrapePrimeraDia = () => scrapeAggregator('La Primera Día', 'primera_dia');
-const scrapePrimeraNoche = () => scrapeAggregator('Primera Noche', 'primera_noche');
-const scrapePrimeraLoto5 = () => scrapeAggregator('Loto 5', 'primera_loto_5');
-const scrapePrimeraQuinielonDia = () => scrapeAggregator('El Quinielón Día', 'primera_quinielon_dia', '/la-primera');
-const scrapePrimeraQuinielonNoche = () => scrapeAggregator('El Quinielón Noche', 'primera_quinielon_noche', '/la-primera');
-const scrapeSuerteDia = () => scrapeAggregator('La Suerte 12:30', 'suerte_dia');
-const scrapeSuerteTarde = () => scrapeAggregator('La Suerte 18:00', 'suerte_tarde');
-const scrapeLotedom = () => scrapeAggregator('Quiniela LoteDom', 'lotedom', '/lotedom');
-const scrapeLotedomQuemaito = () => scrapeAggregator('El Quemaito Mayor', 'lotedom_quemaito_mayor', '/lotedom');
-const scrapeLotedomSuperPale = () => scrapeAggregator('Super Palé', 'lotedom_super_pale', '/lotedom');
-const scrapeLotedomAgarra4 = () => scrapeAggregator('Agarra 4', 'lotedom_agarra_4', '/lotedom');
-const scrapeNYTarde = () => scrapeAggregator('New York Tarde', 'ny_tarde');
-const scrapeNYNoche = () => scrapeAggregator('New York Noche', 'ny_noche');
-const scrapeFLDia = () => scrapeAggregator('Florida Día', 'fl_dia');
-const scrapeFLNoche = () => scrapeAggregator('Florida Noche', 'fl_noche');
-const scrapeAnguila10 = () => scrapeAggregator('Anguila Mañana', 'anguila_10');
-const scrapeAnguila1 = () => scrapeAggregator('Anguila Medio Día', 'anguila_1');
-const scrapeAnguila6 = () => scrapeAggregator('Anguila Tarde', 'anguila_6');
-const scrapeAnguila9 = () => scrapeAggregator('Anguila Noche', 'anguila_9');
+const scrapePrimeraDia = () => scrapePrimeraOfficial('Quiniela La Primera', 'primera');
+const scrapePrimeraNoche = () => scrapePrimeraOfficial('La Primera Noche', 'primera_noche');
+const scrapePrimeraLoto5 = () => scrapePrimeraOfficial('Loto 5', 'primera_loto_5');
+const scrapePrimeraQuinielonDia = () => scrapePrimeraOfficial('El Quinielón Día', 'primera_quinielon_dia');
+const scrapePrimeraQuinielonNoche = () => scrapePrimeraOfficial('El Quinielón Noche', 'primera_quinielon_noche');
 
-const scrapeKingPick3Dia = () => scrapeAggregator('Pick 3 Día', 'king_pick_3_dia', '/king-lottery');
-const scrapeKingPick4Dia = () => scrapeAggregator('Pick 4 Día', 'king_pick_4_dia', '/king-lottery');
-const scrapeKing12 = () => scrapeAggregator('King Lottery 12:30', 'king_12', '/king-lottery');
-const scrapeKingPhilipsburgDia = () => scrapeAggregator('Philipsburg Medio Día', 'king_philipsburg_dia', '/king-lottery');
-const scrapeKingLotoPoolDia = () => scrapeAggregator('Loto Pool Medio Día', 'king_loto_pool_dia', '/king-lottery');
+const scrapeSuerteDia = () => scrapeSuerteOfficial('12:30 PM', 'suerte');
+const scrapeSuerteTarde = () => scrapeSuerteOfficial('6:00 PM', 'suerte_tarde');
 
-const scrapeKingPick3Noche = () => scrapeAggregator('Pick 3 Noche', 'king_pick_3_noche', '/king-lottery');
-const scrapeKingPick4Noche = () => scrapeAggregator('Pick 4 Noche', 'king_pick_4_noche', '/king-lottery');
-const scrapeKing7 = () => scrapeAggregator('King Lottery 7:30', 'king_7', '/king-lottery');
-const scrapeKingPhilipsburgNoche = () => scrapeAggregator('Philipsburg Noche', 'king_philipsburg_noche', '/king-lottery');
-const scrapeKingLotoPoolNoche = () => scrapeAggregator('Loto Pool Noche', 'king_loto_pool_noche', '/king-lottery');
+const scrapeLotedom = () => scrapeLotedomOfficial('Quiniela LoteDom', 'lotedom');
+const scrapeLotedomQuemaito = () => scrapeLotedomOfficial('El Quemaito Mayor', 'lotedom_quemaito_mayor');
+const scrapeLotedomSuperPale = () => scrapeLotedomOfficial('Super Palé LoteDom', 'lotedom_super_pale');
+const scrapeLotedomAgarra4 = () => scrapeLotedomOfficial('Agarralo 4', 'lotedom_agarra_4');
 
-const scrapeMegaMillions = () => scrapeAggregator('Mega Millions', 'mega_millions', '/americanas');
-const scrapePowerball = () => scrapeAggregator('PowerBall', 'powerball', '/americanas');
-const scrapePowerballDP = () => scrapeAggregator('Powerball Double Play', 'powerball_double_play', '/americanas');
+const scrapeNYTarde = () => scrapeAmericanasOfficial('New York Tarde', 'ny_tarde');
+const scrapeNYNoche = () => scrapeAmericanasOfficial('New York Noche', 'ny_noche');
+const scrapeFLDia = () => scrapeAmericanasOfficial('Florida Día', 'fl_dia');
+const scrapeFLNoche = () => scrapeAmericanasOfficial('Florida Noche', 'fl_noche');
+
+const scrapeAnguila10 = () => scrapeAnguilaOfficial('10:00AM', 'anguila_10');
+const scrapeAnguila1 = () => scrapeAnguilaOfficial('1:00PM', 'anguila_1');
+const scrapeAnguila6 = () => scrapeAnguilaOfficial('5:00PM', 'anguila_6');
+const scrapeAnguila9 = () => scrapeAnguilaOfficial('9:00PM', 'anguila_9');
+
+const scrapeKingPick3Dia = () => scrapeKingOfficial('Pick 3 Día', 'king_pick_3_dia');
+const scrapeKingPick4Dia = () => scrapeKingOfficial('Pick 4 Día', 'king_pick_4_dia');
+const scrapeKing12 = () => scrapeKingOfficial('Quiniela SXM - Medio Día', 'king_12');
+const scrapeKingPhilipsburgDia = () => scrapeKingOfficial('Philipsburg Medio Día', 'king_philipsburg_dia');
+const scrapeKingLotoPoolDia = () => scrapeKingOfficial('Loto Pool Medio Día', 'king_loto_pool_dia');
+
+const scrapeKingPick3Noche = () => scrapeKingOfficial('Pick 3 Noche', 'king_pick_3_noche');
+const scrapeKingPick4Noche = () => scrapeKingOfficial('Pick 4 Noche', 'king_pick_4_noche');
+const scrapeKing7 = () => scrapeKingOfficial('Quiniela SXM - Noche', 'king_7');
+const scrapeKingPhilipsburgNoche = () => scrapeKingOfficial('Philipsburg Noche', 'king_philipsburg_noche');
+const scrapeKingLotoPoolNoche = () => scrapeKingOfficial('Loto Pool Noche', 'king_loto_pool_noche');
+
+const scrapeMegaMillions = () => scrapeAmericanasOfficial('Mega Millions', 'mega_millions');
+const scrapePowerball = () => scrapeAmericanasOfficial('PowerBall', 'powerball');
+const scrapePowerballDP = () => scrapeAmericanasOfficial('Powerball Double Play', 'powerball_double_play');
 
 console.log('📅 Initializing Cron Schedule Manager...');
 

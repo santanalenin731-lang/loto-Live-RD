@@ -51,15 +51,16 @@ function saveResult(lotteryCode, drawDate, drawTime, numbers, callback) {
 
 // Function to get the latest result for all lotteries
 function getLatestResults(callback) {
+    // BUG-006 FIX: Usar draw_date para mayor precisión en lugar de MAX(id)
     const sql = `
-        SELECT lottery_code, draw_date, draw_time, numbers
-        FROM draws
-        WHERE id IN (
-            SELECT MAX(id)
+        SELECT d.lottery_code, d.draw_date, d.draw_time, d.numbers
+        FROM draws d
+        INNER JOIN (
+            SELECT lottery_code, MAX(draw_date) as max_date
             FROM draws
             GROUP BY lottery_code
-        )
-        ORDER BY id DESC
+        ) latest ON d.lottery_code = latest.lottery_code AND d.draw_date = latest.max_date
+        ORDER BY d.draw_date DESC
     `;
     db.all(sql, [], (err, rows) => {
         if (err) {
@@ -141,7 +142,15 @@ function getColdNumbers(days, limit, callback) {
 
 // Get the full history of a specific number
 function getNumberHistory(number, days, callback) {
+    // BUG-007 FIX: Validar tipo antes del padding
+    if (number === undefined || number === null) {
+        return callback(new Error('Invalid number parameter'), []);
+    }
     const paddedNum = number.toString().padStart(2, '0');
+    // Validar que sea un número válido (00-99)
+    if (isNaN(paddedNum) || paddedNum < '00' || paddedNum > '99') {
+        return callback(new Error('Number must be between 00 and 99'), []);
+    }
     const sql = `
         SELECT 
             d.lottery_code,

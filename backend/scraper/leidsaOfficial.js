@@ -32,19 +32,49 @@ async function scrapeLeidsaOfficial(targetGame, lotteryCode) {
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 
-        // LEIDSA uses cards labeled with game names (Quiniela, Loto, etc.)
+        // LEIDSA uses next.js with custom css class structures on its home page
         const result = await page.evaluate((target) => {
-            const cards = Array.from(document.querySelectorAll('.chakra-card, div[role="group"], .leidsa-result-card'));
+            const altKeywords = {
+                'Quiniela Leidsa': 'Quiniela Pale',
+                'Pega 3 Más': 'Pega3Mas',
+                'Loto Pool': 'Loto Pool',
+                'Super Kino TV': 'KinoTV',
+                'Loto - Super Loto Más': 'leidsa-loto',
+                'Super Palé': 'Super Pale'
+            };
+            const keyword = altKeywords[target] || target;
             
-            for (let card of cards) {
-                const text = card.innerText || "";
-                if (text.toLowerCase().includes(target.toLowerCase())) {
-                    // Extract numbers from circles/spans inside this specific card
-                    const numbers = Array.from(card.querySelectorAll('span, div'))
-                        .map(n => n.innerText.trim())
-                        .filter(t => t.length > 0 && t.length <= 2 && !isNaN(t));
+            // Special Case: Super Palé is derived from Quiniela Leidsa (first 2 numbers)
+            // If website doesn't show it directly, we fall back to Quiniela Leidsa's first 2 balls
+            let searchKeyword = keyword;
+            if (keyword === 'Super Pale') {
+                searchKeyword = 'Quiniela Pale';
+            }
 
-                    if (numbers.length >= 1) return numbers;
+            const images = Array.from(document.querySelectorAll('img'));
+            const img = images.find(i => i.alt && i.alt.toLowerCase().includes(searchKeyword.toLowerCase()));
+            if (!img) return null;
+            
+            let container = img.parentElement;
+            while (container && container !== document.body) {
+                if (container.classList.contains('css-dg8q2z') || container.classList.contains('css-1mqodg7')) {
+                    break;
+                }
+                container = container.parentElement;
+            }
+            
+            if (!container) {
+                container = img.closest('.chakra-stack, div[class*="stack"], div[class*="container"]');
+            }
+            
+            if (container) {
+                const balls = Array.from(container.querySelectorAll('.css-yogco6'));
+                if (balls.length > 0) {
+                    const rawNums = balls.map(b => b.innerText.trim()).filter(t => t.length > 0 && !isNaN(t));
+                    if (keyword === 'Super Pale' && rawNums.length >= 2) {
+                        return rawNums.slice(0, 2);
+                    }
+                    return rawNums;
                 }
             }
             return null;
@@ -55,9 +85,14 @@ async function scrapeLeidsaOfficial(targetGame, lotteryCode) {
             const drawTime = now.toLocaleTimeString('en-US', { timeZone: 'America/Santo_Domingo', hour12: true, hour: '2-digit', minute: '2-digit' });
 
             return new Promise((resolve, reject) => {
-                db.saveResult(lotteryCode, drawDate, drawTime, result, (err) => {
-                    if (err && !err.message.includes('SQLITE_CONSTRAINT')) reject(err);
-                    else resolve({ lotteryCode, numbers: result });
+                db.saveResult(lotteryCode, drawDate, drawTime, result, (err, lastID) => {
+                    // BUG-005 FIX: Verificar explícitamente el éxito con el callback
+                    if (err) {
+                        console.error(`[OFFICIAL LEIDSA] DB save failed for ${lotteryCode}:`, err.message);
+                        reject(err);
+                    } else {
+                        resolve({ lotteryCode, numbers: result, id: lastID });
+                    }
                 });
             });
         } else {

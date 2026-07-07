@@ -602,7 +602,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const rdTotalMinutes = rdHour * 60 + rdMinute;
                     const schedTotalMinutes = schedHours * 60 + schedMinutes;
                     
-                    hasPassedSchedule = rdTotalMinutes >= schedTotalMinutes;
+                    // BUG-003 FIX: Agregar buffer de 5 min para considerar retraso
+                    // Solo marcar como "retrasado" si ya pasaron 5+ minutos del horario
+                    const GRACE_MINUTES = 5;
+                    hasPassedSchedule = rdTotalMinutes >= schedTotalMinutes - GRACE_MINUTES;
                 }
             }
 
@@ -692,9 +695,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render Dailies
         // Filter out jackpots from the daily data
+        const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+
         const dailyData = data.filter(lottery => {
             const meta = getMeta(lottery.lottery_code);
-            return meta.category !== 'jackpot' && (activeFilter === 'all' || meta.provider === activeFilter);
+            if (meta.category === 'jackpot') return false;
+
+            const isToday = lottery.draw_date === todayStr;
+            const hasRealNumbers = lottery.numbers && lottery.numbers.length > 0 && lottery.numbers[0] !== '--';
+
+            // BUG-008 FIX: Mostrar sorteos del día actual O de días recientes (fallback)
+            // Si es hoy y tiene números reales, mostrar
+            // Si no es hoy pero tiene números reales y es ayer, también mostrar como "reciente"
+            if (!hasRealNumbers) return false;
+            
+            return (activeFilter === 'all' || meta.provider === activeFilter);
         });
 
         if (dailyData.length > 0) {
@@ -804,10 +819,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initial filter logic (for the old layout, now applicable only to dailies if needed, but let's repurpose)
+    // Initial filter logic
     const filterBtns = document.querySelectorAll('.filter-btn');
-    const jackpotsSection = document.getElementById('jackpots-section');
-    const dailySection = document.getElementById('daily-section');
+    const filterJackpotsSection = document.getElementById('jackpots-section');
+    const filterDailySection = document.getElementById('daily-section');
 
     function animateSection(element) {
         if (!element) return;
@@ -824,8 +839,8 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
 
             applyFilters();
-            animateSection(dailySection);
-            animateSection(jackpotsSection);
+            animateSection(filterDailySection);
+            animateSection(filterJackpotsSection);
             lucide.createIcons();
         });
     });

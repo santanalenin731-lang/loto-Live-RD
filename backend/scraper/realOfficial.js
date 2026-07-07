@@ -25,20 +25,56 @@ async function scrapeRealOfficial(targetGame, lotteryCode) {
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 
-        // Real uses styled balls labeled with specific game codes.
+        // Real uses styled balls labeled with specific game codes inside .result__container
         const result = await page.evaluate((target) => {
-            // Find "bolas" inside the results container.
-            const containers = Array.from(document.querySelectorAll('.q-card, div.row'));
+            const altKeywords = {
+                'Quiniela Real': 'loteria real',
+                'Tu Fecha Real': 'tu fecha real',
+                'Pega 4 Real': 'pega 4 real',
+                'Nueva Yol Real': 'nueva yol real',
+                'Loto Pool': 'loto pool',
+                'Loto Real': 'loto real',
+                'Super Palé': 'pale real'
+            };
+            const keyword = altKeywords[target] || target;
             
-            for (let container of containers) {
-                const text = container.innerText || "";
-                if (text.toLowerCase().includes(target.toLowerCase())) {
-                    // Extract numbers from elements with class .bolo or .bolo.shadow-10
-                    const balls = Array.from(container.querySelectorAll('.bolo, .text-bold span'))
-                        .map(b => b.innerText.trim())
-                        .filter(t => t.length > 0 && t.length <= 2 && !isNaN(t));
-
-                    if (balls.length >= 1) return balls;
+            // Buscar la imagen con el alt correspondiente
+            const images = Array.from(document.querySelectorAll('img'));
+            // También buscamos en aria-label de elementos cercanos por si no es img sino div rol="img"
+            let img = images.find(i => i.alt && i.alt.toLowerCase().includes(keyword.toLowerCase()));
+            
+            let container = null;
+            if (img) {
+                container = img.parentElement;
+                while (container && container !== document.body) {
+                    if (container.classList.contains('result__container')) {
+                        break;
+                    }
+                    container = container.parentElement;
+                }
+            } else {
+                // Si no hay img con alt, buscar divs con aria-label que coincida
+                const divs = Array.from(document.querySelectorAll('[aria-label]'));
+                const div = divs.find(d => d.getAttribute('aria-label').toLowerCase().includes(keyword.toLowerCase()));
+                if (div) {
+                    container = div.parentElement;
+                    while (container && container !== document.body) {
+                        if (container.classList.contains('result__container')) {
+                            break;
+                        }
+                        container = container.parentElement;
+                    }
+                }
+            }
+            
+            if (!container && img) {
+                container = img.closest('.result__container, div[class*="container"]');
+            }
+            
+            if (container) {
+                const balls = Array.from(container.querySelectorAll('.bolo, .score'));
+                if (balls.length > 0) {
+                    return balls.map(b => b.innerText.trim()).filter(t => t.length > 0 && !isNaN(t));
                 }
             }
             return null;
