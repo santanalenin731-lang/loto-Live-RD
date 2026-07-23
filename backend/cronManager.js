@@ -423,9 +423,10 @@ async function backfillAll(broadcastCb) {
             console.error(`[BACKFILL] Error on ${item.code}: ${err.message}`);
         }
 
-        // 2-second pause to avoid OOM on Render free tier
+        // Pause to avoid OOM on Render free tier (2s) or run fast in development (200ms)
         if (i < toScrape.length - 1) {
-            await new Promise(res => setTimeout(res, 2000));
+            const delay = process.env.NODE_ENV === 'production' ? 2000 : 200;
+            await new Promise(res => setTimeout(res, delay));
         }
     }
     console.log('\u2705 [BACKFILL] Startup refresh complete. All passed draws updated.');

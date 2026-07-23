@@ -35,12 +35,18 @@ async function scrapeAmericanasOfficial(targetTitle, dbLotteryCode) {
 
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+        const expectedDateStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santo_Domingo', month: '2-digit', day: '2-digit' }).format(now).replace(/\//g, '-'); // e.g. "22-07"
 
-        const result = await page.evaluate((targetTitle) => {
+        const result = await page.evaluate((targetTitle, expectedDate) => {
             const cards = Array.from(document.querySelectorAll('a.flex.flex-col.gap-3.p-5'));
             for (let card of cards) {
                 const titleDiv = card.querySelector('.text-xl.font-bold div, .text-xl.font-bold');
                 if (titleDiv && titleDiv.innerText.trim().toLowerCase() === targetTitle.toLowerCase()) {
+                    // Validate date inside card
+                    const cardText = card.innerText.trim();
+                    if (!cardText.includes(expectedDate)) {
+                        return null; // Return null to retry if not today's draw
+                    }
                     const ballSpans = Array.from(card.querySelectorAll('.score-shape-circle span'));
                     if (ballSpans.length >= 3) {
                         return ballSpans.map(s => s.innerText.trim()).filter(t => t.length > 0 && !isNaN(t));
@@ -48,7 +54,7 @@ async function scrapeAmericanasOfficial(targetTitle, dbLotteryCode) {
                 }
             }
             return null;
-        }, targetTitle);
+        }, targetTitle, expectedDateStr);
 
         if (result && result.length >= 3) {
             console.log(`[OFFICIAL AMERICANAS] SUCCESS! ${targetTitle}:`, result);

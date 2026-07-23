@@ -35,8 +35,9 @@ async function scrapeAnguilaOfficial(targetTime, dbLotteryCode) {
 
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+        const expectedDateStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now); // e.g. "22/07/2026"
 
-        const result = await page.evaluate((targetTime) => {
+        const result = await page.evaluate((targetTime, expectedDate) => {
             // Helper to clean time string
             const cleanTime = (t) => t.replace(/\s+/g, '').toLowerCase();
             const cleanTarget = cleanTime(targetTime);
@@ -45,23 +46,8 @@ async function scrapeAnguilaOfficial(targetTime, dbLotteryCode) {
             const mainHeader = document.querySelector('.result-sorteo .horassorteo');
             if (mainHeader && cleanTime(mainHeader.innerText).includes(cleanTarget)) {
                 const parent = mainHeader.closest('.result-sorteo');
-                const numSpans = Array.from(parent.querySelectorAll('.bolas-sorteo .numero'));
-                if (numSpans.length >= 3) {
-                    return numSpans.slice(0, 3).map(span => {
-                        const clone = span.cloneNode(true);
-                        const small = clone.querySelector('.small');
-                        if (small) small.remove();
-                        return clone.textContent.trim();
-                    });
-                }
-            }
-            
-            // 2. Check in the other draws list
-            const otros = Array.from(document.querySelectorAll('.otro-sorteo'));
-            for (let otro of otros) {
-                const fechaDiv = otro.querySelector('.fecha');
-                if (fechaDiv && cleanTime(fechaDiv.innerText).includes(cleanTarget)) {
-                    const numSpans = Array.from(otro.querySelectorAll('.numero'));
+                if (parent && parent.innerText.includes(expectedDate)) {
+                    const numSpans = Array.from(parent.querySelectorAll('.bolas-sorteo .numero'));
                     if (numSpans.length >= 3) {
                         return numSpans.slice(0, 3).map(span => {
                             const clone = span.cloneNode(true);
@@ -72,8 +58,27 @@ async function scrapeAnguilaOfficial(targetTime, dbLotteryCode) {
                     }
                 }
             }
+            
+            // 2. Check in the other draws list
+            const otros = Array.from(document.querySelectorAll('.otro-sorteo'));
+            for (let otro of otros) {
+                const fechaDiv = otro.querySelector('.fecha');
+                if (fechaDiv && cleanTime(fechaDiv.innerText).includes(cleanTarget)) {
+                    if (fechaDiv.innerText.includes(expectedDate)) {
+                        const numSpans = Array.from(otro.querySelectorAll('.numero'));
+                        if (numSpans.length >= 3) {
+                            return numSpans.slice(0, 3).map(span => {
+                                const clone = span.cloneNode(true);
+                                const small = clone.querySelector('.small');
+                                if (small) small.remove();
+                                return clone.textContent.trim();
+                            });
+                        }
+                    }
+                }
+            }
             return null;
-        }, targetTime);
+        }, targetTime, expectedDateStr);
 
         if (result && result.length >= 3) {
             console.log(`[OFFICIAL ANGUILA] SUCCESS! ${targetTime}:`, result);

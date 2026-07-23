@@ -30,19 +30,37 @@ async function scrapeKingOfficial(targetTitle, dbLotteryCode) {
 
         await page.goto(url, { waitUntil: 'networkidle2', timeout: 35000 });
         
-        // Wait 3 seconds for Elementor hydration
-        await new Promise(res => setTimeout(res, 3000));
+        // Wait for Elementor heading and hydration
+        try {
+            await page.waitForSelector('h2.elementor-heading-title', { timeout: 10000 });
+        } catch (e) {}
+        await new Promise(res => setTimeout(res, 5000));
 
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 
-        const result = await page.evaluate((targetTitle) => {
+        const monthsES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        const formattedDateParts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(now);
+        const day = parseInt(formattedDateParts.find(p => p.type === 'day').value);
+        const monthIndex = parseInt(formattedDateParts.find(p => p.type === 'month').value) - 1;
+        const year = formattedDateParts.find(p => p.type === 'year').value;
+        const expectedDateStr = `${monthsES[monthIndex]} ${day}, ${year}`; // e.g. "julio 22, 2026"
+
+        const result = await page.evaluate((targetTitle, expectedDate) => {
             const headings = Array.from(document.querySelectorAll('h2.elementor-heading-title'));
             const heading = headings.find(h => h.innerText && h.innerText.trim().toLowerCase().includes(targetTitle.toLowerCase()));
             if (!heading) return null;
             
             const container = heading.closest('.e-con-inner');
             if (container) {
+                // Validate date inside container
+                const allTexts = Array.from(container.querySelectorAll('.elementor-widget-text-editor, p, span, div'))
+                    .map(el => el.innerText.toLowerCase());
+                const hasDate = allTexts.some(t => t.includes(expectedDate.toLowerCase()));
+                if (!hasDate) {
+                    return null; // Old results, return null to retry
+                }
+
                 const textEditors = Array.from(container.querySelectorAll('.elementor-widget-text-editor'));
                 const balls = textEditors
                     .map(e => e.innerText.trim())
@@ -53,7 +71,7 @@ async function scrapeKingOfficial(targetTitle, dbLotteryCode) {
                 }
             }
             return null;
-        }, targetTitle);
+        }, targetTitle, expectedDateStr);
 
         if (result && result.length >= 1) {
             console.log(`[OFFICIAL KING] SUCCESS! ${targetTitle}:`, result);

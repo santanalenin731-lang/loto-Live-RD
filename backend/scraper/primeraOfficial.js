@@ -36,7 +36,14 @@ async function scrapePrimeraOfficial(targetTitle, dbLotteryCode) {
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 
-        const result = await page.evaluate((target) => {
+        const monthsES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const formattedDateParts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(now);
+        const day = parseInt(formattedDateParts.find(p => p.type === 'day').value);
+        const monthIndex = parseInt(formattedDateParts.find(p => p.type === 'month').value) - 1;
+        const year = formattedDateParts.find(p => p.type === 'year').value;
+        const expectedDateStr = `${day} ${monthsES[monthIndex]} ${year}`; // e.g. "22 Julio 2026"
+
+        const result = await page.evaluate((target, expectedDate) => {
             const logoMap = {
                 'La Primera Día': 'logo-laprimera-dia',
                 'Quiniela La Primera': 'logo-laprimera-dia',
@@ -53,6 +60,14 @@ async function scrapePrimeraOfficial(targetTitle, dbLotteryCode) {
                 if (imgDiv) {
                     const bgStyle = imgDiv.style.backgroundImage || '';
                     if (bgStyle.toLowerCase().includes(logoKeyword.toLowerCase())) {
+                        // Validate date inside wrapper
+                        const dateEl = wrapper.querySelector('time.date');
+                        if (dateEl) {
+                            const dateText = dateEl.innerText.trim();
+                            if (dateText && !dateText.toLowerCase().includes(expectedDate.toLowerCase())) {
+                                return null; // Old results, return null to retry
+                            }
+                        }
                         const amountDivs = Array.from(wrapper.querySelectorAll('.wrap-results .amount'));
                         if (amountDivs.length > 0) {
                             return amountDivs.map(d => d.innerText.trim()).filter(t => t.length > 0 && !isNaN(t));
@@ -61,7 +76,7 @@ async function scrapePrimeraOfficial(targetTitle, dbLotteryCode) {
                 }
             }
             return null;
-        }, targetTitle);
+        }, targetTitle, expectedDateStr);
 
         if (result && result.length >= 1) {
             console.log(`[OFFICIAL PRIMERA] SUCCESS! ${targetTitle}:`, result);
@@ -79,7 +94,7 @@ async function scrapePrimeraOfficial(targetTitle, dbLotteryCode) {
                 });
             });
         } else {
-            console.log(`[OFFICIAL PRIMERA] Result for ${targetTitle} not posted yet.`);
+            console.log(`[OFFICIAL PRIMERA] Result for ${targetTitle} not posted or date mismatch yet.`);
             return null;
         }
     } catch (e) {

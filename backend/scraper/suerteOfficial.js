@@ -35,8 +35,18 @@ async function scrapeSuerteOfficial(targetTime, dbLotteryCode) {
 
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+        const expectedDateStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now).replace(/\//g, '-'); // e.g. "22-07-2026"
 
-        const result = await page.evaluate((targetTime) => {
+        const result = await page.evaluate((targetTime, expectedDate) => {
+            // Validate date first
+            const dateEl = document.querySelector('.lr-date');
+            if (dateEl) {
+                const dateText = dateEl.innerText.trim();
+                if (dateText && !dateText.includes(expectedDate)) {
+                    return null; // Return null to retry if date does not match today
+                }
+            }
+
             const timeDivs = Array.from(document.querySelectorAll('.lr-draw-time'));
             const match = timeDivs.find(d => d.innerText && d.innerText.trim().includes(targetTime));
             if (match) {
@@ -51,7 +61,7 @@ async function scrapeSuerteOfficial(targetTime, dbLotteryCode) {
                 }
             }
             return null;
-        }, targetTime);
+        }, targetTime, expectedDateStr);
 
         if (result && result.length >= 3) {
             console.log(`[OFFICIAL SUERTE] SUCCESS! ${targetTime}:`, result);
@@ -68,7 +78,22 @@ async function scrapeSuerteOfficial(targetTime, dbLotteryCode) {
                 });
             });
         } else {
-            console.log(`[OFFICIAL SUERTE] Result for ${targetTime} not posted yet.`);
+            console.log(`[OFFICIAL SUERTE] Result for ${targetTime} not posted or date mismatch yet.`);
+            
+            // Try fallback to loteriasdominicanas.com
+            try {
+                console.log(`[OFFICIAL SUERTE] Trying fallback to loteriasdominicanas.com for ${targetTime}...`);
+                const { scrapeAmericanasOfficial } = require('./americanasOfficial');
+                const fallbackTarget = targetTime.includes('12:30') ? 'La Suerte 12:30' : 'La Suerte 18:00';
+                
+                const fallbackResult = await scrapeAmericanasOfficial(fallbackTarget, dbLotteryCode);
+                if (fallbackResult) {
+                    console.log(`[OFFICIAL SUERTE] Fallback SUCCESS for ${targetTime}:`, fallbackResult);
+                    return fallbackResult;
+                }
+            } catch (err) {
+                console.error(`[OFFICIAL SUERTE] Fallback failed for ${targetTime}:`, err.message);
+            }
             return null;
         }
     } catch (e) {

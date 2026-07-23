@@ -32,8 +32,15 @@ async function scrapeLeidsaOfficial(targetGame, lotteryCode) {
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
 
+        const shortMonths = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+        const formattedDateParts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(now);
+        const dayNum = parseInt(formattedDateParts.find(p => p.type === 'day').value);
+        const monthIdx = parseInt(formattedDateParts.find(p => p.type === 'month').value) - 1;
+        const yearNum = formattedDateParts.find(p => p.type === 'year').value;
+        const expectedDateStr = `${dayNum} ${shortMonths[monthIdx]} ${yearNum}`; // e.g. "22 jul 2026"
+
         // LEIDSA uses next.js with custom css class structures on its home page
-        const result = await page.evaluate((target) => {
+        const result = await page.evaluate((target, expectedDate) => {
             const altKeywords = {
                 'Quiniela Leidsa': 'Quiniela Pale',
                 'Pega 3 Más': 'Pega3Mas',
@@ -68,6 +75,15 @@ async function scrapeLeidsaOfficial(targetGame, lotteryCode) {
             }
             
             if (container) {
+                // Validate date inside container
+                const dateEl = container.querySelector('.css-1wdlcwn');
+                if (dateEl) {
+                    const dateText = dateEl.innerText.trim();
+                    if (dateText && !dateText.toLowerCase().includes(expectedDate.toLowerCase())) {
+                        return null; // Return null if it's old results (e.g. yesterday)
+                    }
+                }
+
                 const balls = Array.from(container.querySelectorAll('.css-yogco6'));
                 if (balls.length > 0) {
                     const rawNums = balls.map(b => b.innerText.trim()).filter(t => t.length > 0 && !isNaN(t));
@@ -78,7 +94,7 @@ async function scrapeLeidsaOfficial(targetGame, lotteryCode) {
                 }
             }
             return null;
-        }, targetGame);
+        }, targetGame, expectedDateStr);
 
         if (result && result.length > 0) {
             console.log(`[OFFICIAL LEIDSA] SUCCESS! ${targetGame}:`, result);
@@ -96,7 +112,7 @@ async function scrapeLeidsaOfficial(targetGame, lotteryCode) {
                 });
             });
         } else {
-            console.log(`[OFFICIAL LEIDSA] Result for ${targetGame} not posted yet.`);
+            console.log(`[OFFICIAL LEIDSA] Result for ${targetGame} not posted or date mismatch yet.`);
             return null;
         }
 

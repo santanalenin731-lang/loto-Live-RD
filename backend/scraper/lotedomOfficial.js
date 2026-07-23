@@ -36,10 +36,17 @@ async function scrapeLotedomOfficial(targetGame, dbLotteryCode) {
 
         const now = new Date();
         const drawDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+        const expectedDateStr = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now).replace(/\//g, '-'); // e.g. "22-07-2026"
 
-        const result = await page.evaluate((targetGame) => {
+        const result = await page.evaluate((targetGame, expectedDate) => {
             const card = document.querySelector('.cardResultados');
             if (!card) return null;
+            
+            // Validate date inside card
+            const cardText = card.innerText.trim();
+            if (cardText && !cardText.includes(expectedDate)) {
+                return null; // Old results, retry
+            }
             
             if (targetGame === 'Quiniela LoteDom') {
                 const row = card.querySelector('.resultados_fondo_oscuro');
@@ -82,7 +89,7 @@ async function scrapeLotedomOfficial(targetGame, dbLotteryCode) {
                 }
             }
             return null;
-        }, targetGame);
+        }, targetGame, expectedDateStr);
 
         if (result && result.length >= 1) {
             console.log(`[OFFICIAL LOTEDOM] SUCCESS! ${targetGame}:`, result);
